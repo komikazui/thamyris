@@ -15,8 +15,6 @@ type ExtendedOngekiProfileRating = DB.OngekiProfileRating & {
 	noteCount: number;
 	isFullBell?: number;
 	isFullCombo?: number;
-	platinumScoreStar?: number;
-	platinumScoreMax: number;
 	isAllBreake?: number;
 };
 
