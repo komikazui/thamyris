@@ -16,13 +16,13 @@ interface RatingTable {
 	romVersionCode: number | null;
 	techScoreMax: number | null;
 	platinumScoreMax: number | null;
+	noteCount: number;
 	platinumScoreStar: number | null;
 	artist: string | undefined;
 	title: string;
 	level: number;
 	chartId: number;
 	genre: string;
-	noteCount: number;
 	isFullCombo?: number | null;
 	isFullBell?: number | null;
 	isAllBreake?: number | null;

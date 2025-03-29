@@ -6,72 +6,28 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { getDifficultyFromOngekiChart, getOngekiGrade } from "@/utils/helpers";
 
 interface OngekiScore {
+	// Core information
 	id: number;
-	user: number;
-	sortNumber: number | null;
-	placeId: number | null;
-	placeName: string | null;
-	playDate: string | null;
-	userPlayDate: string | null;
-	musicId: number | null;
-	level: number | null;
-	playKind: number | null;
-	eventId: number | null;
-	eventName: string | null;
-	eventPoint: number | null;
-	playedUserId1: number | null;
-	playedUserId2: number | null;
-	playedUserId3: number | null;
-	playedUserName1: string | null;
-	playedUserName2: string | null;
-	playedUserName3: string | null;
-	playedMusicLevel1: number | null;
-	playedMusicLevel2: number | null;
-	playedMusicLevel3: number | null;
-	cardId1: number | null;
-	cardId2: number | null;
-	cardId3: number | null;
-	cardLevel1: number | null;
-	cardLevel2: number | null;
-	cardLevel3: number | null;
-	cardAttack1: number | null;
-	cardAttack2: number | null;
-	cardAttack3: number | null;
-	bossCharaId: number | null;
-	bossLevel: number | null;
-	bossAttribute: number | null;
-	clearStatus: number | null;
-	techScore: number | null;
-	techScoreRank: number | null;
-	battleScore: number | null;
-	battleScoreRank: number | null;
-	maxCombo: number | null;
-	judgeMiss: number | null;
-	judgeHit: number | null;
-	judgeBreak: number | null;
-	judgeCriticalBreak: number | null;
-	rateTap: number | null;
-	rateHold: number | null;
-	rateFlick: number | null;
-	rateSideTap: number | null;
-	rateSideHold: number | null;
-	bellCount: number | null;
-	totalBellCount: number | null;
-	damageCount: number | null;
-	overDamage: number | null;
-	isTechNewRecord: boolean | null;
-	isBattleNewRecord: boolean | null;
-	isOverDamageNewRecord: boolean | null;
-	isFullCombo?: number | undefined;
-	isFullBell?: number;
-	isAllBreak?: number;
-	playerRating: number | null;
-	battlePoint: number | null;
-	platinumScore?: number | null;
-	platinumScoreStar?: number | null;
-	platinumScoreMax?: number | null;
 	title?: string;
+
+	// Score and display info
+	techScore: number | null;
+	playerRating: number | null;
 	chartId?: number;
+	level: number | null;
+	userPlayDate: string | null;
+
+	// Status indicators
+	clearStatus: number | null;
+	isFullCombo?: number | undefined;
+	isAllBreak?: number;
+
+	// Platinum score info
+	platinumScore: number | null | undefined;
+	platinumScoreStar: number | null | undefined;
+	noteCount: number | undefined;
+
+	// Rating change indicator
 	rating_change?: "Increase" | "Decrease" | "Same";
 }
 
@@ -118,39 +74,45 @@ const OngekiScoreTableNew = ({ scores, searchQuery, onSearchChange }: OngekiScor
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{filteredScores.map((score) => (
-							<TableRow key={score.id} className="border-seperator hover:bg-hover border-b">
-								<TableCell className="text-primary text-sm">{score.title}</TableCell>
-								<TableCell className="text-primary text-sm font-medium">{score.techScore?.toLocaleString()}</TableCell>
-								<TableCell className="text-primary text-sm font-medium">{getOngekiGrade(score.techScore ?? 0)}</TableCell>
-								<TableCell className="text-primary text-sm">
-									<div className="mr-1 flex items-center justify-between">
-										<span>{((score.playerRating ?? 0) / 1000).toFixed(3)}</span>
-										{score.rating_change === "Increase" && <CircleArrowUp className="h-6 w-6 text-green-500" />}
-										{score.rating_change === "Decrease" && <CircleArrowDown className="h-6 w-6 text-red-500" />}
-										{score.rating_change === "Same" && <CircleArrowRight className="h-6 w-6 text-gray-500" />}
-									</div>
-								</TableCell>
-								<TableCell className="text-primary text-sm">{score.platinumScore?.toLocaleString()}</TableCell>
-								<TableCell className="text-primary text-sm">
-									{(score.platinumScoreStar ?? 0) > 0 && (
-										<>
-											<Star className="inline-block text-yellow-300" size={16} />
-											<span className="ml-1">{score.platinumScoreStar?.toLocaleString()}</span>
-										</>
-									)}
-								</TableCell>
-								<TableCell className="text-primary text-sm">{getDifficultyFromOngekiChart(score.chartId ?? 0)}</TableCell>
-								<TableCell className="text-primary text-sm">{new Date(score.userPlayDate ?? 0).toLocaleString()}</TableCell>
-								<TableCell className="text-primary text-sm">{score.level}</TableCell>
-								<TableCell className="text-primary text-sm">
-									{score.isFullCombo ? "FC" : ""} {score.isAllBreak ? "AB" : ""}
-								</TableCell>
-								<TableCell className="text-primary text-sm">
-									{Number(score.clearStatus) === 2 ? "Win" : Number(score.clearStatus) === 1 ? "Draw" : "Loss"}
-								</TableCell>
-							</TableRow>
-						))}
+						{filteredScores.map((score) => {
+							const maxPossibleScore = score.noteCount! * 2;
+
+							return (
+								<TableRow key={score.id} className="border-seperator hover:bg-hover border-b">
+									<TableCell className="text-primary text-sm">{score.title}</TableCell>
+									<TableCell className="text-primary text-sm font-medium">{score.techScore?.toLocaleString()}</TableCell>
+									<TableCell className="text-primary text-sm font-medium">{getOngekiGrade(score.techScore ?? 0)}</TableCell>
+									<TableCell className="text-primary text-sm">
+										<div className="mr-1 flex items-center justify-between">
+											<span>{((score.playerRating ?? 0) / 1000).toFixed(3)}</span>
+											{score.rating_change === "Increase" && <CircleArrowUp className="h-6 w-6 text-green-500" />}
+											{score.rating_change === "Decrease" && <CircleArrowDown className="h-6 w-6 text-red-500" />}
+											{score.rating_change === "Same" && <CircleArrowRight className="h-6 w-6 text-gray-500" />}
+										</div>
+									</TableCell>
+									<TableCell className="text-primary text-sm">
+										{`${(score.platinumScore ?? 0).toLocaleString()} / ${maxPossibleScore.toLocaleString()}`}
+									</TableCell>
+									<TableCell className="text-primary text-sm">
+										{(score.platinumScoreStar ?? 0) > 0 && (
+											<>
+												<Star className="inline-block text-yellow-300" size={16} />
+												<span className="ml-1">{score.platinumScoreStar?.toLocaleString()}</span>
+											</>
+										)}
+									</TableCell>
+									<TableCell className="text-primary text-sm">{getDifficultyFromOngekiChart(score.chartId ?? 0)}</TableCell>
+									<TableCell className="text-primary text-sm">{new Date(score.userPlayDate ?? 0).toLocaleString()}</TableCell>
+									<TableCell className="text-primary text-sm">{score.level}</TableCell>
+									<TableCell className="text-primary text-sm">
+										{score.isFullCombo ? "FC" : ""} {score.isAllBreak ? "AB" : ""}
+									</TableCell>
+									<TableCell className="text-primary text-sm">
+										{Number(score.clearStatus) === 2 ? "Win" : Number(score.clearStatus) === 1 ? "Draw" : "Loss"}
+									</TableCell>
+								</TableRow>
+							);
+						})}
 					</TableBody>
 				</Table>
 				{filteredScores.length === 0 && (

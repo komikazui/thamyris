@@ -1154,9 +1154,11 @@ export namespace DB {
 		playerRating: number | null;
 		battlePoint: number | null;
 		title?: string;
-		platinumScore?: number | null;
-		platinumScoreMax?: number | null;
-		platinumScoreStar?: number | null;
+		techScoreMax: number;
+		noteCount: number;
+		platinumScore: number | null;
+		platinumScoreMax: number | null;
+		platinumScoreStar: number | null;
 	};
 	export type OngekiScoreTechCount = {
 		id: number;
