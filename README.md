@@ -54,7 +54,7 @@ pnpm env use --global lts
 2. **Install dependencies**
 
    ```bash
-   bun install
+   pnpm install
    ```
 
 3. **Environment Setup**
