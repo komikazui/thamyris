@@ -64,10 +64,8 @@ const OngekiRatingTableNew: React.FC<RatingFrameTableProps> = ({ data, title }) 
 							<TableHead className="text-primary">Grade</TableHead>
 							<TableHead className="text-primary">Rating</TableHead>
 							<TableHead className="text-primary">Rate</TableHead>
-
 							<TableHead className="text-primary">P-Score</TableHead>
 							<TableHead className="text-primary">
-								{" "}
 								<Star className="inline-block text-yellow-300" size={16} />
 							</TableHead>
 							<TableHead className="text-primary">Level</TableHead>

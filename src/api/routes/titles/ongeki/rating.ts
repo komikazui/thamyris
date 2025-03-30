@@ -98,7 +98,8 @@ const UserRatingFramesRoutes = new Hono()
           AND r.version = m.version
         WHERE r.user = ?
           AND r.type = 'userRatingBaseBestList'
-          AND r.version = ?`,
+          AND r.version = ?
+        ORDER BY r.index`,
 				[userId, version]
 			);
 			return c.json(results);
@@ -140,7 +141,8 @@ const UserRatingFramesRoutes = new Hono()
           AND r.version = m.version
         WHERE r.user = ?
           AND r.type = 'userRatingBaseBestNewList'
-          AND r.version = ?`,
+          AND r.version = ?
+        ORDER BY r.index`,
 				[userId, version]
 			);
 
@@ -183,7 +185,8 @@ const UserRatingFramesRoutes = new Hono()
           AND r.version = m.version
         WHERE r.user = ?
           AND r.type = 'userRatingBaseNextList'
-          AND r.version = ?`,
+          AND r.version = ?
+        ORDER BY r.index`,
 				[userId, version]
 			);
 
