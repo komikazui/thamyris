@@ -135,46 +135,45 @@ export function OngekiGekForceRating(
 	if (score < 500000) {
 		return 0;
 	} else if (score < 800000) {
-		rating = internalChartRating + ((level - 6) * (score - 500000)) / 300000;
+		rating = ((internalChartRating - 6000) * (score - 500000)) / 300000;
 	} else if (score < 900000) {
-		rating = internalChartRating + (level - 6) + (2 * (score - 800000)) / 100000;
+		rating = internalChartRating - 6000 + (2000 * (score - 800000)) / 100000;
 	} else if (score < 970000) {
-		rating = internalChartRating + (level - 4) + (4 * (score - 900000)) / 70000;
+		rating = internalChartRating - 4000 + (4000 * (score - 900000)) / 70000;
 	} else if (score < 990000) {
-		rating = internalChartRating + level + (0.75 * (score - 970000)) / 20000;
+		rating = internalChartRating + (750 * (score - 970000)) / 20000;
 	} else if (score < 1000000) {
-		rating = internalChartRating + (level + 0.75) + (0.5 * (score - 990000)) / 10000;
+		rating = internalChartRating + 750 + (500 * (score - 990000)) / 10000;
 	} else if (score < 1007500) {
-		rating = internalChartRating + (level + 1.25) + (0.5 * (score - 1000000)) / 7500;
+		rating = internalChartRating + 1250 + (500 * (score - 1000000)) / 7500;
 	} else if (score <= 1010000) {
-		rating = internalChartRating + (level + 1.75) + (0.25 * (score - 1007500)) / 2500;
+		rating = internalChartRating + 1750 + (250 * (score - 1007500)) / 2500;
 	} else {
 		return 0;
 	}
 
 	// Apply bonuses
 	if (score === 1010000) {
-		rating += 0.35; // AB+
+		rating += 350; // AB+
 	} else if (allBreake) {
-		rating += 0.3;
+		rating += 300;
 	} else if (fullCombo) {
-		rating += 0.1;
+		rating += 100;
 	}
 
 	if (fullBell) {
-		rating += 0.05;
+		rating += 50;
 	}
 	if (score >= 1007500) {
-		rating += 0.3; // SSS+
+		rating += 300; // SSS+
 	} else if (score >= 1000000) {
-		rating += 0.2; // SSS
+		rating += 200; // SSS
 	} else if (score >= 990000) {
-		rating += 0.1; // SS
+		rating += 100; // SS
 	}
 
 	return rating;
 }
-
 export function ChunitmRating(level: number, score: number): number {
 	if (score >= 1009000) {
 		return level * 100 + 215;
