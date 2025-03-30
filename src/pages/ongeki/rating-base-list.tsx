@@ -94,7 +94,7 @@ const OngekiRatingFrames = () => {
 						{isRefreshOrAbove ? (
 							<>
 								<OngekiRatingFrameTableNew data={newBaseSongs} title="Best 50" />
-								<OngekiRatingFrameTableNew data={newPscoreSongs} title="Best 50 P-score" sortBy="prating" />
+								<OngekiRatingFrameTableNew data={newPscoreSongs} title="Best 50 P-score" />
 								<OngekiRatingFrameTableNew data={newNewSongs} title="Current Version" />
 								<OngekiRatingFrameTableNew data={newNextSongs} title="Potential Plays" />
 							</>

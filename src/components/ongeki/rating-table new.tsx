@@ -31,27 +31,12 @@ interface RatingTable {
 interface RatingFrameTableProps {
 	data: RatingTable[];
 	title: string;
-	sortBy?: "index" | "maxPstars" | "prating";
 }
 
-const OngekiRatingTableNew: React.FC<RatingFrameTableProps> = ({ data, title, sortBy = "index" }) => {
+const OngekiRatingTableNew: React.FC<RatingFrameTableProps> = ({ data, title }) => {
 	const [searchQuery, setSearchQuery] = useState<string>("");
 
-	let filteredSongs = data.filter((song) => song.title?.toLowerCase().includes(searchQuery.toLowerCase()));
-
-	if (sortBy === "maxPstars") {
-		filteredSongs = [...filteredSongs].sort((a, b) => {
-			const starsA = a.platinumScoreStar ?? 0;
-			const starsB = b.platinumScoreStar ?? 0;
-			return starsB - starsA;
-		});
-	} else if (sortBy === "prating") {
-		filteredSongs = [...filteredSongs].sort((a, b) => {
-			const pratingA = (a.level * a.level * (a.platinumScoreStar ?? 0)) / 1000;
-			const pratingB = (b.level * b.level * (b.platinumScoreStar ?? 0)) / 1000;
-			return pratingB - pratingA;
-		});
-	}
+	const filteredSongs = data.filter((song) => song.title?.toLowerCase().includes(searchQuery.toLowerCase()));
 
 	return (
 		<div className="bg-card rounded-md p-4 sm:p-6">
@@ -78,10 +63,13 @@ const OngekiRatingTableNew: React.FC<RatingFrameTableProps> = ({ data, title, so
 							<TableHead className="text-primary">Score</TableHead>
 							<TableHead className="text-primary">Grade</TableHead>
 							<TableHead className="text-primary">Rating</TableHead>
-							<TableHead className="text-primary">PScore Rating</TableHead>
+							<TableHead className="text-primary">Rate</TableHead>
 
-							<TableHead className="text-primary">PScore</TableHead>
-							<TableHead className="text-primary">PStars</TableHead>
+							<TableHead className="text-primary">P-Score</TableHead>
+							<TableHead className="text-primary">
+								{" "}
+								<Star className="inline-block text-yellow-300" size={16} />
+							</TableHead>
 							<TableHead className="text-primary">Level</TableHead>
 							<TableHead className="text-primary">Difficulty</TableHead>
 						</TableRow>
