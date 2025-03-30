@@ -75,6 +75,8 @@ const OngekiRatingTableNew: React.FC<RatingFrameTableProps> = ({ data, title, so
 							<TableHead className="text-primary">Score</TableHead>
 							<TableHead className="text-primary">Grade</TableHead>
 							<TableHead className="text-primary">Rating</TableHead>
+							<TableHead className="text-primary">PScore Rating</TableHead>
+
 							<TableHead className="text-primary">PScore</TableHead>
 							<TableHead className="text-primary">PStars</TableHead>
 							<TableHead className="text-primary">Level</TableHead>
@@ -84,6 +86,7 @@ const OngekiRatingTableNew: React.FC<RatingFrameTableProps> = ({ data, title, so
 					<TableBody>
 						{filteredSongs.map((song, index) => {
 							const maxPossibleScore = song.noteCount * 2;
+							const pscoreRating = (song.level * song.level * (song.platinumScoreStar ?? 0)) / 1000;
 
 							return (
 								<TableRow key={song.id ?? index} className="border-seperator hover:bg-hover border-b">
@@ -102,6 +105,7 @@ const OngekiRatingTableNew: React.FC<RatingFrameTableProps> = ({ data, title, so
 											) / 1000
 										).toFixed(3)}
 									</TableCell>
+									<TableCell className="text-primary text-sm">{pscoreRating.toFixed(3)}</TableCell>
 									<TableCell className="text-primary text-sm">
 										{`${(song.platinumScoreMax ?? 0).toLocaleString()} / ${maxPossibleScore.toLocaleString()}`}
 									</TableCell>
