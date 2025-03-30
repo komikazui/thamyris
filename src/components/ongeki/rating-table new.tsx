@@ -31,7 +31,7 @@ interface RatingTable {
 interface RatingFrameTableProps {
 	data: RatingTable[];
 	title: string;
-	sortBy?: "index" | "pscorerating";
+	sortBy?: "index" | "maxPstars";
 }
 
 const OngekiRatingTableNew: React.FC<RatingFrameTableProps> = ({ data, title, sortBy = "index" }) => {
@@ -39,14 +39,11 @@ const OngekiRatingTableNew: React.FC<RatingFrameTableProps> = ({ data, title, so
 
 	let filteredSongs = data.filter((song) => song.title?.toLowerCase().includes(searchQuery.toLowerCase()));
 
-	if (sortBy === "pscorerating") {
+	if (sortBy === "maxPstars") {
 		filteredSongs = [...filteredSongs].sort((a, b) => {
-			// Formula: level * level * platinumScoreStar / 1000
 			const starsA = a.platinumScoreStar ?? 0;
 			const starsB = b.platinumScoreStar ?? 0;
-			const ratingA = (a.level * a.level * starsA) / 1000;
-			const ratingB = (b.level * b.level * starsB) / 1000;
-			return ratingB - ratingA;
+			return starsB - starsA;
 		});
 	}
 

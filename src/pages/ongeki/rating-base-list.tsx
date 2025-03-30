@@ -93,7 +93,7 @@ const OngekiRatingFrames = () => {
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
 						{isRefreshOrAbove ? (
 							<>
-								<OngekiRatingFrameTableNew data={newBaseSongs} title="Best 50" />
+								<OngekiRatingFrameTableNew data={newBaseSongs} title="Best 50" sortBy="maxPstars" />
 								<OngekiRatingFrameTableNew data={newPscoreSongs} title="Best 50 P-score" />
 								<OngekiRatingFrameTableNew data={newNewSongs} title="Current Version" />
 								<OngekiRatingFrameTableNew data={newNextSongs} title="Potential Plays" />
