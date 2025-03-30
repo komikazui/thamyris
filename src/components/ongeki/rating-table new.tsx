@@ -31,7 +31,7 @@ interface RatingTable {
 interface RatingFrameTableProps {
 	data: RatingTable[];
 	title: string;
-	sortBy?: "index" | "maxPossibleScore" | "pscorerating";
+	sortBy?: "index" | "pscorerating";
 }
 
 const OngekiRatingTableNew: React.FC<RatingFrameTableProps> = ({ data, title, sortBy = "index" }) => {
