@@ -94,7 +94,7 @@ CFTurnstileKey=1x00000000000000000000AA
 
 # CDN Configuration
 
-CDN_URL=https://thamyris.b-cdn.net/
+CDN_URL=
 ```
 
 4. **Database Setup**
