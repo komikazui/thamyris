@@ -100,10 +100,10 @@ const OngekiRatingTableNew: React.FC<RatingFrameTableProps> = ({ data, title }) 
 									</TableCell>
 									<TableCell className="text-primary text-sm">
 										{(song.platinumScoreStar ?? 0) > 0 && (
-											<>
-												<Star className="inline-block text-yellow-300" size={16} />
+											<div className="flex items-center">
+												<Star className="text-yellow-300" size={16} />
 												<span className="ml-1">{song.platinumScoreStar?.toLocaleString()}</span>
-											</>
+											</div>
 										)}
 									</TableCell>
 									<TableCell className="text-primary text-sm">{song.level}</TableCell>
