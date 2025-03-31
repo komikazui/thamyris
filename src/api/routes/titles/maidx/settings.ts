@@ -27,7 +27,7 @@ const MaimaiDXSettings = new Hono()
 						`
 							UPDATE daphnis_user_option 
 							SET value = ?
-							WHERE user = ? AND \`key\` = '${DaphnisUserOptionKey.ChunithmVersion}'
+							WHERE user = ? AND \`key\` = '${DaphnisUserOptionKey.MaimaiDXVersion}'
 						`,
 						[version, userId]
 					);
@@ -57,7 +57,7 @@ const MaimaiDXSettings = new Hono()
 			const versions = await db.select<{ version: number }>(
 				`
 					SELECT DISTINCT version 
-					FROM chuni_profile_data 
+					FROM mai2_profile_detail 
 					WHERE user = ? 
 					ORDER BY version DESC
 				`,

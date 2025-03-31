@@ -1746,6 +1746,7 @@ export namespace DB {
 		extNum4: number | null;
 		extBool1: boolean | null;
 		trialPlayAchievement: number | null;
+		title?: string;
 	};
 
 	export type Mai2Playlog2p = {
@@ -2087,8 +2088,7 @@ export namespace DB {
 export enum DaphnisUserOptionVersionKey {
 	Chunithm = "chunithm_version",
 	Ongeki = "ongeki_version",
-	Mai2 = "mai2_version",
-
+	MaimaiDX = "maimaidx_version",
 }
 
 /**
@@ -2097,6 +2097,8 @@ export enum DaphnisUserOptionVersionKey {
 export enum DaphnisUserOptionKey {
 	OngekiVersion = DaphnisUserOptionVersionKey.Ongeki,
 	ChunithmVersion = DaphnisUserOptionVersionKey.Chunithm,
+	MaimaiDXVersion = DaphnisUserOptionVersionKey.MaimaiDX,
+
 	MaxTickets = "max_tickets",
 	UnlockAllSongs = "unlock_all_songs",
 }

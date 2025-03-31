@@ -27,6 +27,7 @@ import { NotFound } from "./pages/common/not-found";
 import OverviewPage from "./pages/common/overview-page";
 import ServerNews from "./pages/common/server-news";
 import Mai2ScorePage from "./pages/maimaidx/scores";
+import MaimaiDxSettings from "./pages/maimaidx/settings";
 import OngekiAllSongs from "./pages/ongeki/allsongs";
 import OngekiLeaderboard from "./pages/ongeki/leaderboard";
 import OngekiRatingFrames from "./pages/ongeki/rating-base-list";
@@ -70,24 +71,25 @@ const app = (
 								<Route path="/account" element={<Account />} />
 								<Route path="/arcade" element={<Arcade />} />
 
-								<Route path="/settings/chunithm" element={<ChunithmSettingsPage />} />
+								<Route path="/chunithm/settings" element={<ChunithmSettingsPage />} />
 								<Route path="/chunithm/userbox" element={<ChunithmUserbox />} />
 								<Route path="/chunithm/scores" element={<ChunithmScorePage />} />
 								<Route path="/chunithm/favorites" element={<ChunithmFavorites />} />
 								<Route path="/chunithm/leaderboard" element={<ChunithmLeaderboard />} />
 								<Route path="/chunithm/allsongs" element={<ChunithmAllSongs />} />
 								<Route path="/chunithm/rivals" element={<ChunithmRivals />} />
+								<Route path="/chunithm/rating" element={<ChunithmRatingBaseList />} />
 
-								<Route path="/settings/ongeki" element={<OngekiSettingsPage />} />
+								<Route path="/ongeki/settings" element={<OngekiSettingsPage />} />
 								<Route path="/ongeki/allsongs" element={<OngekiAllSongs />} />
 								<Route path="/ongeki/scores" element={<OngekiScorePage />} />
-								<Route path="/chunithm/rating" element={<ChunithmRatingBaseList />} />
 								<Route path="/ongeki/rating" element={<OngekiRatingFrames />} />
 								<Route path="/ongeki/rating" element={<OngekiRatingFrames />} />
 								<Route path="/ongeki/leaderboard" element={<OngekiLeaderboard />} />
 								<Route path="/ongeki/rivals" element={<OngekiRivals />} />
 
 								<Route path="/maimaidx/scores" element={<Mai2ScorePage />} />
+								<Route path="/maimaidx/settings" element={<MaimaiDxSettings />} />
 							</Route>
 						</Route>
 

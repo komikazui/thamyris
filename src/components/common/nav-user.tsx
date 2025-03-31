@@ -93,7 +93,16 @@ export function NavUser({
 						<DropdownMenuSeparator className="bg-border" />
 						<DropdownMenuGroup>
 							<DropdownMenuItem
-								onClick={() => navigate("/settings/ongeki")}
+								onClick={() => navigate("/maimaidx/settings")}
+								className="text-primary focus:bg-hover focus:text-primary hover:cursor-pointer"
+							>
+								<SettingsIcon className="text-primary`" />
+								Maimai DX Settings
+							</DropdownMenuItem>
+						</DropdownMenuGroup>
+						<DropdownMenuGroup>
+							<DropdownMenuItem
+								onClick={() => navigate("/ongeki/settings")}
 								className="text-primary focus:bg-hover focus:text-primary hover:cursor-pointer"
 							>
 								<SettingsIcon className="text-primary`" />
@@ -102,7 +111,7 @@ export function NavUser({
 						</DropdownMenuGroup>
 						<DropdownMenuGroup>
 							<DropdownMenuItem
-								onClick={() => navigate("/settings/chunithm")}
+								onClick={() => navigate("/chunithm/settings")}
 								className="text-primary focus:bg-hover focus:text-primary hover:cursor-pointer"
 							>
 								<SettingsIcon className="text-primary" />

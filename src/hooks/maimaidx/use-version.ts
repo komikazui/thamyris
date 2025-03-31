@@ -7,7 +7,7 @@ import { useCurrentUser } from "../users";
 
 export const useMaimaiDxVersion = (): number => {
 	const { versions } = useCurrentUser();
-	return versions.chunithm_version;
+	return versions.maimaidx_version;
 };
 
 export const useMaimaiDxVersions = () => {
@@ -24,7 +24,7 @@ export const useMaimaiDxVersions = () => {
 	});
 };
 
-export const useUpdateMaimaiDx2Version = () => {
+export const useUpdateMaimaiDxVersion = () => {
 	const { setUser } = useAuth();
 	return useMutation({
 		mutationFn: async (version: number) => {

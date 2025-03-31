@@ -19,3 +19,18 @@ export enum Theme {
 	Dark = "dark",
 	System = "system",
 }
+
+export enum MaimaiDxVersions {
+	MaimaiDX = 13,
+	MaimaiDXPlus = 14,
+	MaimaiDXSplash = 15,
+	MaimaiDXSplashPlus = 16,
+	MaimaiDXUniverse = 17,
+	MaimaiDXUniversePlus = 18,
+	MaimaiDXFestival = 19,
+	MaimaiDXFestivalPlus = 20,
+	MaimaiDxBuddies = 21,
+	MaimaiDxBuddiesPlus = 22,
+	MaimaiDxPrism = 23,
+	MaimaiDxPrismPlus = 24,
+}
