@@ -3,7 +3,6 @@ import React from "react";
 import { CircleArrowDown, CircleArrowRight, CircleArrowUp, Search } from "lucide-react";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { cdnUrl } from "@/lib/constants";
 import { getChunithmGrade, getDifficultyFromChunithmChart } from "@/utils/helpers";
 
 interface Mai2Score {

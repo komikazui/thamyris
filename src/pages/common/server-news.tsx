@@ -20,7 +20,7 @@ const newsBulletin = [
 				>
 					Discord
 				</a>
-				for updates
+				&nbsp; for updates
 			</>
 		),
 		date: `${env.BUILD_DATE_YEAR_MONTH_DAY}`,
