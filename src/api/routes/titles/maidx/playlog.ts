@@ -23,9 +23,8 @@ const MaimaiDXPlaylogRoute = new Hono().get("playlog", async (c) => {
                     mp.syncStatus,
                     msm.chartId,  
                     msm.title,
-                    msm.level,
+                    msm.difficulty,
                     msm.genre,
-                    msm.jacketPath,
                     msm.artist,
                     IF(mp.achievement > LAG(mp.achievement, 1) OVER (ORDER BY mp.userPlayDate), 'Increase',
                     IF(mp.achievement < LAG(mp.achievement, 1) OVER (ORDER BY mp.userPlayDate), 'Decrease', 'Same')) AS score_change,
@@ -33,7 +32,7 @@ const MaimaiDXPlaylogRoute = new Hono().get("playlog", async (c) => {
                     IF(mp.deluxscore < LAG(mp.deluxscore, 1) OVER (ORDER BY mp.userPlayDate), 'Decrease', 'Same')) AS rating_change
                 FROM
                     mai2_playlog mp
-                    JOIN mai2_profile_data pd ON mp.user = pd.user
+                    JOIN mai2_profile_detail pd ON mp.user = pd.user
                     JOIN mai2_static_music msm ON mp.musicId = msm.songId
                     AND mp.level = msm.chartId
                     AND msm.version = ?
@@ -51,9 +50,8 @@ const MaimaiDXPlaylogRoute = new Hono().get("playlog", async (c) => {
                 syncStatus,
                 chartId,  
                 title,
-                level,
+                difficulty,
                 genre,
-                jacketPath,
                 artist,
                 score_change,
                 rating_change

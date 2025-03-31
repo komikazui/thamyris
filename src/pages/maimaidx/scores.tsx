@@ -1,18 +1,19 @@
 import { useState } from "react";
 import React from "react";
 
-import ChunithmScoreTable from "@/components/chunithm/score-table";
 import Header from "@/components/common/header";
 import Pagination from "@/components/common/pagination";
 import Spinner from "@/components/common/spinner";
-import { useChunithmScores, useChunithmVersion } from "@/hooks/chunithm";
+import MaimaiDxScoreTable from "@/components/mai2/score-table";
+import { useMaimaidxScores } from "@/hooks/maimaidx/use-scores";
+import { useMaimaiDxVersion } from "@/hooks/maimaidx/use-version";
 
 const Mai2ScorePage = () => {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [currentPage, setCurrentPage] = useState(1);
 
-	const { data: scores = [], isLoading: isLoadingScores } = useChunithmScores();
-	const version = useChunithmVersion();
+	const { data: scores = [], isLoading: isLoadingScores } = useMaimaidxScores();
+	const version = useMaimaiDxVersion();
 
 	const filteredScores = scores.filter((score) => score.title?.toLowerCase().includes(searchQuery.toLowerCase()));
 
@@ -39,7 +40,7 @@ const Mai2ScorePage = () => {
 			{version ? (
 				<div className="container mx-auto space-y-6">
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
-						<ChunithmScoreTable
+						<MaimaiDxScoreTable
 							scores={paginatedScores}
 							searchQuery={searchQuery}
 							onSearchChange={(e) => setSearchQuery(e.target.value)}

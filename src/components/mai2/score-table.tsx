@@ -74,13 +74,13 @@ interface Mai2Score {
 	rating_change?: "Increase" | "Decrease" | "Same";
 }
 
-interface ChunithmScoreTableProps {
+interface MaimaiDxScoreTableProps {
 	scores: Mai2Score[];
 	searchQuery: string;
 	onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const Mai2ScoreTable = ({ scores, searchQuery, onSearchChange }: ChunithmScoreTableProps) => {
+const MaimaiDxScoreTable = ({ scores, searchQuery, onSearchChange }: MaimaiDxScoreTableProps) => {
 	const filteredScores = scores.filter((score) => score.title?.toLowerCase().includes(searchQuery.toLowerCase()));
 
 	return (
@@ -164,4 +164,4 @@ const Mai2ScoreTable = ({ scores, searchQuery, onSearchChange }: ChunithmScoreTa
 	);
 };
 
-export default Mai2ScoreTable;
+export default MaimaiDxScoreTable;

@@ -5,12 +5,12 @@ import { api } from "@/utils";
 import { useAuth } from "../auth";
 import { useCurrentUser } from "../users";
 
-export const useMai2Version = (): number => {
+export const useMaimaiDxVersion = (): number => {
 	const { versions } = useCurrentUser();
 	return versions.chunithm_version;
 };
 
-export const useMai2Versions = () => {
+export const useMaimaiDxVersions = () => {
 	return useQuery({
 		queryKey: ["mai2Versions"],
 		queryFn: async () => {
@@ -24,7 +24,7 @@ export const useMai2Versions = () => {
 	});
 };
 
-export const useUpdateMai2Version = () => {
+export const useUpdateMaimaiDx2Version = () => {
 	const { setUser } = useAuth();
 	return useMutation({
 		mutationFn: async (version: number) => {
