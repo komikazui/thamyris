@@ -19,7 +19,7 @@ const newsBulletin = [
 					className="text-blue-500 hover:underline"
 				>
 					Discord
-				</a>{" "}
+				</a>
 				for updates
 			</>
 		),

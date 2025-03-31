@@ -7,7 +7,7 @@ export function useChunithmScores() {
 	return useQuery({
 		queryKey: ["chunithm", "scores"],
 		queryFn: async () => {
-			const response = await api.chunithm.chuni_score_playlog.$get();
+			const response = await api.chunithm.profile.playlog.$get();
 
 			if (!response.ok) {
 				throw new Error();

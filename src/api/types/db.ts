@@ -2087,6 +2087,8 @@ export namespace DB {
 export enum DaphnisUserOptionVersionKey {
 	Chunithm = "chunithm_version",
 	Ongeki = "ongeki_version",
+	Mai2 = "mai2_version",
+
 }
 
 /**

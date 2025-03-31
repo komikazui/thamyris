@@ -5,16 +5,16 @@ import { api } from "@/utils";
 import { useAuth } from "../auth";
 import { useCurrentUser } from "../users";
 
-export const useChunithmVersion = (): number => {
+export const useMai2Version = (): number => {
 	const { versions } = useCurrentUser();
 	return versions.chunithm_version;
 };
 
-export const useChunithmVersions = () => {
+export const useMai2Versions = () => {
 	return useQuery({
-		queryKey: ["chunithmVersions"],
+		queryKey: ["mai2Versions"],
 		queryFn: async () => {
-			const response = await api.chunithm.cozynet.versions.$get();
+			const response = await api.maimaidx.cozynet.versions.$get();
 			if (!response.ok) {
 				throw new Error();
 			}
@@ -24,11 +24,11 @@ export const useChunithmVersions = () => {
 	});
 };
 
-export const useUpdateChunithmVersion = () => {
+export const useUpdateMai2Version = () => {
 	const { setUser } = useAuth();
 	return useMutation({
 		mutationFn: async (version: number) => {
-			const response = await api.chunithm.cozynet.update.$post({
+			const response = await api.maimaidx.cozynet.update.$post({
 				json: { version },
 			});
 			if (!response.ok) {

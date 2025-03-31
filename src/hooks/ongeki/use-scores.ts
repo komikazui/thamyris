@@ -7,7 +7,7 @@ export function useOngekiScores() {
 	return useQuery({
 		queryKey: ["ongeki", "scores"],
 		queryFn: async () => {
-			const response = await api.ongeki.ongeki_score_playlog.$get();
+			const response = await api.ongeki.profile.playlog.$get();
 			if (!response.ok) {
 				throw new Error();
 			}

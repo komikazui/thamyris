@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { cdnUrl } from "@/lib/constants";
 import { getChunithmGrade, getDifficultyFromChunithmChart } from "@/utils/helpers";
 
-interface ChunithmScore {
+interface Mai2Score {
 	id: number;
 	user: number;
 	orderId: number | null;
@@ -46,7 +46,7 @@ interface ChunithmScore {
 	eventId: number | null;
 	playerRating: number | null;
 	isNewRecord: boolean | null;
-	isFullCombo: number;
+	isFullCombo: boolean | null;
 	fullChainKind: number | null;
 	isAllJustice: boolean | null;
 	isContinue: boolean | null;
@@ -75,12 +75,12 @@ interface ChunithmScore {
 }
 
 interface ChunithmScoreTableProps {
-	scores: ChunithmScore[];
+	scores: Mai2Score[];
 	searchQuery: string;
 	onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const ChunithmScoreTable = ({ scores, searchQuery, onSearchChange }: ChunithmScoreTableProps) => {
+const Mai2ScoreTable = ({ scores, searchQuery, onSearchChange }: ChunithmScoreTableProps) => {
 	const filteredScores = scores.filter((score) => score.title?.toLowerCase().includes(searchQuery.toLowerCase()));
 
 	return (
@@ -164,4 +164,4 @@ const ChunithmScoreTable = ({ scores, searchQuery, onSearchChange }: ChunithmSco
 	);
 };
 
-export default ChunithmScoreTable;
+export default Mai2ScoreTable;

@@ -1,23 +1,25 @@
 import { Hono } from "hono";
 
 import { AvatarRoutes } from "./avatar";
-import { ChunithmRoutes } from "./chunithm";
 import { FavoritesRoutes } from "./favorites";
 import { ChunithmKamaitachiRoutes } from "./kamaitachi";
 import { ChunithmLeaderboardRoutes } from "./leaderboard";
 import { MapIconRoutes } from "./mapicon";
 import { ChunithmModsRoutes } from "./modifications";
 import { NameplateRoutes } from "./nameplate";
+import { ChunithmScorePlaylog } from "./playlog";
 import { UserRatingFramesRoutes } from "./rating";
 import { ChunithmReiwaRoutes } from "./reiwa";
 import { RivalsRoutes } from "./rivals";
 import { ChunithmSettingsRoutes } from "./settings";
+import { ChunithmStaticMusic } from "./staticmusic";
 import { SystemVoiceRoutes } from "./systemvoice";
 import { ChunithmTeamsRoutes } from "./teams";
 import { TrophyRoutes } from "./trophies";
 
 export const AllChunithmRoutes = new Hono()
-	.route("", ChunithmRoutes)
+	.route("static", ChunithmStaticMusic)
+	.route("profile", ChunithmScorePlaylog)
 	.route("avatar", AvatarRoutes)
 	.route("favorites", FavoritesRoutes)
 	.route("kamaitachi", ChunithmKamaitachiRoutes)
@@ -27,7 +29,7 @@ export const AllChunithmRoutes = new Hono()
 	.route("rating", UserRatingFramesRoutes)
 	.route("reiwa", ChunithmReiwaRoutes)
 	.route("rivals", RivalsRoutes)
-	.route("settings", ChunithmSettingsRoutes)
+	.route("cozynet", ChunithmSettingsRoutes)
 	.route("systemvoice", SystemVoiceRoutes)
 	.route("trophy", TrophyRoutes)
 	.route("mods", ChunithmModsRoutes)

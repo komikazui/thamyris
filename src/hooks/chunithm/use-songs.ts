@@ -6,7 +6,7 @@ export function useChunithmSongs() {
 	return useQuery({
 		queryKey: ["chunithm", "songs"],
 		queryFn: async () => {
-			const response = await api.chunithm.chuni_static_music.$get();
+			const response = await api.chunithm.static.chuni_static_music.$get();
 
 			if (!response.ok) {
 				throw new Error("Failed to fetch songs");

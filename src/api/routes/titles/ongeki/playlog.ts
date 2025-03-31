@@ -4,14 +4,13 @@ import { db } from "@/api/db";
 import { DB } from "@/api/types";
 import { rethrowWithMessage } from "@/api/utils/error";
 
-const OngekiRoutes = new Hono()
-	.get("ongeki_score_playlog", async (c) => {
-		try {
-			const { userId, versions } = c.payload;
-			const version = versions.ongeki_version;
+const OngekiProfilePlaylog = new Hono().get("playlog", async (c) => {
+	try {
+		const { userId, versions } = c.payload;
+		const version = versions.ongeki_version;
 
-			const results = await db.select<DB.OngekiScorePlaylog>(
-				`
+		const results = await db.select<DB.OngekiScorePlaylog>(
+			`
                 WITH RankedScores AS (
                     SELECT 
                         csp.id,
@@ -89,27 +88,12 @@ const OngekiRoutes = new Hono()
                 ORDER BY 
                     userPlayDate DESC;
                     `,
-				[version, userId, version]
-			);
-			return c.json(results);
-		} catch (error) {
-			throw rethrowWithMessage("Failed to fetch ongeki playlog", error);
-		}
-	})
-	.get("ongeki_static_music", async (c) => {
-		try {
-			const { versions } = c.payload;
-			const version = versions.ongeki_version;
+			[version, userId, version]
+		);
+		return c.json(results);
+	} catch (error) {
+		throw rethrowWithMessage("Failed to fetch ongeki playlog", error);
+	}
+});
 
-			const results = await db.select<DB.OngekiStaticMusic>(
-				`SELECT id, songId, chartId, title, level, artist, genre  
-       FROM ongeki_static_music
-       WHERE version = ?`,
-				[version]
-			);
-			return c.json(results);
-		} catch (error) {
-			throw rethrowWithMessage("Failed to get static music", error);
-		}
-	});
-export { OngekiRoutes };
+export { OngekiProfilePlaylog };

@@ -26,7 +26,7 @@ import ChunithmUserbox from "./pages/chunithm/userbox";
 import { NotFound } from "./pages/common/not-found";
 import OverviewPage from "./pages/common/overview-page";
 import ServerNews from "./pages/common/server-news";
-import MaimaiScores from "./pages/maimai/scores";
+import Mai2ScorePage from "./pages/mai2/scores";
 import OngekiAllSongs from "./pages/ongeki/allsongs";
 import OngekiLeaderboard from "./pages/ongeki/leaderboard";
 import OngekiRatingFrames from "./pages/ongeki/rating-base-list";
@@ -87,7 +87,7 @@ const app = (
 								<Route path="/ongeki/leaderboard" element={<OngekiLeaderboard />} />
 								<Route path="/ongeki/rivals" element={<OngekiRivals />} />
 
-								<Route path="/maimai/scores" element={<MaimaiScores />} />
+								<Route path="/mai2/scores" element={<Mai2ScorePage />} />
 							</Route>
 						</Route>
 
