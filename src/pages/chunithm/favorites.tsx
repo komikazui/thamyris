@@ -76,7 +76,8 @@ const ChunithmFavorites = () => {
 		Title: (row: ChunithmFavorite) => <span className="text-primary truncate">{row.title}</span>,
 		Favorite: (row: ChunithmFavorite) => (
 			<Heart
-				className={`h-5 w-5 cursor-pointer ${row.isFavorited ? "fill-current text-red-500" : "text-gray-500"}`}
+				fill={favoriteSongIds.includes(row.songId) ? "currentColor" : "none"}
+				className={`h-5 w-5 cursor-pointer ${favoriteSongIds.includes(row.songId) ? "text-red-500" : "text-gray-500"}`}
 				onClick={() => handleToggleFavorite(row.songId)}
 			/>
 		),
