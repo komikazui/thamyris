@@ -29,7 +29,7 @@ const UserRatingFramesRoutes = new Hono()
 			const results = await db.select<ExtendedOngekiProfileRating>(
 				`SELECT 
           r.musicId,
-          b.techScoreMax as score,
+          b.techScoreMax,
           b.platinumScoreMax,
           r.difficultId,
           r.version,
@@ -72,7 +72,7 @@ const UserRatingFramesRoutes = new Hono()
 			const results = await db.select<ExtendedOngekiProfileRating>(
 				`SELECT 
          r.musicId,
-          b.techScoreMax as score,
+          b.techScoreMax,
           b.platinumScoreMax,
           r.difficultId,
           r.version,
@@ -115,7 +115,7 @@ const UserRatingFramesRoutes = new Hono()
 			const results = await db.select<ExtendedOngekiProfileRating>(
 				`SELECT 
           r.musicId,
-          b.techScoreMax as score,
+          b.techScoreMax,
           b.platinumScoreMax,
           r.difficultId,
           r.version,
@@ -159,7 +159,7 @@ const UserRatingFramesRoutes = new Hono()
 			const results = await db.select<ExtendedOngekiProfileRating>(
 				`SELECT 
           r.musicId,
-          b.techScoreMax as score,
+          b.techScoreMax,
           b.platinumScoreMax,
           r.difficultId,
           r.version,

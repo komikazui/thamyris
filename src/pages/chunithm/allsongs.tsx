@@ -1,22 +1,58 @@
 import { useState } from "react";
 import React from "react";
 
-import ChunithmAllSongsTable from "@/components/chunithm/allsongs-table";
 import Header from "@/components/common/header";
-import Pagination from "@/components/common/pagination";
+import QouteCard from "@/components/common/qoutecard";
 import Spinner from "@/components/common/spinner";
+import ScoreTable from "@/components/common/table";
 import { useChunithmSongs, useChunithmVersion } from "@/hooks/chunithm";
+import { cdnUrl } from "@/lib/constants";
+import { getDifficultyFromChunithmChart } from "@/utils/helpers";
+
+interface ChunithmSong {
+	title: string;
+	jacketPath?: string;
+	artist?: string;
+	level?: number;
+	bpm?: number;
+	difficulty?: string;
+	chartId?: number;
+	genre?: string;
+}
 
 const ChunithmAllSongs = () => {
-	const { data: songs = [], isLoading: isLoadingSongs } = useChunithmSongs();
+	const { data: songs = [], isLoading: isLoadingSongs } = useChunithmSongs() as {
+		data: ChunithmSong[];
+		isLoading: boolean;
+	};
 	const version = useChunithmVersion();
 	const [searchQuery, setSearchQuery] = useState("");
-	const [currentPage, setCurrentPage] = useState(1);
 
-	const filteredSongs = songs.filter((song) => song.title?.toLowerCase().includes(searchQuery.toLowerCase()));
-	const ITEMS_PER_PAGE = 15;
-	const totalPages = Math.ceil(filteredSongs.length / ITEMS_PER_PAGE);
-	const paginatedSongs = filteredSongs.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+	const isNewVersion = Number(version) >= 8;
+
+	// Define table columns
+	const columns = {
+		Song: (row: ChunithmSong) => (
+			<div className="flex items-center gap-3">
+				<img
+					width={40}
+					height={40}
+					src={`${cdnUrl}/assets/jacket/${row.jacketPath?.replace(".dds", ".png")}`}
+					alt={row.title}
+					className="flex-shrink-0"
+				/>
+				<span className="text-primary truncate">{row.title}</span>
+			</div>
+		),
+		Artist: (row: ChunithmSong) => row.artist || "Unknown",
+		Level: (row: ChunithmSong) => row.level || "N/A",
+		Difficulty: (row: ChunithmSong) => getDifficultyFromChunithmChart(row.chartId ?? 0),
+		Genre: (row: ChunithmSong) => row.genre || "N/A",
+	};
+
+	// Filter data based on search query
+	const filterData = (data: ChunithmSong[]) =>
+		data.filter((song) => song.title?.toLowerCase().includes(searchQuery.toLowerCase()));
 
 	if (isLoadingSongs) {
 		return (
@@ -35,12 +71,33 @@ const ChunithmAllSongs = () => {
 			{version ? (
 				<div className="container mx-auto space-y-6">
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
-						<ChunithmAllSongsTable
-							allSongs={paginatedSongs}
-							searchQuery={searchQuery}
-							onSearchChange={(e) => setSearchQuery(e.target.value)}
+						<QouteCard
+							header="Song data is displayed based on the Chunithm version."
+							welcomeMessage={
+								<div className="flex flex-col space-y-1">
+									{isNewVersion ? (
+										<>
+											<span>• New version features are enabled.</span>
+											<span>• Data includes enhanced metrics and details.</span>
+										</>
+									) : (
+										<>
+											<span>• Legacy version features are enabled.</span>
+											<span>• Data includes basic song details.</span>
+										</>
+									)}
+								</div>
+							}
+							color="#f067e9"
 						/>
-						{totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />}
+					</div>
+
+					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
+						<ScoreTable
+							data={filterData(songs)}
+							columns={columns}
+							onSearch={(search) => setSearchQuery(search.value || "")}
+						/>
 					</div>
 				</div>
 			) : (

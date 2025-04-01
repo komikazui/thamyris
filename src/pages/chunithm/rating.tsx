@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 
-import ChunithmRatingFrameTable from "@/components/chunithm/rating-table";
 import Header from "@/components/common/header";
 import QouteCard from "@/components/common/qoutecard";
+import ScoreTable from "@/components/common/table";
 import {
 	useChunithmVersion,
 	useHighestRating,
@@ -12,8 +12,22 @@ import {
 	useUserRatingBaseNewList,
 	useUserRatingBaseNextList,
 } from "@/hooks/chunithm";
+import { ChunitmRating, getDifficultyFromChunithmChart } from "@/utils/helpers";
+
+interface ChunithmRatingData {
+	title: string;
+	score?: number;
+	noteCount?: number;
+	level?: number;
+	difficulty?: string;
+	playerRating?: number;
+	highestRating?: number;
+	chartId?: number;
+}
 
 const ChunithmRatingFrames = () => {
+	const [searchQuery, setSearchQuery] = useState("");
+
 	const version = useChunithmVersion();
 	const { data: baseSongs = [] } = useUserRatingBaseList();
 	const { data: hotSongs = [] } = useUserRatingBaseHotList();
@@ -24,6 +38,20 @@ const ChunithmRatingFrames = () => {
 
 	const isVerseOrAbove = Number(version) >= 17;
 
+	const columns = {
+		Song: (row: ChunithmRatingData) => <span className="text-primary truncate">{row.title}</span>,
+		Rating: (row: ChunithmRatingData) => ((ChunitmRating(row.level!, row.score!) ?? 0) / 100).toFixed(2),
+		Score: (row: ChunithmRatingData) => row.score?.toLocaleString(),
+		Difficulty: (row: ChunithmRatingData) => getDifficultyFromChunithmChart(row.chartId ?? 0),
+	};
+
+	const handleSearch = (search: { value?: string }) => {
+		setSearchQuery(search.value || "");
+	};
+
+	const filterData = (data: ChunithmRatingData[]) =>
+		data.filter((song) => song.title?.toLowerCase().includes(searchQuery.toLowerCase()));
+
 	return (
 		<div className="relative flex-1 overflow-auto">
 			<Header title="Rating Frame" />
@@ -31,7 +59,9 @@ const ChunithmRatingFrames = () => {
 				<div className="container mx-auto space-y-6">
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
 						<QouteCard
-							header={`Single track ratings are calculated from fumen constants and scores. Player rating is the average of ${isVerseOrAbove ? "50" : "30"} unique fumen ratings, including:`}
+							header={`Single track ratings are calculated from fumen constants and scores. Player rating is the average of ${
+								isVerseOrAbove ? "50" : "30"
+							} unique fumen ratings, including:`}
 							welcomeMessage={
 								<div className="flex flex-col space-y-1">
 									{isVerseOrAbove ? (
@@ -59,17 +89,17 @@ const ChunithmRatingFrames = () => {
 					</div>
 
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
-						<ChunithmRatingFrameTable data={baseSongs} title="Best 30" />
+						{/* Best 30 Table */}
+						<ScoreTable data={filterData(baseSongs)} columns={columns} onSearch={handleSearch} />
 
-						{isVerseOrAbove && (
-							<>
-								<ChunithmRatingFrameTable data={newSongs} title="Current Version" />
-							</>
-						)}
+						{/* Current Version Table */}
+						{isVerseOrAbove && <ScoreTable data={filterData(newSongs)} columns={columns} onSearch={handleSearch} />}
 
-						<ChunithmRatingFrameTable data={hotSongs} title="Recent" />
+						{/* Recent Table */}
+						<ScoreTable data={filterData(hotSongs)} columns={columns} onSearch={handleSearch} />
 
-						{isVerseOrAbove && <ChunithmRatingFrameTable data={nextSongs} title="Potential Plays" />}
+						{/* Potential Plays Table */}
+						{isVerseOrAbove && <ScoreTable data={filterData(nextSongs)} columns={columns} onSearch={handleSearch} />}
 					</div>
 				</div>
 			) : (

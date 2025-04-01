@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
+
+import { Star } from "lucide-react";
 
 import Header from "@/components/common/header";
 import QouteCard from "@/components/common/qoutecard";
-import OngekiRatingFrameTable from "@/components/ongeki/rating-table";
-import OngekiRatingFrameTableNew from "@/components/ongeki/rating-table new";
+import ScoreTable from "@/components/common/table";
 import {
 	useHighestRating,
 	useNewHighestRating,
@@ -19,10 +20,27 @@ import {
 	useUserRatingBaseNextList,
 } from "@/hooks/ongeki";
 import { useUserNewRatingBasePScoreList } from "@/hooks/ongeki/use-new-rating";
+import { OngekiGekForceRating, OngekiRating, getDifficultyFromOngekiChart, getOngekiGrade } from "@/utils/helpers";
+
+interface OngekiRatingData {
+	title: string;
+	techScoreMax?: number;
+	platinumScoreMax?: number;
+	platinumScoreStar?: number;
+	noteCount: number;
+	level?: number;
+	chartId?: number;
+	isFullCombo?: number;
+	isAllBreake?: number;
+	isFullBell?: number;
+}
 
 const OngekiRatingFrames = () => {
+	const [searchQuery, setSearchQuery] = useState("");
+
 	const version = useOngekiVersion();
 
+	// Fetch data for different rating categories
 	const { data: baseSongs = [] } = useUserRatingBaseList();
 	const { data: hotSongs = [] } = useUserRatingBaseHotList();
 	const { data: newSongs = [] } = useUserRatingBaseNewList();
@@ -39,6 +57,46 @@ const OngekiRatingFrames = () => {
 	const { data: newHighestRating = [] } = useNewHighestRating();
 
 	const isRefreshOrAbove = Number(version) >= 8;
+
+	// Define table columns
+	const columns = {
+		Song: (row: OngekiRatingData) => <span className="text-primary truncate">{row.title}</span>,
+		Score: (row: OngekiRatingData) => row.techScoreMax?.toLocaleString(),
+		Grade: (row: OngekiRatingData) => getOngekiGrade(row.techScoreMax!),
+		Rating: (row: OngekiRatingData) => {
+			return isRefreshOrAbove
+				? (
+						OngekiGekForceRating(
+							row.level ?? 0,
+							row.techScoreMax ?? 0,
+							row.isFullCombo ?? 0,
+							row.isAllBreake ?? 0,
+							row.isFullBell ?? 0
+						) / 1000
+					).toFixed(3)
+				: (OngekiRating(row.level ?? 0, row.techScoreMax ?? 0) / 100).toFixed(2);
+		},
+		"P-Score": (row: OngekiRatingData) => {
+			const maxPossibleScore = row.noteCount * 2;
+			return `${(row.platinumScoreMax ?? 0).toLocaleString()} / ${maxPossibleScore.toLocaleString()}`;
+		},
+		Stars: (row: OngekiRatingData) =>
+			(row.platinumScoreStar ?? 0) > 0 && (
+				<div className="flex items-center">
+					<Star className="text-yellow-300" size={16} />
+					<span className="ml-1">{row.platinumScoreStar?.toLocaleString()}</span>
+				</div>
+			),
+		Level: (row: OngekiRatingData) => row.level,
+		Difficulty: (row: OngekiRatingData) => getDifficultyFromOngekiChart(row.chartId ?? 0),
+	};
+
+	const handleSearch = (search: { value?: string }) => {
+		setSearchQuery(search.value || "");
+	};
+
+	const filterData = (data: any[]) =>
+		data.filter((song) => song.title?.toLowerCase().includes(searchQuery.toLowerCase()));
 
 	return (
 		<div className="relative flex-1 overflow-auto">
@@ -93,17 +151,17 @@ const OngekiRatingFrames = () => {
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
 						{isRefreshOrAbove ? (
 							<>
-								<OngekiRatingFrameTableNew data={newBaseSongs} title="Best 50" />
-								<OngekiRatingFrameTableNew data={newPscoreSongs} title="Best 50 P-score" />
-								<OngekiRatingFrameTableNew data={newNewSongs} title="Current Version" />
-								<OngekiRatingFrameTableNew data={newNextSongs} title="Potential Plays" />
+								<ScoreTable data={filterData(newBaseSongs)} columns={columns} onSearch={handleSearch} />
+								<ScoreTable data={filterData(newPscoreSongs)} columns={columns} onSearch={handleSearch} />
+								<ScoreTable data={filterData(newNewSongs)} columns={columns} onSearch={handleSearch} />
+								<ScoreTable data={filterData(newNextSongs)} columns={columns} onSearch={handleSearch} />
 							</>
 						) : (
 							<>
-								<OngekiRatingFrameTable data={baseSongs} title="Best 30" />
-								<OngekiRatingFrameTable data={newSongs} title="Current Version" />
-								<OngekiRatingFrameTable data={hotSongs} title="Recent" />
-								<OngekiRatingFrameTable data={nextSongs} title="Potential Plays" />
+								<ScoreTable data={filterData(baseSongs)} columns={columns} onSearch={handleSearch} />
+								<ScoreTable data={filterData(newSongs)} columns={columns} onSearch={handleSearch} />
+								<ScoreTable data={filterData(hotSongs)} columns={columns} onSearch={handleSearch} />
+								<ScoreTable data={filterData(nextSongs)} columns={columns} onSearch={handleSearch} />
 							</>
 						)}
 					</div>
