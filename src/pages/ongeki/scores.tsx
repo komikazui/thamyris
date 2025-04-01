@@ -1,32 +1,75 @@
 import { useState } from "react";
 import React from "react";
 
+import { Star } from "lucide-react";
+
 import Header from "@/components/common/header";
-import Pagination from "@/components/common/pagination";
 import Spinner from "@/components/common/spinner";
-import OngekiScoreTable from "@/components/ongeki/score-table";
-import OngekiScoreTableNew from "@/components/ongeki/score-table-new";
+import ScoreTable from "@/components/common/table";
 import { useOngekiScores, useOngekiVersion } from "@/hooks/ongeki";
+import { getDifficultyFromOngekiChart } from "@/utils/helpers";
+
+interface OngekiScore {
+	id: number;
+	title: string;
+	jacketPath?: string;
+	techScore: number;
+	platinumScoreStar?: number;
+	playerRating?: number;
+	userPlayDate?: string;
+	chartId?: number;
+}
 
 const OngekiScorePage = () => {
+	const [searchQuery, setSearchQuery] = useState("");
+
+	const { data: scores = [], isLoading: isLoadingScores } = useOngekiScores() as {
+		data: OngekiScore[];
+		isLoading: boolean;
+	};
+
 	const version = useOngekiVersion();
 	const isRefreshOrAbove = Number(version) >= 8;
 
-	const [searchQuery, setSearchQuery] = useState("");
-	const [currentPage, setCurrentPage] = useState(1);
-
-	const { data: scores = [], isLoading: isLoadingScores } = useOngekiScores();
-
 	const filteredScores = scores.filter((score) => score.title?.toLowerCase().includes(searchQuery.toLowerCase()));
-
 	const versionFilteredScores = isRefreshOrAbove
 		? filteredScores.filter((score) => score.platinumScoreStar !== null)
 		: filteredScores.filter((score) => score.platinumScoreStar === null);
 
-	const itemsPerPage = 15;
-	const totalPages = Math.ceil(versionFilteredScores.length / itemsPerPage);
+	const columns = {
+		Song: (row: OngekiScore) => (
+			<div className="flex items-center gap-3">
+				{/* <img
+                    width={40}
+                    height={40}
+                    src={`assets/${row.jacketPath?.replace(".dds", ".png")}`}
+                    alt={row.title}
+                    className="flex-shrink-0"
+                /> */}
+				<span className="text-primary truncate">{row.title}</span>
+			</div>
+		),
+		Score: (row: OngekiScore) => row.techScore?.toLocaleString(),
+		"Platinum Stars": (row: OngekiScore) =>
+			(row.platinumScoreStar ?? 0) > 0 && (
+				<>
+					<Star className="inline-block text-yellow-300" size={16} />
+					<span className="ml-1">{row.platinumScoreStar?.toLocaleString()}</span>
+				</>
+			),
+		Rating: (row: OngekiScore) => {
+			if (row.platinumScoreStar === null) {
+				return ((row.playerRating ?? 0) / 100).toFixed(2);
+			}
+			return ((row.playerRating ?? 0) / 1000).toFixed(3);
+		},
+		Difficulty: (row: OngekiScore) => getDifficultyFromOngekiChart(row.chartId ?? 0),
+		Playdate: (row: OngekiScore) => (row.userPlayDate ? new Date(row.userPlayDate).toLocaleString() : "Unknown"),
+	};
 
-	const paginatedScores = versionFilteredScores.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+	const handleSearch = (search: { value?: string }) => {
+		setSearchQuery(search.value || "");
+	};
 
 	if (isLoadingScores) {
 		return (
@@ -45,26 +88,9 @@ const OngekiScorePage = () => {
 		<div className="relative flex-1 overflow-auto">
 			<Header title="Scores" />
 			{version ? (
-				<div className="container mx-auto space-y-6">
-					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
-						{isRefreshOrAbove ? (
-							<OngekiScoreTableNew
-								scores={paginatedScores}
-								searchQuery={searchQuery}
-								onSearchChange={(e) => setSearchQuery(e.target.value)}
-							/>
-						) : (
-							<OngekiScoreTable
-								scores={paginatedScores}
-								searchQuery={searchQuery}
-								onSearchChange={(e) => setSearchQuery(e.target.value)}
-							/>
-						)}
-						{totalPages > 1 && (
-							<div className="mt-4 flex justify-center">
-								<Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
-							</div>
-						)}
+				<div className="space-y-6">
+					<div className="mb-4 space-y-4 p-4 sm:px-6 sm:py-0">
+						<ScoreTable data={versionFilteredScores} columns={columns} onSearch={handleSearch} />
 					</div>
 				</div>
 			) : (

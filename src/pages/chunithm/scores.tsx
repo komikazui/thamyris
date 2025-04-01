@@ -1,24 +1,58 @@
 import { useState } from "react";
 import React from "react";
 
-import ChunithmScoreTable from "@/components/chunithm/score-table";
 import Header from "@/components/common/header";
-import Pagination from "@/components/common/pagination";
 import Spinner from "@/components/common/spinner";
+import ScoreTable from "@/components/common/table";
 import { useChunithmScores, useChunithmVersion } from "@/hooks/chunithm";
+import { cdnUrl } from "@/lib/constants";
+import { getChunithmGrade, getDifficultyFromChunithmChart } from "@/utils/helpers";
+
+interface ChunithmScore {
+	id: number;
+	title: string;
+	jacketPath?: string;
+	score: number;
+	playerRating?: number;
+	chartId?: number;
+	userPlayDate?: string;
+}
 
 const ChunithmScorePage = () => {
 	const [searchQuery, setSearchQuery] = useState("");
-	const [currentPage, setCurrentPage] = useState(1);
 
-	const { data: scores = [], isLoading: isLoadingScores } = useChunithmScores();
+	const { data: scores = [], isLoading: isLoadingScores } = useChunithmScores() as {
+		data: ChunithmScore[];
+		isLoading: boolean;
+	};
+
 	const version = useChunithmVersion();
 
 	const filteredScores = scores.filter((score) => score.title?.toLowerCase().includes(searchQuery.toLowerCase()));
 
-	const itemsPerPage = 15;
-	const totalPages = Math.ceil(filteredScores.length / itemsPerPage);
-	const paginatedScores = filteredScores.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+	const columns = {
+		Song: (row: ChunithmScore) => (
+			<div className="flex items-center gap-3">
+				<img
+					width={40}
+					height={40}
+					src={`${cdnUrl}/assets/jacket/${row.jacketPath?.replace(".dds", ".png")}`}
+					alt={row.title}
+					className="flex-shrink-0"
+				/>
+				<span className="text-primary truncate">{row.title}</span>
+			</div>
+		),
+		Score: (row: ChunithmScore) => row.score?.toLocaleString(),
+		Grade: (row: ChunithmScore) => getChunithmGrade(row.score),
+		Rating: (row: ChunithmScore) => ((row.playerRating ?? 0) / 100).toFixed(2),
+		Difficulty: (row: ChunithmScore) => getDifficultyFromChunithmChart(row.chartId ?? 0),
+		Playdate: (row: ChunithmScore) => (row.userPlayDate ? new Date(row.userPlayDate).toLocaleString() : "Unknown"),
+	};
+
+	const handleSearch = (search: { value?: string }) => {
+		setSearchQuery(search.value || "");
+	};
 
 	if (isLoadingScores) {
 		return (
@@ -37,14 +71,9 @@ const ChunithmScorePage = () => {
 		<div className="relative flex-1 overflow-auto">
 			<Header title="Scores" />
 			{version ? (
-				<div className="container mx-auto space-y-6">
-					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
-						<ChunithmScoreTable
-							scores={paginatedScores}
-							searchQuery={searchQuery}
-							onSearchChange={(e) => setSearchQuery(e.target.value)}
-						/>
-						{totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />}
+				<div className="space-y-6">
+					<div className="mb-4 space-y-4 p-4 sm:px-6 sm:py-0">
+						<ScoreTable data={filteredScores} columns={columns} onSearch={handleSearch} />
 					</div>
 				</div>
 			) : (
