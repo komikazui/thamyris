@@ -11,8 +11,7 @@ export function useFavorites() {
 				throw new Error("Failed to fetch favorites");
 			}
 
-			const data = await response.json();
-			return data.map((fav: { favId: number }) => fav.favId);
+			return await response.json();
 		},
 	});
 }

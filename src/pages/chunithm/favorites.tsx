@@ -17,11 +17,16 @@ import {
 import { cdnUrl } from "@/lib/constants";
 
 interface ChunithmFavorite {
-	songId: number;
-	title: string;
-	chartId: number;
+	songId?: number;
+	title?: string;
+	chartId?: number;
 	isFavorited?: boolean;
 	jacketPath?: string | null;
+	id?: number;
+	user?: number;
+	version?: number;
+	favId?: number;
+	favKind?: number;
 }
 
 const ChunithmFavorites = () => {
@@ -36,7 +41,7 @@ const ChunithmFavorites = () => {
 	const [searchQuery, setSearchQuery] = useState("");
 
 	const handleToggleFavorite = (songId: number) => {
-		const isFavorited = favoriteSongIds.includes(songId);
+		const isFavorited = favoriteSongIds.some((fav) => fav.favId === songId);
 
 		if (isFavorited) {
 			removeFavorite(songId, {
@@ -74,13 +79,16 @@ const ChunithmFavorites = () => {
 			/>
 		),
 		Title: (row: ChunithmFavorite) => <span className="text-primary truncate">{row.title}</span>,
-		Favorite: (row: ChunithmFavorite) => (
-			<Heart
-				fill={favoriteSongIds.includes(row.songId) ? "currentColor" : "none"}
-				className={`h-5 w-5 cursor-pointer ${favoriteSongIds.includes(row.songId) ? "text-red-500" : "text-gray-500"}`}
-				onClick={() => handleToggleFavorite(row.songId)}
-			/>
-		),
+		Favorite: (row: ChunithmFavorite) => {
+			const isFavorited = favoriteSongIds.some((favorite: ChunithmFavorite) => favorite.favId === row.songId);
+			return (
+				<Heart
+					fill={isFavorited ? "currentColor" : "none"}
+					className={`h-5 w-5 cursor-pointer ${isFavorited ? "text-red-500" : "text-gray-500"}`}
+					onClick={() => handleToggleFavorite(row.songId ?? 0)}
+				/>
+			);
+		},
 	};
 
 	if (isLoadingSongs || isLoadingFavorites) {
