@@ -4,7 +4,6 @@ import React from "react";
 import Header from "@/components/common/header";
 import QouteCard from "@/components/common/qoutecard";
 import Spinner from "@/components/common/spinner";
-import ScoreTable from "@/components/common/table";
 import TableComponent from "@/components/common/table";
 import { useOngekiSongs, useOngekiVersion } from "@/hooks/ongeki";
 import { getDifficultyFromOngekiChart } from "@/utils/helpers";
