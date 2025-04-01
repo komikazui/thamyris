@@ -1,7 +1,6 @@
 import React from "react";
 
 import Header from "@/components/common/header";
-import MaimaiDxVersionManager from "@/components/mai2/version-management";
 
 interface GameSettingsProps {
 	onUpdate?: () => void;
