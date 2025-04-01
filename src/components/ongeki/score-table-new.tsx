@@ -65,7 +65,9 @@ const OngekiScoreTableNew = ({ scores, searchQuery, onSearchChange }: OngekiScor
 							<TableHead className="text-primary whitespace-nowrap">Grade</TableHead>
 							<TableHead className="text-primary whitespace-nowrap">Rating</TableHead>
 							<TableHead className="text-primary whitespace-nowrap">Pscore</TableHead>
-							<TableHead className="text-primary whitespace-nowrap">Pstars</TableHead>
+							<TableHead className="text-primary">
+								<Star className="inline-block text-yellow-300" size={16} />
+							</TableHead>
 							<TableHead className="text-primary whitespace-nowrap">Difficulty</TableHead>
 							<TableHead className="text-primary whitespace-nowrap">Playdate</TableHead>
 							<TableHead className="text-primary whitespace-nowrap">Level</TableHead>
@@ -90,7 +92,7 @@ const OngekiScoreTableNew = ({ scores, searchQuery, onSearchChange }: OngekiScor
 											{score.rating_change === "Same" && <CircleArrowRight className="h-6 w-6 text-gray-500" />}
 										</div>
 									</TableCell>
-									<TableCell className="text-primary text-sm">
+									<TableCell className="text-primary max-w-[80px] truncate text-sm">
 										{`${(score.platinumScore ?? 0).toLocaleString()} / ${maxPossibleScore.toLocaleString()}`}
 									</TableCell>
 									<TableCell className="text-primary text-sm">

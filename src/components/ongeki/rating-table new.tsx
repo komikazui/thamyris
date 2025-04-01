@@ -80,7 +80,7 @@ const OngekiRatingTableNew: React.FC<RatingFrameTableProps> = ({ data, title }) 
 							return (
 								<TableRow key={song.id ?? index} className="border-seperator hover:bg-hover border-b">
 									<TableCell className="text-primary text-sm">{index + 1}</TableCell>
-									<TableCell className="text-primary max-w-[140px] truncate text-sm">{song.title}</TableCell>
+									<TableCell className="text-primary max-w-[120px] truncate text-sm">{song.title}</TableCell>
 									<TableCell className="text-primary text-sm">{song.techScoreMax?.toLocaleString()}</TableCell>
 									<TableCell className="text-primary text-sm">{getOngekiGrade(song.techScoreMax!)}</TableCell>
 									<TableCell className="text-primary text-sm">
@@ -95,7 +95,7 @@ const OngekiRatingTableNew: React.FC<RatingFrameTableProps> = ({ data, title }) 
 										).toFixed(3)}
 									</TableCell>
 									<TableCell className="text-primary text-sm">{pscoreRating.toFixed(3)}</TableCell>
-									<TableCell className="text-primary text-sm">
+									<TableCell className="text-primary max-w-[50px] truncate text-sm">
 										{`${(song.platinumScoreMax ?? 0).toLocaleString()} / ${maxPossibleScore.toLocaleString()}`}
 									</TableCell>
 									<TableCell className="text-primary text-sm">
