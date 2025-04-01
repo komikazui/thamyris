@@ -2,28 +2,42 @@ import { useState } from "react";
 import React from "react";
 
 import Header from "@/components/common/header";
-import { LeaderboardTable } from "@/components/common/leaderboard-table";
-import Pagination from "@/components/common/pagination";
 import Spinner from "@/components/common/spinner";
-import { NewOngekiLeaderboardTable } from "@/components/ongeki/new-ongeki-leaderboard-table";
+import RatingTable from "@/components/common/table";
+// Reusable table component
 import { useLeaderboard, useOngekiVersion } from "@/hooks/ongeki";
 
-const ITEMS_PER_PAGE = 50;
+interface LeaderboardPlayer {
+	userName: string;
+	playerRating: number;
+	newPlayerRating: number;
+	rank: number;
+}
 
 const OngekiLeaderboard = () => {
+	const [searchQuery, setSearchQuery] = useState("");
+
+	const { data: leaderboard = [], isLoading: isLoadingLeaderboard } = useLeaderboard() as {
+		data: LeaderboardPlayer[];
+		isLoading: boolean;
+	};
+
 	const version = useOngekiVersion();
 	const isRefreshOrAbove = Number(version) >= 8;
 
-	const [page, setPage] = useState(1);
-	const [search, setSearch] = useState("");
-	const { data: leaderboard = [], isLoading } = useLeaderboard();
+	const filteredLeaderboard = leaderboard.filter((player) =>
+		player.userName?.toLowerCase().includes(searchQuery.toLowerCase())
+	);
 
-	const filteredData = leaderboard.filter((player) => player.userName?.toLowerCase().includes(search.toLowerCase()));
+	const columns = {
+		Rank: (row: LeaderboardPlayer) => `#${row.rank}`,
+		Player: (row: LeaderboardPlayer) => row.userName,
+		Rating: (row: LeaderboardPlayer) => {
+			return isRefreshOrAbove ? (row.newPlayerRating / 1000).toFixed(3) : (row.playerRating / 100).toFixed(2);
+		},
+	};
 
-	const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
-	const currentData = filteredData.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
-
-	if (isLoading) {
+	if (isLoadingLeaderboard) {
 		return (
 			<div className="relative flex-1 overflow-auto">
 				<Header title="Leaderboard" />
@@ -38,35 +52,18 @@ const OngekiLeaderboard = () => {
 		<div className="relative flex-1 overflow-auto">
 			<Header title="Leaderboard" />
 			{version ? (
-				<div className="container mx-auto space-y-6">
-					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
-						{isRefreshOrAbove ? (
-							<NewOngekiLeaderboardTable
-								players={currentData}
-								searchQuery={search}
-								onSearchChange={(e) => setSearch(e.target.value)}
-								page={page}
-								itemsPerPage={ITEMS_PER_PAGE}
-							/>
-						) : (
-							<LeaderboardTable
-								players={currentData}
-								searchQuery={search}
-								onSearchChange={(e) => setSearch(e.target.value)}
-								page={page}
-								itemsPerPage={ITEMS_PER_PAGE}
-							/>
-						)}
-						{totalPages > 1 && (
-							<div className="mt-4 flex justify-center">
-								<Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
-							</div>
-						)}
+				<div className="space-y-6">
+					<div className="mb-4 space-y-4 p-4 sm:px-6 sm:py-0">
+						<RatingTable
+							data={filteredLeaderboard}
+							columns={columns}
+							onSearch={(search) => setSearchQuery(search.value || "")}
+						/>
 					</div>
 				</div>
 			) : (
 				<div className="flex h-[calc(100vh-64px)] items-center justify-center">
-					<p className="text-primary">Please set your Chunithm version in settings first</p>
+					<p className="text-primary">Please set your Ongeki version in settings first</p>
 				</div>
 			)}
 		</div>
