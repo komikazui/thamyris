@@ -3,8 +3,7 @@ import React from "react";
 
 import Header from "@/components/common/header";
 import Spinner from "@/components/common/spinner";
-import RatingTable from "@/components/common/table";
-// Assuming this is the reusable table component
+import TableComponent from "@/components/common/table";
 import { useChunithmVersion, useLeaderboard } from "@/hooks/chunithm";
 
 interface LeaderboardPlayer {
@@ -50,7 +49,7 @@ const ChunithmLeaderboard = () => {
 			{version ? (
 				<div className="space-y-6">
 					<div className="mb-4 space-y-4 p-4 sm:px-6 sm:py-0">
-						<RatingTable
+						<TableComponent
 							data={filteredLeaderboard}
 							columns={columns}
 							onSearch={(search) => setSearchQuery(search.value || "")}

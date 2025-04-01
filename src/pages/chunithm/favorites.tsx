@@ -6,7 +6,7 @@ import { toast } from "sonner";
 
 import Header from "@/components/common/header";
 import Spinner from "@/components/common/spinner";
-import Table from "@/components/common/table";
+import TableComponent from "@/components/common/table";
 import {
 	useAddFavorite,
 	useChunithmSongs,
@@ -99,7 +99,11 @@ const ChunithmFavorites = () => {
 			{version ? (
 				<div className="space-y-6">
 					<div className="mb-4 space-y-4 p-4 sm:px-6 sm:py-0">
-						<Table data={filteredSongs} columns={columns} onSearch={(search) => setSearchQuery(search.value || "")} />
+						<TableComponent
+							data={filteredSongs}
+							columns={columns}
+							onSearch={(search) => setSearchQuery(search.value || "")}
+						/>
 					</div>
 				</div>
 			) : (

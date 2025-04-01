@@ -3,7 +3,7 @@ import React from "react";
 
 import Header from "@/components/common/header";
 import Spinner from "@/components/common/spinner";
-import ScoreTable from "@/components/common/table";
+import TableComponent from "@/components/common/table";
 import { useChunithmScores, useChunithmVersion } from "@/hooks/chunithm";
 import { cdnUrl } from "@/lib/constants";
 import { getChunithmGrade, getDifficultyFromChunithmChart } from "@/utils/helpers";
@@ -73,7 +73,7 @@ const ChunithmScorePage = () => {
 			{version ? (
 				<div className="space-y-6">
 					<div className="mb-4 space-y-4 p-4 sm:px-6 sm:py-0">
-						<ScoreTable data={filteredScores} columns={columns} onSearch={handleSearch} />
+						<TableComponent data={filteredScores} columns={columns} onSearch={handleSearch} />
 					</div>
 				</div>
 			) : (

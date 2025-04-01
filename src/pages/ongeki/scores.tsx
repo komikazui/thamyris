@@ -5,7 +5,7 @@ import { Star } from "lucide-react";
 
 import Header from "@/components/common/header";
 import Spinner from "@/components/common/spinner";
-import ScoreTable from "@/components/common/table";
+import TableComponent from "@/components/common/table";
 import { useOngekiScores, useOngekiVersion } from "@/hooks/ongeki";
 import { getDifficultyFromOngekiChart } from "@/utils/helpers";
 
@@ -90,7 +90,7 @@ const OngekiScorePage = () => {
 			{version ? (
 				<div className="space-y-6">
 					<div className="mb-4 space-y-4 p-4 sm:px-6 sm:py-0">
-						<ScoreTable data={versionFilteredScores} columns={columns} onSearch={handleSearch} />
+						<TableComponent data={versionFilteredScores} columns={columns} onSearch={handleSearch} />
 					</div>
 				</div>
 			) : (

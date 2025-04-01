@@ -16,7 +16,7 @@ interface TableProps<T> {
 	onSearch: (search: SearchProps) => void;
 }
 
-const ScoreTable: React.FC<TableProps<any>> = ({ columns, data, onSearch }) => {
+const TableComponent: React.FC<TableProps<any>> = ({ columns, data, onSearch }) => {
 	const [searchQuery, setSearchQuery] = useState<string>("");
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const itemsPerPage = 10;
@@ -94,4 +94,4 @@ const ScoreTable: React.FC<TableProps<any>> = ({ columns, data, onSearch }) => {
 	);
 };
 
-export default ScoreTable;
+export default TableComponent;

@@ -5,6 +5,7 @@ import Header from "@/components/common/header";
 import QouteCard from "@/components/common/qoutecard";
 import Spinner from "@/components/common/spinner";
 import ScoreTable from "@/components/common/table";
+import TableComponent from "@/components/common/table";
 import { useOngekiSongs, useOngekiVersion } from "@/hooks/ongeki";
 import { getDifficultyFromOngekiChart } from "@/utils/helpers";
 
@@ -79,7 +80,7 @@ const OngekiAllSongs = () => {
 					</div>
 
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
-						<ScoreTable
+						<TableComponent
 							data={filterData(songs)}
 							columns={columns}
 							onSearch={(search) => setSearchQuery(search.value || "")}

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import Header from "@/components/common/header";
 import QouteCard from "@/components/common/qoutecard";
-import ScoreTable from "@/components/common/table";
+import TableComponent from "@/components/common/table";
 import {
 	useChunithmVersion,
 	useHighestRating,
@@ -90,16 +90,16 @@ const ChunithmRatingFrames = () => {
 
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
 						{/* Best 30 Table */}
-						<ScoreTable data={filterData(baseSongs)} columns={columns} onSearch={handleSearch} />
+						<TableComponent data={filterData(baseSongs)} columns={columns} onSearch={handleSearch} />
 
 						{/* Current Version Table */}
-						{isVerseOrAbove && <ScoreTable data={filterData(newSongs)} columns={columns} onSearch={handleSearch} />}
+						{isVerseOrAbove && <TableComponent data={filterData(newSongs)} columns={columns} onSearch={handleSearch} />}
 
 						{/* Recent Table */}
-						<ScoreTable data={filterData(hotSongs)} columns={columns} onSearch={handleSearch} />
+						<TableComponent data={filterData(hotSongs)} columns={columns} onSearch={handleSearch} />
 
 						{/* Potential Plays Table */}
-						{isVerseOrAbove && <ScoreTable data={filterData(nextSongs)} columns={columns} onSearch={handleSearch} />}
+						{isVerseOrAbove && <TableComponent data={filterData(nextSongs)} columns={columns} onSearch={handleSearch} />}
 					</div>
 				</div>
 			) : (

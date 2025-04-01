@@ -4,7 +4,7 @@ import { Star } from "lucide-react";
 
 import Header from "@/components/common/header";
 import QouteCard from "@/components/common/qoutecard";
-import ScoreTable from "@/components/common/table";
+import TableComponent from "@/components/common/table";
 import {
 	useHighestRating,
 	useNewHighestRating,
@@ -151,17 +151,17 @@ const OngekiRatingFrames = () => {
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
 						{isRefreshOrAbove ? (
 							<>
-								<ScoreTable data={filterData(newBaseSongs)} columns={columns} onSearch={handleSearch} />
-								<ScoreTable data={filterData(newPscoreSongs)} columns={columns} onSearch={handleSearch} />
-								<ScoreTable data={filterData(newNewSongs)} columns={columns} onSearch={handleSearch} />
-								<ScoreTable data={filterData(newNextSongs)} columns={columns} onSearch={handleSearch} />
+								<TableComponent data={filterData(newBaseSongs)} columns={columns} onSearch={handleSearch} />
+								<TableComponent data={filterData(newPscoreSongs)} columns={columns} onSearch={handleSearch} />
+								<TableComponent data={filterData(newNewSongs)} columns={columns} onSearch={handleSearch} />
+								<TableComponent data={filterData(newNextSongs)} columns={columns} onSearch={handleSearch} />
 							</>
 						) : (
 							<>
-								<ScoreTable data={filterData(baseSongs)} columns={columns} onSearch={handleSearch} />
-								<ScoreTable data={filterData(newSongs)} columns={columns} onSearch={handleSearch} />
-								<ScoreTable data={filterData(hotSongs)} columns={columns} onSearch={handleSearch} />
-								<ScoreTable data={filterData(nextSongs)} columns={columns} onSearch={handleSearch} />
+								<TableComponent data={filterData(baseSongs)} columns={columns} onSearch={handleSearch} />
+								<TableComponent data={filterData(newSongs)} columns={columns} onSearch={handleSearch} />
+								<TableComponent data={filterData(hotSongs)} columns={columns} onSearch={handleSearch} />
+								<TableComponent data={filterData(nextSongs)} columns={columns} onSearch={handleSearch} />
 							</>
 						)}
 					</div>
