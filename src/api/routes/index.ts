@@ -6,7 +6,7 @@ import { AimeCardRoute } from "./common/aime";
 import { ArcadeRoutes } from "./common/arcades";
 import { UserRoutes } from "./common/users";
 import { AllChunithmRoutes } from "./titles/chunithm";
-import { AllMaimaiDXRoutes } from "./titles/maidx";
+import { AllMaimaiDXRoutes } from "./titles/maimaidx";
 import { AllOngekiRoutes } from "./titles/ongeki";
 import { UnprotectedRoutes } from "./unprotected";
 

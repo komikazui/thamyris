@@ -7,7 +7,7 @@ import { rethrowWithMessage } from "@/api/utils/error";
 const MaimaiDXStaticMusic = new Hono().get("music", async (c) => {
 	try {
 		const { versions } = c.payload;
-		const version = versions.mai2_version;
+		const version = versions.maimaidx_version;
 
 		const results = await db.select<DB.Mai2StaticMusic>(
 			`SELECT id, songId, chartId, title, level, artist, genre, jacketPath  

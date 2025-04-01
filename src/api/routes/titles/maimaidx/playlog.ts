@@ -7,7 +7,7 @@ import { rethrowWithMessage } from "@/api/utils/error";
 const MaimaiDXPlaylogRoute = new Hono().get("playlog", async (c) => {
 	try {
 		const { userId, versions } = c.payload;
-		const version = versions.mai2_version;
+		const version = versions.maimaidx_version;
 
 		const results = await db.select<DB.Mai2Playlog>(
 			`
