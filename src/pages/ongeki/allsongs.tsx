@@ -2,22 +2,52 @@ import { useState } from "react";
 import React from "react";
 
 import Header from "@/components/common/header";
-import Pagination from "@/components/common/pagination";
+import QouteCard from "@/components/common/qoutecard";
 import Spinner from "@/components/common/spinner";
-import OngekiAllSongsTable from "@/components/ongeki/allsongs-table";
+import ScoreTable from "@/components/common/table";
 import { useOngekiSongs, useOngekiVersion } from "@/hooks/ongeki";
+import { getDifficultyFromOngekiChart } from "@/utils/helpers";
+
+interface OngekiSong {
+	title: string;
+	jacketPath?: string;
+	artist?: string;
+	level?: number;
+	difficulty?: string;
+	genre?: string;
+	chartId?: number;
+}
 
 const OngekiAllSongs = () => {
+	const { data: songs = [], isLoading: isLoadingSongs } = useOngekiSongs() as {
+		data: OngekiSong[];
+		isLoading: boolean;
+	};
 	const version = useOngekiVersion();
-
-	const { data: songs = [], isLoading: isLoadingSongs } = useOngekiSongs();
 	const [searchQuery, setSearchQuery] = useState("");
-	const [currentPage, setCurrentPage] = useState(1);
-	const itemsPerPage = 15;
 
-	const filteredSongs = songs.filter((song) => song.title!.toLowerCase().includes(searchQuery.toLowerCase()));
-	const totalPages = Math.ceil(filteredSongs.length / itemsPerPage);
-	const paginatedSongs = filteredSongs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+	const columns = {
+		Song: (row: OngekiSong) => (
+			<div className="flex items-center gap-3">
+				{/* <img
+					width={40}
+					height={40}
+					src={`${cdnUrl}/assets/jacket/${row.jacketPath?.replace(".dds", ".png")}`}
+					alt={row.title}
+					className="flex-shrink-0"
+				/> */}
+				<span className="text-primary truncate">{row.title}</span>
+			</div>
+		),
+		Artist: (row: OngekiSong) => row.artist || "Unknown",
+		Level: (row: OngekiSong) => row.level || "N/A",
+		Difficulty: (row: OngekiSong) => getDifficultyFromOngekiChart(row.chartId ?? 0),
+
+		Genre: (row: OngekiSong) => row.genre || "N/A",
+	};
+
+	const filterData = (data: OngekiSong[]) =>
+		data.filter((song) => song.title?.toLowerCase().includes(searchQuery.toLowerCase()));
 
 	if (isLoadingSongs) {
 		return (
@@ -36,16 +66,24 @@ const OngekiAllSongs = () => {
 			{version ? (
 				<div className="container mx-auto space-y-6">
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
-						<OngekiAllSongsTable
-							allSongs={paginatedSongs}
-							searchQuery={searchQuery}
-							onSearchChange={(e) => setSearchQuery(e.target.value)}
+						<QouteCard
+							header="Song data is displayed based on the Ongeki version."
+							welcomeMessage={
+								<div className="flex flex-col space-y-1">
+									<span>• Data includes detailed song information.</span>
+									<span>• Use the search bar to filter songs by title.</span>
+								</div>
+							}
+							color="#f067e9"
 						/>
-						{totalPages > 1 && (
-							<div className="mt-4 flex justify-center">
-								<Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
-							</div>
-						)}
+					</div>
+
+					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
+						<ScoreTable
+							data={filterData(songs)}
+							columns={columns}
+							onSearch={(search) => setSearchQuery(search.value || "")}
+						/>
 					</div>
 				</div>
 			) : (

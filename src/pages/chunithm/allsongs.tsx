@@ -14,7 +14,6 @@ interface ChunithmSong {
 	jacketPath?: string;
 	artist?: string;
 	level?: number;
-	bpm?: number;
 	difficulty?: string;
 	chartId?: number;
 	genre?: string;
@@ -30,7 +29,6 @@ const ChunithmAllSongs = () => {
 
 	const isNewVersion = Number(version) >= 8;
 
-	// Define table columns
 	const columns = {
 		Song: (row: ChunithmSong) => (
 			<div className="flex items-center gap-3">
@@ -50,7 +48,6 @@ const ChunithmAllSongs = () => {
 		Genre: (row: ChunithmSong) => row.genre || "N/A",
 	};
 
-	// Filter data based on search query
 	const filterData = (data: ChunithmSong[]) =>
 		data.filter((song) => song.title?.toLowerCase().includes(searchQuery.toLowerCase()));
 
