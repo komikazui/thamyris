@@ -4,7 +4,6 @@ import React from "react";
 import Header from "@/components/common/header";
 import Spinner from "@/components/common/spinner";
 import RatingTable from "@/components/common/table";
-// Reusable table component
 import { useLeaderboard, useOngekiVersion } from "@/hooks/ongeki";
 
 interface LeaderboardPlayer {
