@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@/utils";
 
 // Fetch Chunithm scores
-export function useMaimaidxScores() {
+export function useMaimaiDxScores() {
 	return useQuery({
 		queryKey: ["maimaidx", "scores"],
 		queryFn: async () => {

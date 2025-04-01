@@ -3,7 +3,7 @@ import React from "react";
 import { toast } from "sonner";
 
 import VersionManagement from "@/components/common/version-management";
-import { useMaimaiDxVersion, useMaimaiDxVersions, useUpdateMaimaiDxVersion } from "@/hooks/maimaidx/use-version";
+import { useMaimaiDxVersion, useMaimaiDxVersions, useUpdateMaimaiDxVersion } from "@/hooks/maimaidx";
 import { MaimaiDxVersions } from "@/types/enums";
 
 const MaimaiDxVersionManager = () => {
