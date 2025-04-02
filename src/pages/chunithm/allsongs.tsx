@@ -7,7 +7,8 @@ import Spinner from "@/components/common/spinner";
 import TableComponent from "@/components/common/table";
 import { useChunithmSongs, useChunithmVersion } from "@/hooks/chunithm";
 import { cdnUrl } from "@/lib/constants";
-import { getDifficultyFromChunithmChart } from "@/utils/helpers";
+import { getAllowedChunithmOptions, getDifficultyFromChunithmChart } from "@/utils/helpers";
+import { useAdmin } from "@/hooks/admin";
 
 interface ChunithmSong {
 	title: string;
@@ -17,8 +18,8 @@ interface ChunithmSong {
 	difficulty?: string;
 	chartId?: number;
 	genre?: string;
+	option?: string;
 }
-
 const ChunithmAllSongs = () => {
 	const { data: songs = [], isLoading: isLoadingSongs } = useChunithmSongs() as {
 		data: ChunithmSong[];
@@ -28,6 +29,10 @@ const ChunithmAllSongs = () => {
 	const [searchQuery, setSearchQuery] = useState("");
 
 	const isNewVersion = Number(version) >= 8;
+
+	const { isAdmin } = useAdmin();
+
+	const allowedOptions = getAllowedChunithmOptions(isAdmin);
 
 	const columns = {
 		Song: (row: ChunithmSong) => (
@@ -48,8 +53,15 @@ const ChunithmAllSongs = () => {
 		Genre: (row: ChunithmSong) => row.genre || "N/A",
 	};
 
-	const filterData = (data: ChunithmSong[]) =>
-		data.filter((song) => song.title?.toLowerCase().includes(searchQuery.toLowerCase()));
+	const filterData = (data: ChunithmSong[]) => {
+		return data.filter((song) => {
+			const isAllowed = allowedOptions.includes(song.option || "");
+			return (
+				song.title?.toLowerCase().includes(searchQuery.toLowerCase()) &&
+				(isAdmin || isAllowed)
+			);
+		});
+	};
 
 	if (isLoadingSongs) {
 		return (

@@ -787,6 +787,7 @@ export namespace DB {
 		genre: string | null;
 		jacketPath: string | null;
 		worldsEndTag: string | null;
+		option: string | null;
 	};
 
 	export type DaphnisStaticCharacter = {

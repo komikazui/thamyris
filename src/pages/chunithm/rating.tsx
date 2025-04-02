@@ -12,7 +12,8 @@ import {
 	useUserRatingBaseNewList,
 	useUserRatingBaseNextList,
 } from "@/hooks/chunithm";
-import { ChunitmRating, getDifficultyFromChunithmChart } from "@/utils/helpers";
+import { ChunitmRating, getAllowedChunithmOptions, getDifficultyFromChunithmChart } from "@/utils/helpers";
+import { useAdmin } from "@/hooks/admin";
 
 interface ChunithmRatingData {
 	title: string;
@@ -23,6 +24,7 @@ interface ChunithmRatingData {
 	playerRating?: number;
 	highestRating?: number;
 	chartId?: number;
+	option?: string;
 }
 
 const ChunithmRatingFrames = () => {
@@ -38,6 +40,10 @@ const ChunithmRatingFrames = () => {
 
 	const isVerseOrAbove = Number(version) >= 17;
 
+	const { isAdmin } = useAdmin();
+
+	const allowedOptions = getAllowedChunithmOptions(isAdmin);
+
 	const columns = {
 		Song: (row: ChunithmRatingData) => <span className="text-primary truncate">{row.title}</span>,
 		Rating: (row: ChunithmRatingData) => ((ChunitmRating(row.level!, row.score!) ?? 0) / 100).toFixed(2),
@@ -49,8 +55,15 @@ const ChunithmRatingFrames = () => {
 		setSearchQuery(search.value || "");
 	};
 
-	const filterData = (data: ChunithmRatingData[]) =>
-		data.filter((song) => song.title?.toLowerCase().includes(searchQuery.toLowerCase()));
+	const filterData = (data: ChunithmRatingData[]) => {
+		return data.filter((song) => {
+			const isAllowed = allowedOptions.includes(song.option || "");
+			return (
+				song.title?.toLowerCase().includes(searchQuery.toLowerCase()) &&
+				(isAdmin || isAllowed)
+			);
+		});
+	};
 
 	return (
 		<div className="relative flex-1 overflow-auto">
@@ -59,9 +72,8 @@ const ChunithmRatingFrames = () => {
 				<div className="container mx-auto space-y-6">
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
 						<QouteCard
-							header={`Single track ratings are calculated from fumen constants and scores. Player rating is the average of ${
-								isVerseOrAbove ? "50" : "30"
-							} unique fumen ratings, including:`}
+							header={`Single track ratings are calculated from fumen constants and scores. Player rating is the average of ${isVerseOrAbove ? "50" : "30"
+								} unique fumen ratings, including:`}
 							welcomeMessage={
 								<div className="flex flex-col space-y-1">
 									{isVerseOrAbove ? (

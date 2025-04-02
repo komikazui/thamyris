@@ -15,6 +15,8 @@ import {
 	useRemoveFavorite,
 } from "@/hooks/chunithm";
 import { cdnUrl } from "@/lib/constants";
+import { getAllowedChunithmOptions } from "@/utils/helpers";
+import { useAdmin } from "@/hooks/admin";
 
 interface ChunithmFavorite {
 	songId?: number;
@@ -27,8 +29,8 @@ interface ChunithmFavorite {
 	version?: number;
 	favId?: number;
 	favKind?: number;
+	option?: string;
 }
-
 const ChunithmFavorites = () => {
 	const version = useChunithmVersion();
 	const { data: songs = [], isLoading: isLoadingSongs } = useChunithmSongs() as {
@@ -39,6 +41,10 @@ const ChunithmFavorites = () => {
 	const { mutate: addFavorite } = useAddFavorite();
 	const { mutate: removeFavorite } = useRemoveFavorite();
 	const [searchQuery, setSearchQuery] = useState("");
+
+	const { isAdmin } = useAdmin();
+
+	const allowedOptions = getAllowedChunithmOptions(isAdmin);
 
 	const handleToggleFavorite = (songId: number) => {
 		const isFavorited = favoriteSongIds.some((fav) => fav.favId === songId);
@@ -64,9 +70,14 @@ const ChunithmFavorites = () => {
 		}
 	};
 
-	const filteredSongs = songs.filter(
-		(song) => song.chartId === 3 && song.title?.toLowerCase().includes(searchQuery.toLowerCase())
-	);
+	const filteredSongs = songs.filter((song) => {
+		const isAllowed = allowedOptions.includes(song.option || "");
+		return (
+			(isAdmin || isAllowed) &&
+			song.chartId === 3 &&
+			song.title?.toLowerCase().includes(searchQuery.toLowerCase())
+		);
+	});
 
 	const columns = {
 		Jacket: (row: ChunithmFavorite) => (

@@ -195,3 +195,11 @@ export function ChunitmRating(level: number, score: number): number {
 		return 0;
 	}
 }
+
+export const getAllowedChunithmOptions = (isAdmin: boolean): string[] => {
+	const baseOptions = ["A000", "A001", "A121", "A122", "A131", "A132", "A140", "A141", "A142", "A143", "A151", "A152", "A153"];
+	if (isAdmin) {
+		return [...baseOptions,]; // for future use add option names after base options
+	}
+	return baseOptions;
+};
