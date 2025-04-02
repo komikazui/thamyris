@@ -11,8 +11,9 @@ const ChunithmStaticMusic = new Hono().get("chuni_static_music", async (c) => {
 
 		const results = await db.select<DB.ChuniStaticMusic>(
 			`SELECT id, songId, chartId, title, level, artist, genre, jacketPath, option
-       FROM chuni_static_music
-       WHERE version = ?`,
+				 FROM chuni_static_music
+				 WHERE version = ?
+				 ORDER BY id DESC`,
 			[version]
 		);
 		return c.json(results);

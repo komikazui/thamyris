@@ -54,13 +54,14 @@ const ChunithmAllSongs = () => {
 	};
 
 	const filterData = (data: ChunithmSong[]) => {
-		return data.filter((song) => {
-			const isAllowed = allowedOptions.includes(song.option || "");
-			return (
-				song.title?.toLowerCase().includes(searchQuery.toLowerCase()) &&
-				(isAdmin || isAllowed)
-			);
-		});
+		return data
+			.filter((song) => {
+				const isAllowed = allowedOptions.includes(song.option || "");
+				return (
+					song.title?.toLowerCase().includes(searchQuery.toLowerCase()) &&
+					(isAdmin || isAllowed)
+				);
+			})
 	};
 
 	if (isLoadingSongs) {
