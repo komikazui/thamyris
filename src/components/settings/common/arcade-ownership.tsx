@@ -73,7 +73,7 @@ const ArcadeOwnership = () => {
 	return (
 		<div className="bg-card rounded-md p-6">
 			<h2 className="text-primary mb-2 text-xl font-semibold">Arcade ownership settings</h2>
-			<div className="text-primary mb-4 text-sm">Changes who owners a specific arcade</div>
+			<div className="text-primary mb-4 text-sm">Changes who owns a specific arcade</div>
 			<div className="mb-4">
 				<button
 					onClick={handleArcadeDropdownToggle}
