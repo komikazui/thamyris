@@ -196,7 +196,7 @@ export function ChunitmRating(level: number, score: number): number {
 	}
 }
 
- enum ChunithmOption {
+ enum WhitelistedChunithmOptions {
     A000 = "A000",
     A001 = "A001",
     A121 = "A121",
@@ -212,10 +212,17 @@ export function ChunitmRating(level: number, score: number): number {
     A153 = "A153"
 }
 
-export const getAllowedChunithmOptions = (isSpecial: boolean, isAdmin: boolean): ChunithmOption[] => {
-    const baseOptions = Object.values(ChunithmOption);
+ enum BlacklistedChunithmOptions {
+    A161 = "A161",
+}
+
+export const getAllowedChunithmOptions = (isSpecial: boolean, isAdmin: boolean): string[] => {
+    const whiteListedOptions = Object.values(WhitelistedChunithmOptions);
+	const blacklistedOptions = Object.values(BlacklistedChunithmOptions);
+
     if (isSpecial || isAdmin) {
-        return baseOptions; // for future use add option names after base options
+        return [...whiteListedOptions, ...blacklistedOptions];
     }
-    return baseOptions;
+    
+    return whiteListedOptions;
 };
