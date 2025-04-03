@@ -10,8 +10,7 @@ const AdminRoutes = new Hono()
 		try {
 			const { userId, permissions } = c.payload;
 
-			// Check if the user has either Admin or Special permissions
-			if (!userId || (permissions !== UserRole.Admin && permissions !== UserRole.Special)) {
+			if (!userId || (permissions !== UserRole.Admin)) {
 				throw new HTTPException(403);
 			}
 
