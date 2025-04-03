@@ -6,11 +6,26 @@ import { UserRole } from "@/api/types/enums";
 import { rethrowWithMessage } from "@/api/utils/error";
 
 const AdminRoutes = new Hono()
-	.get("/check", async (c) => {
+	.get("/isadmin", async (c) => {
 		try {
 			const { userId, permissions } = c.payload;
 
-			if (!userId || permissions !== UserRole.Admin) {
+			// Check if the user has either Admin or Special permissions
+			if (!userId || (permissions !== UserRole.Admin && permissions !== UserRole.Special)) {
+				throw new HTTPException(403);
+			}
+
+			return c.json({ isAdmin: true });
+		} catch (error) {
+			throw rethrowWithMessage("Failed to check admin status", error);
+		}
+	})
+
+	.get("/isspecial", async (c) => {
+		try {
+			const { userId, permissions } = c.payload;
+
+			if (!userId || permissions !== UserRole.Special) {
 				throw new HTTPException(403);
 			}
 

@@ -16,7 +16,7 @@ import {
 } from "@/hooks/chunithm";
 import { cdnUrl } from "@/lib/constants";
 import { getAllowedChunithmOptions } from "@/utils/helpers";
-import { useAdmin } from "@/hooks/admin";
+import { useAdmin, useSpecial } from "@/hooks/admin/use-admin";
 
 interface ChunithmFavorite {
 	songId?: number;
@@ -42,9 +42,10 @@ const ChunithmFavorites = () => {
 	const { mutate: removeFavorite } = useRemoveFavorite();
 	const [searchQuery, setSearchQuery] = useState("");
 
+	const { isSpecial } = useSpecial();
 	const { isAdmin } = useAdmin();
 
-	const allowedOptions = getAllowedChunithmOptions(isAdmin);
+	const allowedOptions = getAllowedChunithmOptions(isSpecial, isAdmin);
 
 	const handleToggleFavorite = (songId: number) => {
 		const isFavorited = favoriteSongIds.some((fav) => fav.favId === songId);
@@ -73,9 +74,9 @@ const ChunithmFavorites = () => {
 	const filteredSongs = songs.filter((song) => {
 		const isAllowed = allowedOptions.includes(song.option || "");
 		return (
-			(isAdmin || isAllowed) &&
 			song.chartId === 3 &&
-			song.title?.toLowerCase().includes(searchQuery.toLowerCase())
+			song.title?.toLowerCase().includes(searchQuery.toLowerCase()) &&
+			(isAdmin || isSpecial || isAllowed)
 		);
 	});
 

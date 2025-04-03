@@ -14,6 +14,7 @@ import {
 } from "@/hooks/chunithm";
 import { ChunitmRating, getAllowedChunithmOptions, getDifficultyFromChunithmChart } from "@/utils/helpers";
 import { useAdmin } from "@/hooks/admin";
+import { useSpecial } from "@/hooks/admin/use-admin";
 
 interface ChunithmRatingData {
 	title: string;
@@ -40,9 +41,10 @@ const ChunithmRatingFrames = () => {
 
 	const isVerseOrAbove = Number(version) >= 17;
 
+	const { isSpecial } = useSpecial();
 	const { isAdmin } = useAdmin();
 
-	const allowedOptions = getAllowedChunithmOptions(isAdmin);
+	const allowedOptions = getAllowedChunithmOptions(isSpecial, isAdmin);
 
 	const columns = {
 		Song: (row: ChunithmRatingData) => <span className="text-primary truncate">{row.title}</span>,
@@ -60,7 +62,7 @@ const ChunithmRatingFrames = () => {
 			const isAllowed = allowedOptions.includes(song.option || "");
 			return (
 				song.title?.toLowerCase().includes(searchQuery.toLowerCase()) &&
-				(isAdmin || isAllowed)
+				(isAdmin || isSpecial || isAllowed)
 			);
 		});
 	};

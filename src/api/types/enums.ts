@@ -11,4 +11,5 @@ export const enum ChunithmAvatarCategory {
 export enum UserRole {
 	User = 1,
 	Admin = 2,
+	Special = 3,
 }

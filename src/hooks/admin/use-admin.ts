@@ -10,7 +10,7 @@ export const useAdmin = () => {
 	useEffect(() => {
 		const checkAdminStatus = async () => {
 			try {
-				const response = await api.admin.check.$get();
+				const response = await api.admin.isadmin.$get();
 				// Check if the response is OK (200-299)
 				if (response.ok) {
 					setIsAdmin(true);
@@ -32,3 +32,33 @@ export const useAdmin = () => {
 
 	return { isAdmin, isLoading, error };
 };
+
+export const useSpecial = () => {
+	const [isSpecial, setIsSpecial] = useState(false);
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		const checkAdminStatus = async () => {
+			try {
+				const response = await api.admin.isspecial.$get();
+				if (response.ok) {
+					setIsSpecial(true);
+				} else {
+					setIsSpecial(false);
+				}
+			} catch {
+				// This will only trigger for network errors
+				setError("Failed to verify admin status");
+				setIsSpecial(false);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		checkAdminStatus();
+	}, []);
+
+	return { isSpecial, isLoading, error };
+};
+

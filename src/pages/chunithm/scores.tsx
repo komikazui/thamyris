@@ -6,7 +6,8 @@ import Spinner from "@/components/common/spinner";
 import TableComponent from "@/components/common/table";
 import { useChunithmScores, useChunithmVersion } from "@/hooks/chunithm";
 import { cdnUrl } from "@/lib/constants";
-import { getChunithmGrade, getDifficultyFromChunithmChart } from "@/utils/helpers";
+import { getAllowedChunithmOptions, getChunithmGrade, getDifficultyFromChunithmChart } from "@/utils/helpers";
+import { useAdmin, useSpecial } from "@/hooks/admin/use-admin";
 
 interface ChunithmScore {
 	id: number;
@@ -16,10 +17,13 @@ interface ChunithmScore {
 	playerRating?: number;
 	chartId?: number;
 	userPlayDate?: string;
+	option?: string;
 }
 
 const ChunithmScorePage = () => {
 	const [searchQuery, setSearchQuery] = useState("");
+	const { isSpecial } = useSpecial();
+	const { isAdmin } = useAdmin();
 
 	const { data: scores = [], isLoading: isLoadingScores } = useChunithmScores() as {
 		data: ChunithmScore[];
@@ -27,9 +31,13 @@ const ChunithmScorePage = () => {
 	};
 
 	const version = useChunithmVersion();
+	const allowedOptions = getAllowedChunithmOptions(isSpecial, isAdmin);
 
-	const filteredScores = scores.filter((score) => score.title?.toLowerCase().includes(searchQuery.toLowerCase()));
-
+	const filteredScores = scores.filter((score) => {
+		const isAllowed = allowedOptions.includes(score.option || "");
+		return score.title?.toLowerCase().includes(searchQuery.toLowerCase()) &&
+			(isAdmin || isSpecial || isAllowed);
+	});
 	const columns = {
 		Song: (row: ChunithmScore) => (
 			<div className="flex items-center gap-3">

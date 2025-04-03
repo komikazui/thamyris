@@ -5,12 +5,12 @@ import { DB } from "@/api/types";
 import { rethrowWithMessage } from "@/api/utils/error";
 
 const ChunithmScorePlaylog = new Hono().get("playlog", async (c) => {
-	try {
-		const { userId, versions } = c.payload;
-		const version = versions.chunithm_version;
+    try {
+        const { userId, versions } = c.payload;
+        const version = versions.chunithm_version;
 
-		const results = await db.select<DB.ChuniScorePlaylog>(
-			`
+        const results = await db.select<DB.ChuniScorePlaylog>(
+            `
                 WITH RankedScores AS (
                 SELECT
                     csp.id,
@@ -34,6 +34,7 @@ const ChunithmScorePlaylog = new Hono().get("playlog", async (c) => {
                     csm.genre,
                     csm.jacketPath,
                     csm.artist,
+                    csm.option,
                     IF(csp.score > LAG(csp.score, 1) OVER (ORDER BY csp.userPlayDate), 'Increase',
                     IF(csp.score < LAG(csp.score, 1) OVER (ORDER BY csp.userPlayDate), 'Decrease', 'Same')) AS score_change,
                     IF(csp.playerRating > LAG(csp.playerRating, 1) OVER (ORDER BY csp.userPlayDate), 'Increase',
@@ -72,18 +73,19 @@ const ChunithmScorePlaylog = new Hono().get("playlog", async (c) => {
                 artist,
                 score_change,
                 rating_change,
-                playerRating
+                playerRating,
+                option
                 FROM
                 RankedScores
                 ORDER BY
                 userPlayDate DESC;
                 `,
-			[version, userId, version]
-		);
-		return c.json(results);
-	} catch (error) {
-		throw rethrowWithMessage("Failed to get static music", error);
-	}
+            [version, userId, version]
+        );
+        return c.json(results);
+    } catch (error) {
+        throw rethrowWithMessage("Failed to get static music", error);
+    }
 });
 
 export { ChunithmScorePlaylog };

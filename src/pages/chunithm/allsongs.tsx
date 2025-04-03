@@ -8,7 +8,7 @@ import TableComponent from "@/components/common/table";
 import { useChunithmSongs, useChunithmVersion } from "@/hooks/chunithm";
 import { cdnUrl } from "@/lib/constants";
 import { getAllowedChunithmOptions, getDifficultyFromChunithmChart } from "@/utils/helpers";
-import { useAdmin } from "@/hooks/admin";
+import { useAdmin, useSpecial } from "@/hooks/admin/use-admin";
 
 interface ChunithmSong {
 	title: string;
@@ -30,9 +30,10 @@ const ChunithmAllSongs = () => {
 
 	const isNewVersion = Number(version) >= 8;
 
+	const { isSpecial } = useSpecial();
 	const { isAdmin } = useAdmin();
 
-	const allowedOptions = getAllowedChunithmOptions(isAdmin);
+	const allowedOptions = getAllowedChunithmOptions(isSpecial, isAdmin);
 
 	const columns = {
 		Song: (row: ChunithmSong) => (
@@ -59,7 +60,7 @@ const ChunithmAllSongs = () => {
 				const isAllowed = allowedOptions.includes(song.option || "");
 				return (
 					song.title?.toLowerCase().includes(searchQuery.toLowerCase()) &&
-					(isAdmin || isAllowed)
+					(isSpecial || isSpecial || isAllowed)
 				);
 			})
 	};
