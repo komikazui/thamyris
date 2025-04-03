@@ -11,15 +11,12 @@ export const useAdmin = () => {
 		const checkAdminStatus = async () => {
 			try {
 				const response = await api.admin.isadmin.$get();
-				// Check if the response is OK (200-299)
 				if (response.ok) {
 					setIsAdmin(true);
 				} else {
-					// This handles 403 without throwing an error to the console
 					setIsAdmin(false);
 				}
 			} catch {
-				// This will only trigger for network errors
 				setError("Failed to verify admin status");
 				setIsAdmin(false);
 			} finally {
@@ -48,7 +45,6 @@ export const useSpecial = () => {
 					setIsSpecial(false);
 				}
 			} catch {
-				// This will only trigger for network errors
 				setError("Failed to verify admin status");
 				setIsSpecial(false);
 			} finally {
