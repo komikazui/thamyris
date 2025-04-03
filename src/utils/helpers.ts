@@ -196,10 +196,26 @@ export function ChunitmRating(level: number, score: number): number {
 	}
 }
 
-export const getAllowedChunithmOptions = (isSpecial: boolean, isAdmin: boolean): string[] => {
-	const baseOptions = ["A000", "A001", "A121", "A122", "A131", "A132", "A140", "A141", "A142", "A143", "A151", "A152", "A153"];
-	if (isSpecial || isAdmin) {
-		return [...baseOptions,]; // for future use add option names after base options
-	}
-	return baseOptions;
+ enum ChunithmOption {
+    A000 = "A000",
+    A001 = "A001",
+    A121 = "A121",
+    A122 = "A122",
+    A131 = "A131",
+    A132 = "A132",
+    A140 = "A140",
+    A141 = "A141",
+    A142 = "A142",
+    A143 = "A143",
+    A151 = "A151",
+    A152 = "A152",
+    A153 = "A153"
+}
+
+export const getAllowedChunithmOptions = (isSpecial: boolean, isAdmin: boolean): ChunithmOption[] => {
+    const baseOptions = Object.values(ChunithmOption);
+    if (isSpecial || isAdmin) {
+        return baseOptions; // for future use add option names after base options
+    }
+    return baseOptions;
 };
