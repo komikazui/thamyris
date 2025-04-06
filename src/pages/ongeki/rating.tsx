@@ -116,8 +116,8 @@ const OngekiRatingFrames = () => {
 										</>
 									) : (
 										<>
-											<span>• 15 highest ratings from new version fumens</span>
 											<span>• 30 highest ratings from old version fumens</span>
+											<span>• 15 highest ratings from new version fumens</span>
 											<span>• 10 highest ratings from recent plays, excluding Lunatic difficulty</span>
 										</>
 									)}
@@ -151,17 +151,17 @@ const OngekiRatingFrames = () => {
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
 						{isRefreshOrAbove ? (
 							<>
-								<TableComponent data={filterData(newBaseSongs)} columns={columns} onSearch={handleSearch} />
-								<TableComponent data={filterData(newPscoreSongs)} columns={columns} onSearch={handleSearch} />
-								<TableComponent data={filterData(newNewSongs)} columns={columns} onSearch={handleSearch} />
-								<TableComponent data={filterData(newNextSongs)} columns={columns} onSearch={handleSearch} />
+								<TableComponent data={filterData(newBaseSongs)} columns={columns} onSearch={handleSearch} title="Top 50 fumen" />
+								<TableComponent data={filterData(newPscoreSongs)} columns={columns} onSearch={handleSearch} title="Top 50 PScore"/>
+								<TableComponent data={filterData(newNewSongs)} columns={columns} onSearch={handleSearch} title="Top 10 current fumens" />
+								<TableComponent data={filterData(newNextSongs)} columns={columns} onSearch={handleSearch} title="Recommended fumens" />
 							</>
 						) : (
 							<>
-								<TableComponent data={filterData(baseSongs)} columns={columns} onSearch={handleSearch} />
-								<TableComponent data={filterData(newSongs)} columns={columns} onSearch={handleSearch} />
-								<TableComponent data={filterData(hotSongs)} columns={columns} onSearch={handleSearch} />
-								<TableComponent data={filterData(nextSongs)} columns={columns} onSearch={handleSearch} />
+								<TableComponent data={filterData(baseSongs)} columns={columns} onSearch={handleSearch} title="Top 30 fumen"  />
+								<TableComponent data={filterData(newSongs)} columns={columns} onSearch={handleSearch} title="Recent 15 fumen"  />
+								<TableComponent data={filterData(hotSongs)} columns={columns} onSearch={handleSearch} title="Recent 10 current fumen" />
+								<TableComponent data={filterData(nextSongs)} columns={columns} onSearch={handleSearch} title="Recommended fumens" />
 							</>
 						)}
 					</div>
