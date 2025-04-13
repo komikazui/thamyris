@@ -21,7 +21,26 @@ export interface AvatarParts {
 	avatarAccessoryId?: number;
 }
 
-// User Rating Related Interfaces
+export interface UnlockedOutfit {
+	id: string;
+	name: string;
+	headId: number;
+	backId: number;
+	wearId: number;
+	faceId: number;
+	itemId: number;
+	accessoryId: number;
+	category: string;
+	version: string;
+	iconPath: string;
+	texturePath: string;
+}
+
+export interface AllAvatarApiResponse {
+	results?: UnlockedOutfit[];
+	error?: string;
+}
+
 export interface UserRatingEntry {
 	type: string;
 	version: number;
@@ -47,7 +66,7 @@ export interface RatingResponse {
 	error?: string;
 }
 
-// Song Related Interfaces
+
 export interface Song {
 	id?: number;
 	songId: number;
@@ -83,26 +102,6 @@ export interface RatingFrameTableProps {
 	title: string;
 }
 
-/// avatar use-avatar.ts
-export interface AllAvatarApiResponse {
-	results?: UnlockedOutfit[];
-	error?: string;
-}
-
-export interface UnlockedOutfit {
-	id: string;
-	name: string;
-	headId: number;
-	backId: number;
-	wearId: number;
-	faceId: number;
-	itemId: number;
-	accessoryId: number;
-	category: string;
-	version: string;
-	iconPath: string;
-	texturePath: string;
-}
 
 export interface Trophy {
 	id: number;
