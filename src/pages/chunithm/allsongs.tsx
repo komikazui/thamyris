@@ -41,7 +41,7 @@ const ChunithmAllSongs = () => {
 				<img
 					width={40}
 					height={40}
-					src={`${cdnUrl}/assets/jacket/${row.jacketPath?.replace(".dds", ".png")}`}
+					src={`${cdnUrl}/jacket/${row.jacketPath?.replace(".dds", ".png")}`}
 					alt={row.title}
 					className="flex-shrink-0"
 				/>
