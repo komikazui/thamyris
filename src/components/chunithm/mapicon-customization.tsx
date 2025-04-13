@@ -71,7 +71,7 @@ const MapiconSelector = () => {
 			<div className="flex h-full items-center justify-center md:w-[300px]">
 				{selectedIcon && (
 					<img
-						src={`${cdnUrl}assets/map_icon/${selectedIcon.replace(".dds", ".png")}`}
+						src={`${cdnUrl}/map_icon/${selectedIcon.replace(".dds", ".png")}`}
 						className="w-[130px] object-contain"
 						alt="Map Icon"
 					/>
