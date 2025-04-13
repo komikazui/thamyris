@@ -196,35 +196,38 @@ export function ChunitmRating(level: number, score: number): number {
 	}
 }
 
- enum whitelistedChunithmOptions {
-    A000 = "A000",
-    A001 = "A001",
-    A121 = "A121",
-    A122 = "A122",
-    A131 = "A131",
-    A132 = "A132",
-    A140 = "A140",
-    A141 = "A141",
-    A142 = "A142",
-    A143 = "A143",
-    A151 = "A151",
-    A152 = "A152",
-    A153 = "A153"
+enum whitelistedChunithmOptions {
+	A000 = "A000",
+	A001 = "A001",
+	A121 = "A121",
+	A122 = "A122",
+	A131 = "A131",
+	A132 = "A132",
+	A140 = "A140",
+	A141 = "A141",
+	A142 = "A142",
+	A143 = "A143",
+	A151 = "A151",
+	A152 = "A152",
+	A153 = "A153"
 }
 
- enum blacklistedChunithmOptions {
-    A161 = "A161",
+enum blacklistedChunithmOptions {
+	A161 = "A161",
+	A162 = "A162",
+
+
 }
 
 export const getAllowedChunithmOptions = (isSpecial: boolean, isAdmin: boolean): string[] => {
-    const whiteListedOptions = Object.values(whitelistedChunithmOptions);
+	const whiteListedOptions = Object.values(whitelistedChunithmOptions);
 	const blacklistedOptions = Object.values(blacklistedChunithmOptions);
 
-    if (isSpecial || isAdmin) {
-        return [...whiteListedOptions, ...blacklistedOptions];
-    }
-    
-    return whiteListedOptions;
+	if (isSpecial || isAdmin) {
+		return [...whiteListedOptions, ...blacklistedOptions];
+	}
+
+	return whiteListedOptions;
 };
 
 
