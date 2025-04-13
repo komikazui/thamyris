@@ -103,10 +103,19 @@ const ChunithmRatingFrames = () => {
 					</div>
 
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
-						<TableComponent data={filterData(baseSongs)} columns={columns} onSearch={handleSearch} title="Top 30 fumen" />
-						{isVerseOrAbove && <TableComponent data={filterData(newSongs)} columns={columns} onSearch={handleSearch} title="Top 20 current fumen" />}
-						<TableComponent data={filterData(hotSongs)} columns={columns} onSearch={handleSearch} title="Recent 10 fumen" />
-						{isVerseOrAbove && <TableComponent data={filterData(nextSongs)} columns={columns} onSearch={handleSearch} title="Potential fumens" />}
+						{isVerseOrAbove ? (
+							<>
+								<TableComponent data={filterData(newSongs)} columns={columns} onSearch={handleSearch} title="Top 20 current fumen" />
+								<TableComponent data={filterData(nextSongs)} columns={columns} onSearch={handleSearch} title="Potential fumens" />
+								<TableComponent data={filterData(hotSongs)} columns={columns} onSearch={handleSearch} title="Recent 10 fumen" />
+
+							</>
+						) : (
+							<>
+								<TableComponent data={filterData(baseSongs)} columns={columns} onSearch={handleSearch} title="Top 30 fumen" />
+								<TableComponent data={filterData(hotSongs)} columns={columns} onSearch={handleSearch} title="Recent 10 fumen" />
+							</>
+						)}
 					</div>
 				</div>
 			) : (
