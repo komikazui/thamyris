@@ -3,7 +3,7 @@ import { config as dotenv } from "dotenv";
 import { z } from "zod";
 
 dotenv();
-
+// env validation
 export const env = createEnv({
 	server: {
 		NODE_ENV: z.enum(["development", "production"]).default("development"),
@@ -12,7 +12,7 @@ export const env = createEnv({
 		RATELIMIT_KEY: z.string(),
 		CLIENT_PORT: z.coerce.number().default(3000),
 		SERVER_PORT: z.coerce.number().default(3000),
-		CHUNI_CDN_URL: z.string(), // need to use process.env.CDN_URL for client side
+		CHUNI_CDN_URL: z.string(),
 
 		// Development database
 		DEV_MYSQL_HOST: z.string().optional(),
