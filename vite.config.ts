@@ -175,7 +175,7 @@ export default defineConfig({
 			CFTurnstileKey: env.CFTurnstileKey,
 			BUILD_DATE_YEAR_MONTH_DAY: buildDateYearMonthDay(new Date().toISOString()),
 			BUILD_TIME_12_HOUR: buildTime12HourFormat(new Date().toISOString()),
-			CDN_URL: env.CDN_URL,
+			CDN_URL: env.CHUNI_CDN_URL,
 			USE_REACT_STRICT: JSON.stringify(env.NODE_ENV === "development"),
 			BUILD_HASH: buildHash,
 		},
