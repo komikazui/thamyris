@@ -71,12 +71,16 @@ const OngekiScorePage = () => {
 			const comboStatus = getOngekiComboStatus(row.isFullCombo ?? 0, row.isAllBreak ?? 0, row.isFullBell ?? 0);
 			if (comboStatus) {
 				let colorClass = "text-gray-200";
-				if (comboStatus.includes("AB")) {
-					colorClass = "text-purple-400";
-				} else if (comboStatus.includes("FC")) {
-					colorClass = "text-cyan-400";
-				} else if (comboStatus.includes("FB")) {
+
+				// Check for the combined status first
+				if (comboStatus === "AB + FB") {
 					colorClass = "text-yellow-400";
+				} else if (comboStatus === "AB") {
+					colorClass = "text-purple-400";
+				} else if (comboStatus === "FC") {
+					colorClass = "text-cyan-400";
+				} else if (comboStatus === "FB") {
+					colorClass = "text-orange-400";
 				}
 
 				return <span className={colorClass}>{comboStatus}</span>;
