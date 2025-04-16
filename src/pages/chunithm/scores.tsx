@@ -66,9 +66,9 @@ const ChunithmScorePage = () => {
 			if (comboStatus) {
 				let colorClass = "text-gray-200";
 				if (comboStatus.includes("FC")) {
-					colorClass = "text-yellow-400";
-				} else if (comboStatus.includes("AJ")) {
 					colorClass = "text-cyan-400";
+				} else if (comboStatus.includes("AJ")) {
+					colorClass = "text-yellow-400";
 				}
 
 				return <span className={colorClass}>{comboStatus}</span>;
