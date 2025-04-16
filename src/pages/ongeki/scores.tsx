@@ -74,9 +74,9 @@ const OngekiScorePage = () => {
 				if (comboStatus.includes("AB")) {
 					colorClass = "text-purple-400";
 				} else if (comboStatus.includes("FC")) {
-					colorClass = "text-yellow-400";
-				} else if (comboStatus.includes("FB")) {
 					colorClass = "text-cyan-400";
+				} else if (comboStatus.includes("FB")) {
+					colorClass = "text-yellow-400";
 				}
 
 				return <span className={colorClass}>{comboStatus}</span>;
