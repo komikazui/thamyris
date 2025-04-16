@@ -667,9 +667,9 @@ export namespace DB {
 		eventId: number | null;
 		playerRating: number | null;
 		isNewRecord: boolean | null;
-		isFullCombo: number;
+		isFullCombo:  number| null;
 		fullChainKind: number | null;
-		isAllJustice: boolean | null;
+		isAllJustice: number| null;
 		isContinue: boolean | null;
 		isFreeToPlay: boolean | null;
 		characterId: number | null;

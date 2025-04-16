@@ -4,10 +4,15 @@ import React from "react";
 import Header from "@/components/common/header";
 import Spinner from "@/components/common/spinner";
 import TableComponent from "@/components/common/table";
+import { useAdmin, useSpecial } from "@/hooks/admin/use-admin";
 import { useChunithmScores, useChunithmVersion } from "@/hooks/chunithm";
 import { cdnUrl } from "@/lib/constants";
-import { getAllowedChunithmOptions, getChunithmGrade, getDifficultyFromChunithmChart } from "@/utils/helpers";
-import { useAdmin, useSpecial } from "@/hooks/admin/use-admin";
+import {
+	getAllowedChunithmOptions,
+	getChunithmComboStatus,
+	getChunithmGrade,
+	getDifficultyFromChunithmChart,
+} from "@/utils/helpers";
 
 interface ChunithmScore {
 	id: number;
@@ -18,6 +23,8 @@ interface ChunithmScore {
 	chartId?: number;
 	userPlayDate?: string;
 	option?: string;
+	isFullCombo?: number;
+	isAllJustice?: number;
 }
 
 const ChunithmScorePage = () => {
@@ -35,8 +42,7 @@ const ChunithmScorePage = () => {
 
 	const filteredScores = scores.filter((score) => {
 		const isAllowed = allowedOptions.includes(score.option || "");
-		return score.title?.toLowerCase().includes(searchQuery.toLowerCase()) &&
-			(isAdmin || isSpecial || isAllowed);
+		return score.title?.toLowerCase().includes(searchQuery.toLowerCase()) && (isAdmin || isSpecial || isAllowed);
 	});
 	const columns = {
 		Song: (row: ChunithmScore) => (
@@ -55,6 +61,20 @@ const ChunithmScorePage = () => {
 		Grade: (row: ChunithmScore) => getChunithmGrade(row.score),
 		Rating: (row: ChunithmScore) => ((row.playerRating ?? 0) / 100).toFixed(2),
 		Difficulty: (row: ChunithmScore) => getDifficultyFromChunithmChart(row.chartId ?? 0),
+		"Combo Lamp": (row: ChunithmScore) => {
+			const comboStatus = getChunithmComboStatus(row.isFullCombo ?? 0, row.isAllJustice ?? 0);
+			if (comboStatus) {
+				let colorClass = "text-gray-200";
+				if (comboStatus.includes("FC")) {
+					colorClass = "text-yellow-400";
+				} else if (comboStatus.includes("AJ")) {
+					colorClass = "text-cyan-400";
+				}
+
+				return <span className={colorClass}>{comboStatus}</span>;
+			}
+			return "-";
+		},
 		Playdate: (row: ChunithmScore) => (row.userPlayDate ? new Date(row.userPlayDate).toLocaleString() : "Unknown"),
 	};
 

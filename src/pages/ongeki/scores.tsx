@@ -7,7 +7,7 @@ import Header from "@/components/common/header";
 import Spinner from "@/components/common/spinner";
 import TableComponent from "@/components/common/table";
 import { useOngekiScores, useOngekiVersion } from "@/hooks/ongeki";
-import { getDifficultyFromOngekiChart } from "@/utils/helpers";
+import { getDifficultyFromOngekiChart, getOngekiComboStatus } from "@/utils/helpers";
 
 interface OngekiScore {
 	id: number;
@@ -18,6 +18,9 @@ interface OngekiScore {
 	playerRating?: number;
 	userPlayDate?: string;
 	chartId?: number;
+	isFullCombo?: number;
+	isAllBreak?: number;
+	isFullBell?: number;
 }
 
 const OngekiScorePage = () => {
@@ -64,6 +67,22 @@ const OngekiScorePage = () => {
 			return ((row.playerRating ?? 0) / 1000).toFixed(3);
 		},
 		Difficulty: (row: OngekiScore) => getDifficultyFromOngekiChart(row.chartId ?? 0),
+		"Combo Lamp": (row: OngekiScore) => {
+			const comboStatus = getOngekiComboStatus(row.isFullCombo ?? 0, row.isAllBreak ?? 0, row.isFullBell ?? 0);
+			if (comboStatus) {
+				let colorClass = "text-gray-200";
+				if (comboStatus.includes("AB")) {
+					colorClass = "text-purple-400";
+				} else if (comboStatus.includes("FC")) {
+					colorClass = "text-yellow-400";
+				} else if (comboStatus.includes("FB")) {
+					colorClass = "text-cyan-400";
+				}
+
+				return <span className={colorClass}>{comboStatus}</span>;
+			}
+			return "-";
+		},
 		Playdate: (row: OngekiScore) => (row.userPlayDate ? new Date(row.userPlayDate).toLocaleString() : "Unknown"),
 	};
 

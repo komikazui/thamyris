@@ -73,14 +73,13 @@ export const getChunithmClearStatus = (isClear: number): string => {
 	return "";
 };
 
-export const getChunithmComboStatus = (isFullCombo: number, isAllJustice: number, score?: number) => {
-	if (score && score >= 1010000 && isAllJustice === 1) {
-		return "All Justice Critical";
-	}
-	if (isAllJustice === 1) return "All Justice";
-	if (isFullCombo === 1) return "Full Combo";
+
+export const getChunithmComboStatus = (isFullCombo: number, isAllJustice: number, score?: number): string => {
+	if (score && score >= 1010000 && isAllJustice === 1) return "AJC";
+	if (isAllJustice === 1) return "AJ";
+	if (isFullCombo === 1) return "FC";
 	return "";
-};
+  };
 
 export const getOngekiClearStatus = (clearStatus: number): string => {
 	if (clearStatus === 2) return "Won";
