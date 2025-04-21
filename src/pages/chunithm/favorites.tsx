@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import Header from "@/components/common/header";
 import Spinner from "@/components/common/spinner";
 import TableComponent from "@/components/common/table";
+import { useAdmin, useSpecial } from "@/hooks/admin/use-admin";
 import {
 	useAddFavorite,
 	useChunithmSongs,
@@ -16,7 +17,6 @@ import {
 } from "@/hooks/chunithm";
 import { cdnUrl } from "@/lib/constants";
 import { getAllowedChunithmOptions } from "@/utils/helpers";
-import { useAdmin, useSpecial } from "@/hooks/admin/use-admin";
 
 interface ChunithmFavorite {
 	songId?: number;
@@ -85,7 +85,7 @@ const ChunithmFavorites = () => {
 			<img
 				width={40}
 				height={40}
-				src={`${cdnUrl}/assets/jacket/${row.jacketPath?.replace(".dds", ".png")}`}
+				src={`${cdnUrl}/jacket/${row.jacketPath?.replace(".dds", ".png")}`}
 				alt={row.title}
 				className="flex-shrink-0"
 			/>
