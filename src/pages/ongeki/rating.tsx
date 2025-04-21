@@ -20,7 +20,7 @@ import {
 	useUserRatingBaseNextList,
 } from "@/hooks/ongeki";
 import { useUserNewRatingBasePScoreList } from "@/hooks/ongeki/use-new-rating";
-import { OngekiGekForceRating, OngekiRating, getDifficultyFromOngekiChart, getOngekiGrade } from "@/utils/helpers";
+import { OngekiGekForceRating, OngekiRating, getDifficultyFromOngekiChart } from "@/utils/helpers";
 
 interface OngekiRatingData {
 	title: string;
@@ -58,12 +58,23 @@ const OngekiRatingFrames = () => {
 
 	const isRefreshOrAbove = Number(version) >= 8;
 
-	// Define table columns
 	const columns = {
 		Song: (row: OngekiRatingData) => <span className="text-primary truncate">{row.title}</span>,
-		Score: (row: OngekiRatingData) => row.techScoreMax?.toLocaleString(),
-		Grade: (row: OngekiRatingData) => getOngekiGrade(row.techScoreMax!),
-		Rating: (row: OngekiRatingData) => {
+		Diff: (row: OngekiRatingData) => getDifficultyFromOngekiChart(row.chartId ?? 0),
+		Lv: (row: OngekiRatingData) => row.level,
+		PS: (row: OngekiRatingData) => {
+			const pscoreRating = ((row.level ?? 0) * (row.level ?? 0) * (row.platinumScoreStar ?? 0)) / 1000;
+			return pscoreRating.toFixed(3);
+		},
+
+		Stars: (row: OngekiRatingData) =>
+			(row.platinumScoreStar ?? 0) > 0 && (
+				<div className="flex items-center">
+					<Star className="text-yellow-300" size={16} />
+					<span className="ml-1">{row.platinumScoreStar?.toLocaleString()}</span>
+				</div>
+			),
+		Rate: (row: OngekiRatingData) => {
 			return isRefreshOrAbove
 				? (
 						OngekiGekForceRating(
@@ -76,24 +87,6 @@ const OngekiRatingFrames = () => {
 					).toFixed(3)
 				: (OngekiRating(row.level ?? 0, row.techScoreMax ?? 0) / 100).toFixed(2);
 		},
-		"P-Score Rating": (row: OngekiRatingData) => {
-			const pscoreRating = ((row.level ?? 0) * (row.level ?? 0) * (row.platinumScoreStar ?? 0)) / 1000;
-			return pscoreRating.toFixed(3);
-		},
-
-		"P-Score": (row: OngekiRatingData) => {
-			const maxPossibleScore = row.noteCount * 2;
-			return `${(row.platinumScoreMax ?? 0).toLocaleString()} / ${maxPossibleScore.toLocaleString()}`;
-		},
-		Stars: (row: OngekiRatingData) =>
-			(row.platinumScoreStar ?? 0) > 0 && (
-				<div className="flex items-center">
-					<Star className="text-yellow-300" size={16} />
-					<span className="ml-1">{row.platinumScoreStar?.toLocaleString()}</span>
-				</div>
-			),
-		Level: (row: OngekiRatingData) => row.level,
-		Difficulty: (row: OngekiRatingData) => getDifficultyFromOngekiChart(row.chartId ?? 0),
 	};
 
 	const handleSearch = (search: { value?: string }) => {
@@ -113,7 +106,7 @@ const OngekiRatingFrames = () => {
 							header="Single track ratings are calculated from fumen constants and scores."
 							welcomeMessage={
 								<div className="flex flex-col space-y-1">
-									{isRefreshOrAbove ? (
+									{/* {isRefreshOrAbove ? (
 										<>
 											<span>• (sum of NEW top 10) ÷ 50</span>
 											<span>• (sum of BEST top 50) ÷ 50</span>
@@ -125,7 +118,7 @@ const OngekiRatingFrames = () => {
 											<span>• 15 highest ratings from new version fumens</span>
 											<span>• 10 highest ratings from recent plays, excluding Lunatic difficulty</span>
 										</>
-									)}
+									)} */}
 									<div className="flex flex-col">
 										{isRefreshOrAbove ? (
 											<>
