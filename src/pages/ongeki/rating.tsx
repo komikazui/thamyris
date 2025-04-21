@@ -65,8 +65,8 @@ const OngekiRatingFrames = () => {
 
 	const columns = {
 		Song: (row: OngekiRatingData) => <span className="text-primary truncate">{row.title}</span>,
-		Diff: (row: OngekiRatingData) => getDifficultyFromOngekiChart(row.chartId ?? 0),
-		Lv: (row: OngekiRatingData) => row.level,
+		Difficulty: (row: OngekiRatingData) => getDifficultyFromOngekiChart(row.chartId ?? 0),
+		Level: (row: OngekiRatingData) => row.level,
 		"Technical Score": (row: OngekiRatingData) => row.techScoreMax?.toLocaleString(),
 		PScore: (row: OngekiRatingData) => {
 			const pscoreRating = ((row.level ?? 0) * (row.level ?? 0) * (row.platinumScoreStar ?? 0)) / 1000;
