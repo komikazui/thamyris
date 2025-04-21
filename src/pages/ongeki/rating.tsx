@@ -20,7 +20,12 @@ import {
 	useUserRatingBaseNextList,
 } from "@/hooks/ongeki";
 import { useUserNewRatingBasePScoreList } from "@/hooks/ongeki/use-new-rating";
-import { OngekiGekForceRating, OngekiRating, getDifficultyFromOngekiChart } from "@/utils/helpers";
+import {
+	OngekiGekForceRating,
+	OngekiRating,
+	getDifficultyFromOngekiChart,
+	getOngekiComboStatus,
+} from "@/utils/helpers";
 
 interface OngekiRatingData {
 	title: string;
@@ -62,7 +67,8 @@ const OngekiRatingFrames = () => {
 		Song: (row: OngekiRatingData) => <span className="text-primary truncate">{row.title}</span>,
 		Diff: (row: OngekiRatingData) => getDifficultyFromOngekiChart(row.chartId ?? 0),
 		Lv: (row: OngekiRatingData) => row.level,
-		PS: (row: OngekiRatingData) => {
+		"Technical Score": (row: OngekiRatingData) => row.techScoreMax?.toLocaleString(),
+		PScore: (row: OngekiRatingData) => {
 			const pscoreRating = ((row.level ?? 0) * (row.level ?? 0) * (row.platinumScoreStar ?? 0)) / 1000;
 			return pscoreRating.toFixed(3);
 		},
@@ -74,6 +80,28 @@ const OngekiRatingFrames = () => {
 					<span className="ml-1">{row.platinumScoreStar?.toLocaleString()}</span>
 				</div>
 			),
+		Lamp: (row: OngekiRatingData) => {
+			const comboStatus = getOngekiComboStatus(row.isFullCombo ?? 0, row.isAllBreake ?? 0, row.isFullBell ?? 0);
+			if (comboStatus) {
+				let colorClass = "text-gray-200";
+
+				// Check for the combined status first
+				if (comboStatus === "AB + FB") {
+					colorClass = "text-yellow-400";
+				} else if (comboStatus === "FC + FB") {
+					colorClass = "text-orange-400";
+				} else if (comboStatus === "AB") {
+					colorClass = "text-purple-400";
+				} else if (comboStatus === "FC") {
+					colorClass = "text-cyan-400";
+				} else if (comboStatus === "FB") {
+					colorClass = "text-orange-400";
+				}
+
+				return <span className={colorClass}>{comboStatus}</span>;
+			}
+			return "-";
+		},
 		Rate: (row: OngekiRatingData) => {
 			return isRefreshOrAbove
 				? (
