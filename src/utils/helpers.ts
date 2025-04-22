@@ -88,10 +88,11 @@ export const getOngekiClearStatus = (clearStatus: number): string => {
 	return "";
 };
 
-export const getOngekiComboStatus = (isFullCombo: number, IsAllBreak: number, isFullBell: number): string => {
-	if (IsAllBreak === 1 && isFullBell === 1) return "AB + FB";
-	if (IsAllBreak === 1) return "AB";
-	if (isFullCombo === 1 && isFullBell === 1) return "FC + FB";
+export const getOngekiComboStatus = ( isFullCombo: number, isAllBreake: number, isFullBell: number, techScoreMax?: number): string => {
+	if (techScoreMax && techScoreMax >= 1010000 && isAllBreake === 1) return "AB+";
+	if (isAllBreake === 1 && isFullBell === 1) return "AB/FB";
+	if (isAllBreake === 1) return "AB";
+	if (isFullCombo === 1 && isFullBell === 1) return "FC/FB";
 	if (isFullBell === 1) return "FB";
 	if (isFullCombo === 1) return "FC";
 	return "";

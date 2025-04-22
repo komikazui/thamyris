@@ -63,33 +63,29 @@ const OngekiRatingFrames = () => {
 
 	const isRefreshOrAbove = Number(version) >= 8;
 
-	const columns = {
+	const ratingTableColumns = {
 		Song: (row: OngekiRatingData) => <span className="text-primary truncate">{row.title}</span>,
 		Difficulty: (row: OngekiRatingData) => getDifficultyFromOngekiChart(row.chartId ?? 0),
 		Level: (row: OngekiRatingData) => row.level,
 		"Technical Score": (row: OngekiRatingData) => row.techScoreMax?.toLocaleString(),
-		PScore: (row: OngekiRatingData) => {
-			const pscoreRating = ((row.level ?? 0) * (row.level ?? 0) * (row.platinumScoreStar ?? 0)) / 1000;
-			return pscoreRating.toFixed(3);
-		},
 
-		Stars: (row: OngekiRatingData) =>
-			(row.platinumScoreStar ?? 0) > 0 && (
-				<div className="flex items-center">
-					<Star className="text-yellow-300" size={16} />
-					<span className="ml-1">{row.platinumScoreStar?.toLocaleString()}</span>
-				</div>
-			),
 		Lamp: (row: OngekiRatingData) => {
-			const comboStatus = getOngekiComboStatus(row.isFullCombo ?? 0, row.isAllBreake ?? 0, row.isFullBell ?? 0);
+			const comboStatus = getOngekiComboStatus(
+				row.isFullCombo ?? 0,
+				row.isAllBreake ?? 0,
+				row.isFullBell ?? 0,
+				row.techScoreMax
+			);
 			if (comboStatus) {
 				let colorClass = "text-gray-200";
 
 				// Check for the combined status first
-				if (comboStatus === "AB + FB") {
+				if (comboStatus === "AB/FB") {
 					colorClass = "text-yellow-400";
-				} else if (comboStatus === "FC + FB") {
+				} else if (comboStatus === "FC/FB") {
 					colorClass = "text-orange-400";
+				} else if (comboStatus === "AB+") {
+					colorClass = "text-pink-400";
 				} else if (comboStatus === "AB") {
 					colorClass = "text-purple-400";
 				} else if (comboStatus === "FC") {
@@ -115,6 +111,28 @@ const OngekiRatingFrames = () => {
 					).toFixed(3)
 				: (OngekiRating(row.level ?? 0, row.techScoreMax ?? 0) / 100).toFixed(2);
 		},
+	};
+
+	const pScoreTableColumns = {
+		Song: (row: OngekiRatingData) => <span className="text-primary truncate">{row.title}</span>,
+		Difficulty: (row: OngekiRatingData) => getDifficultyFromOngekiChart(row.chartId ?? 0),
+		Level: (row: OngekiRatingData) => row.level,
+		"P-Score": (row: OngekiRatingData) => {
+			const maxPossibleScore = row.noteCount * 2;
+			return `${(row.platinumScoreMax ?? 0).toLocaleString()} / ${maxPossibleScore.toLocaleString()}`;
+		},
+		Rating: (row: OngekiRatingData) => {
+			const pscoreRating = ((row.level ?? 0) * (row.level ?? 0) * (row.platinumScoreStar ?? 0)) / 1000;
+			return pscoreRating.toFixed(3);
+		},
+
+		Stars: (row: OngekiRatingData) =>
+			(row.platinumScoreStar ?? 0) > 0 && (
+				<div className="flex items-center">
+					<Star className="text-yellow-300" size={16} />
+					<span className="ml-1">{row.platinumScoreStar?.toLocaleString()}</span>
+				</div>
+			),
 	};
 
 	const handleSearch = (search: { value?: string }) => {
@@ -179,42 +197,52 @@ const OngekiRatingFrames = () => {
 							<>
 								<TableComponent
 									data={filterData(newBaseSongs)}
-									columns={columns}
+									columns={ratingTableColumns}
 									onSearch={handleSearch}
 									title="Top 50 fumen"
 								/>
 								<TableComponent
 									data={filterData(newPscoreSongs)}
-									columns={columns}
+									columns={pScoreTableColumns}
 									onSearch={handleSearch}
 									title="Top 50 PScore"
 								/>
 								<TableComponent
 									data={filterData(newNewSongs)}
-									columns={columns}
+									columns={ratingTableColumns}
 									onSearch={handleSearch}
 									title="Top 10 current fumens"
 								/>
 								<TableComponent
 									data={filterData(newNextSongs)}
-									columns={columns}
+									columns={ratingTableColumns}
 									onSearch={handleSearch}
 									title="Recommended fumens"
 								/>
 							</>
 						) : (
 							<>
-								<TableComponent data={filterData(baseSongs)} columns={columns} onSearch={handleSearch} title="Top 30 fumen" />
-								<TableComponent data={filterData(newSongs)} columns={columns} onSearch={handleSearch} title="Recent 15 fumen" />
+								<TableComponent
+									data={filterData(baseSongs)}
+									columns={ratingTableColumns}
+									onSearch={handleSearch}
+									title="Top 30 fumen"
+								/>
+								<TableComponent
+									data={filterData(newSongs)}
+									columns={ratingTableColumns}
+									onSearch={handleSearch}
+									title="Recent 15 fumen"
+								/>
 								<TableComponent
 									data={filterData(hotSongs)}
-									columns={columns}
+									columns={ratingTableColumns}
 									onSearch={handleSearch}
 									title="Recent 10 current fumen"
 								/>
 								<TableComponent
 									data={filterData(nextSongs)}
-									columns={columns}
+									columns={ratingTableColumns}
 									onSearch={handleSearch}
 									title="Recommended fumens"
 								/>
