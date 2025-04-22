@@ -74,7 +74,7 @@ const OngekiRatingFrames = () => {
 				row.isFullCombo ?? 0,
 				row.isAllBreake ?? 0,
 				row.isFullBell ?? 0,
-				row.techScoreMax
+				row.techScoreMax ?? 0
 			);
 			if (comboStatus) {
 				let colorClass = "text-gray-200";
