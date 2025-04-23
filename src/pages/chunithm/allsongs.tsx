@@ -28,8 +28,6 @@ const ChunithmAllSongs = () => {
 	const version = useChunithmVersion();
 	const [searchQuery, setSearchQuery] = useState("");
 
-	const isNewVersion = Number(version) >= 8;
-
 	const { isSpecial } = useSpecial();
 	const { isAdmin } = useAdmin();
 
@@ -82,25 +80,6 @@ const ChunithmAllSongs = () => {
 			{version ? (
 				<div className="container mx-auto space-y-6">
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
-						<QouteCard
-							header="Song data is displayed based on the Chunithm version."
-							welcomeMessage={
-								<div className="flex flex-col space-y-1">
-									{isNewVersion ? (
-										<>
-											<span>• New version features are enabled.</span>
-											<span>• Data includes enhanced metrics and details.</span>
-										</>
-									) : (
-										<>
-											<span>• Legacy version features are enabled.</span>
-											<span>• Data includes basic song details.</span>
-										</>
-									)}
-								</div>
-							}
-							color="#f067e9"
-						/>
 					</div>
 
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
