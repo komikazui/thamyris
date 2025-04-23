@@ -215,6 +215,7 @@ enum whitelistedChunithmOptions {
 enum blacklistedChunithmOptions {
 	A161 = "A161",
 	A162 = "A162",
+	A163 = "A163",
 
 
 }
