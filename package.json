@@ -13,7 +13,8 @@
 		"typecheck": "tsc --noEmit",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
-		"format": "prettier --write \"**/*.{ts,tsx}\" --cache"
+		"format": "prettier --write \"**/*.{ts,tsx}\" --cache",
+		"test": "node -v"   
 	},
 	"dependencies": {
 		"@hono/node-server": "^1.13.8",
