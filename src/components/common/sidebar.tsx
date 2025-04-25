@@ -27,8 +27,10 @@ import {
 	SidebarMenuItem,
 	SidebarMenuSub,
 } from "@/components/ui/sidebar";
+import { useRoles } from "@/hooks/admin/use-admin";
 import { useAuth } from "@/hooks/auth";
 
+// Import the useRoles hook
 import { NavUser } from "./nav-user";
 
 const chunithmSubnav = [
@@ -168,6 +170,7 @@ export function SidebarComponent() {
 	const [openCategories, setOpenCategories] = React.useState<Record<string, boolean>>({});
 	const [openSubCategories, setOpenSubCategories] = React.useState<Record<string, boolean>>({});
 	const { user } = useAuth();
+	const { isAdmin, isSpecial, hasDownloads } = useRoles();
 
 	const toggleCategory = (categoryName: string) => {
 		setOpenCategories((prev) => ({
@@ -201,75 +204,81 @@ export function SidebarComponent() {
 				<SidebarGroup>
 					<SidebarGroupContent>
 						<SidebarMenu>
-							{sidebarItems.map((item, index) => (
-								<SidebarMenuItem key={index}>
-									{item.subnav ? (
-										<>
-											<SidebarMenuButton
-												className="text-primary hover:bg-hover data-[state=open]:bg-card data-[state=open]:text-primary cursor-pointer ring-0"
-												onClick={() => toggleCategory(item.name)}
-											>
-												<item.icon style={{ color: item.color }} />
-												<span>{item.name}</span>
-											</SidebarMenuButton>
-											{openCategories[item.name] && (
-												<SidebarMenuSub className="border-none">
-													{item.subnav.map((subItem, subIndex) => (
-														<SidebarMenuItem key={`${index}-${subIndex}`}>
-															{subItem.subnav ? (
-																<>
+							{sidebarItems.map((item, index) => {
+								if (item.name === "Downloads" && !(isAdmin || isSpecial || hasDownloads)) {
+									return null;
+								}
+
+								return (
+									<SidebarMenuItem key={index}>
+										{item.subnav ? (
+											<>
+												<SidebarMenuButton
+													className="text-primary hover:bg-hover data-[state=open]:bg-card data-[state=open]:text-primary cursor-pointer ring-0"
+													onClick={() => toggleCategory(item.name)}
+												>
+													<item.icon style={{ color: item.color }} />
+													<span>{item.name}</span>
+												</SidebarMenuButton>
+												{openCategories[item.name] && (
+													<SidebarMenuSub className="border-none">
+														{item.subnav.map((subItem, subIndex) => (
+															<SidebarMenuItem key={`${index}-${subIndex}`}>
+																{subItem.subnav ? (
+																	<>
+																		<SidebarMenuButton
+																			className="text-primary hover:bg-hover cursor-pointer ring-0 data-[state=open]:bg-gray-700 data-[state=open]:text-gray-100"
+																			onClick={(e) => toggleSubCategory(subItem.name, e)}
+																		>
+																			<subItem.icon style={{ color: subItem.color }} />
+																			<span>{subItem.name}</span>
+																		</SidebarMenuButton>
+																		{openSubCategories[subItem.name] && (
+																			<SidebarMenuSub className="border-none pl-4">
+																				{subItem.subnav.map((nestedItem, nestedIndex) => (
+																					<SidebarMenuItem key={`${index}-${subIndex}-${nestedIndex}`}>
+																						<SidebarMenuButton
+																							className="text-primary hover:bg-hover cursor-pointer ring-0 data-[state=open]:bg-gray-700 data-[state=open]:text-gray-100"
+																							asChild
+																						>
+																							<Link to={nestedItem.href}>
+																								<nestedItem.icon style={{ color: nestedItem.color }} />
+																								<span>{nestedItem.name}</span>
+																							</Link>
+																						</SidebarMenuButton>
+																					</SidebarMenuItem>
+																				))}
+																			</SidebarMenuSub>
+																		)}
+																	</>
+																) : (
 																	<SidebarMenuButton
 																		className="text-primary hover:bg-hover cursor-pointer ring-0 data-[state=open]:bg-gray-700 data-[state=open]:text-gray-100"
-																		onClick={(e) => toggleSubCategory(subItem.name, e)}
+																		asChild
 																	>
 																		<subItem.icon style={{ color: subItem.color }} />
 																		<span>{subItem.name}</span>
 																	</SidebarMenuButton>
-																	{openSubCategories[subItem.name] && (
-																		<SidebarMenuSub className="border-none pl-4">
-																			{subItem.subnav.map((nestedItem, nestedIndex) => (
-																				<SidebarMenuItem key={`${index}-${subIndex}-${nestedIndex}`}>
-																					<SidebarMenuButton
-																						className="text-primary hover:bg-hover cursor-pointer ring-0 data-[state=open]:bg-gray-700 data-[state=open]:text-gray-100"
-																						asChild
-																					>
-																						<Link to={nestedItem.href}>
-																							<nestedItem.icon style={{ color: nestedItem.color }} />
-																							<span>{nestedItem.name}</span>
-																						</Link>
-																					</SidebarMenuButton>
-																				</SidebarMenuItem>
-																			))}
-																		</SidebarMenuSub>
-																	)}
-																</>
-															) : (
-																<SidebarMenuButton
-																	className="text-primary hover:bg-hover cursor-pointer ring-0 data-[state=open]:bg-gray-700 data-[state=open]:text-gray-100"
-																	asChild
-																>
-																	<subItem.icon style={{ color: subItem.color }} />
-																	<span>{subItem.name}</span>
-																</SidebarMenuButton>
-															)}
-														</SidebarMenuItem>
-													))}
-												</SidebarMenuSub>
-											)}
-										</>
-									) : (
-										<SidebarMenuButton
-											className="text-primary hover:bg-hover cursor-pointer ring-0 data-[state=open]:bg-gray-700 data-[state=open]:text-gray-100"
-											asChild
-										>
-											<Link to={item.href}>
-												<item.icon style={{ color: item.color }} />
-												<span>{item.name}</span>
-											</Link>
-										</SidebarMenuButton>
-									)}
-								</SidebarMenuItem>
-							))}
+																)}
+															</SidebarMenuItem>
+														))}
+													</SidebarMenuSub>
+												)}
+											</>
+										) : (
+											<SidebarMenuButton
+												className="text-primary hover:bg-hover cursor-pointer ring-0 data-[state=open]:bg-gray-700 data-[state=open]:text-gray-100"
+												asChild
+											>
+												<Link to={item.href}>
+													<item.icon style={{ color: item.color }} />
+													<span>{item.name}</span>
+												</Link>
+											</SidebarMenuButton>
+										)}
+									</SidebarMenuItem>
+								);
+							})}
 						</SidebarMenu>
 					</SidebarGroupContent>
 				</SidebarGroup>
