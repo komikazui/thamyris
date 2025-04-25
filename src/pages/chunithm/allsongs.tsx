@@ -6,6 +6,7 @@ import Spinner from "@/components/common/spinner";
 import TableComponent from "@/components/common/table";
 import { useAdmin } from "@/hooks/admin";
 import { useChunithmSongs, useChunithmVersion } from "@/hooks/chunithm";
+import { useUserRoles } from "@/hooks/users";
 import { cdnUrl } from "@/lib/constants";
 import { getAllowedChunithmOptions, getDifficultyFromChunithmChart } from "@/utils/helpers";
 
@@ -27,7 +28,12 @@ const ChunithmAllSongs = () => {
 	const version = useChunithmVersion();
 	const [searchQuery, setSearchQuery] = useState("");
 
-	const { hasAdminPerms } = useAdmin();
+	const { data: systemAdmin } = useAdmin();
+	const hasAdminPerms = systemAdmin?.isAdmin ?? false;
+
+	const { data: userRoles, isLoading: isLoadingRoles } = useUserRoles();
+
+	console.log(userRoles);
 
 	const allowedOptions = getAllowedChunithmOptions(hasAdminPerms);
 

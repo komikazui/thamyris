@@ -8,7 +8,8 @@ import { useFiles } from "@/hooks/users/use-files";
 
 const Downloads = () => {
 	const navigate = useNavigate();
-	const { hasAdminPerms } = useAdmin();
+	const { data: systemAdmin } = useAdmin();
+	const hasAdminPerms = systemAdmin?.isAdmin ?? false;
 
 	const [currentPath, setCurrentPath] = useState("");
 	const { data = [], isLoading, error } = useFiles(currentPath);

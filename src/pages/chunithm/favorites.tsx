@@ -42,7 +42,8 @@ const ChunithmFavorites = () => {
 	const { mutate: removeFavorite } = useRemoveFavorite();
 	const [searchQuery, setSearchQuery] = useState("");
 
-	const { hasAdminPerms } = useAdmin();
+	const { data: systemAdmin } = useAdmin();
+	const hasAdminPerms = systemAdmin?.isAdmin ?? false;
 
 	const allowedOptions = getAllowedChunithmOptions(hasAdminPerms);
 

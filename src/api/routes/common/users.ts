@@ -15,6 +15,31 @@ const UserRoutes = new Hono()
       throw rethrowWithMessage("Failed to verify user", error);
     }
   })
+
+
+  .get("/roles", async (c) => {
+	try {
+	  const { userId } = c.payload;
+	  if (!userId) throw new HTTPException(403);
+  
+	  const rows = await db.select<{ key: string; value: number }>(
+		"SELECT `key`, value FROM daphnis_user_option WHERE user = ? AND `key` IN ('has_upload', 'has_download', 'has_special')",
+		[userId]
+	  );
+  
+	  // Default all roles to false
+	  const roles = { upload: false, download: false, special: false };
+	  for (const row of rows) {
+		if (row.key === "has_upload" && row.value === 1) roles.upload = true;
+		if (row.key === "has_download" && row.value === 1) roles.download = true;
+		if (row.key === "has_special" && row.value === 1) roles.special = true;
+	  }
+  
+	  return c.json({ userId, roles });
+	} catch (error) {
+	  throw rethrowWithMessage("Failed to get user roles", error);
+	}
+  })
   .post(
     "/role/update",
     validateJson(

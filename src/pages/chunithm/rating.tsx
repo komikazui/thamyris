@@ -40,7 +40,8 @@ const ChunithmRatingFrames = () => {
 
 	const isVerseOrAbove = Number(version) >= 17;
 
-	const { hasAdminPerms } = useAdmin();
+	const { data: systemAdmin } = useAdmin();
+	const hasAdminPerms = systemAdmin?.isAdmin ?? false;
 
 	const allowedOptions = getAllowedChunithmOptions(hasAdminPerms);
 

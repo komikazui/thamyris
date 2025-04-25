@@ -8,20 +8,8 @@ import UserRoles from "@/components/settings/common/user-roles";
 import { useAdmin } from "@/hooks/admin";
 
 const Account = () => {
-	const { hasAdminPerms, isLoading: isCheckingAdmin } = useAdmin();
-
-	if (isCheckingAdmin) {
-		return (
-			<div className="relative flex-1 overflow-auto">
-				<Header title="Account Dashboard" />
-				<div className="mx-auto max-w-2xl space-y-6">
-					<div className="rounded-lg bg-gray-800 p-6 shadow-md">
-						<p className="text-center">Checking permissions...</p>
-					</div>
-				</div>
-			</div>
-		);
-	}
+	const { data: systemAdmin } = useAdmin();
+	const hasAdminPerms = systemAdmin?.isAdmin ?? false;
 
 	return (
 		<div className="relative flex-1 overflow-auto">
