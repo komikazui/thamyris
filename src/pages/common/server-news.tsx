@@ -1,7 +1,5 @@
 import React from "react";
 
-import { Newspaper } from "lucide-react";
-
 import Header from "@/components/common/header";
 import NewsCard from "@/components/common/newscard";
 
@@ -9,10 +7,8 @@ const newsBulletin = [
 	{
 		id: 1,
 		title: "Latest Server Update",
-
 		date: `${env.BUILD_DATE_YEAR_MONTH_DAY}`,
 		time: `${env.BUILD_TIME_12_HOUR} UTC`,
-		icon: <Newspaper className="h-6 w-6 text-blue-500" />,
 	},
 ];
 
