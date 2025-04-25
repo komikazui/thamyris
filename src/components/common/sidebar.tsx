@@ -170,7 +170,7 @@ export function SidebarComponent() {
 	const [openCategories, setOpenCategories] = React.useState<Record<string, boolean>>({});
 	const [openSubCategories, setOpenSubCategories] = React.useState<Record<string, boolean>>({});
 	const { user } = useAuth();
-	const { hasAdminPerms, hasDownloadPerms } = useRoles();
+	const { hasAdminPerms } = useRoles();
 
 	const toggleCategory = (categoryName: string) => {
 		setOpenCategories((prev) => ({
