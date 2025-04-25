@@ -8,19 +8,24 @@ import { validateJson } from "@/api/middleware/validator";
 import { z } from "zod";
 
 const AdminRoutes = new Hono()
-.get("/check", async (c) => {
+.get("/roles", async (c) => {
     try {
-        const { userId, permissions } = c.payload;
-
-        if (!userId || permissions !== UserRole.Admin) {
-            throw new HTTPException(403);
-        }
-
-        return c.json({ isAdmin: true });
+      const { userId, permissions } = c.payload;
+      
+      if (!userId) {
+        throw new HTTPException(403);
+      }
+      
+      const roles = {
+        isAdmin: permissions === UserRole.Admin,
+   
+      };
+      
+      return c.json(roles);
     } catch (error) {
-        throw rethrowWithMessage("Failed to check admin status", error);
+      throw rethrowWithMessage("Failed to check user roles", error);
     }
-})
+  })
 
   .get("/user/roles", async (c) => {
     try {

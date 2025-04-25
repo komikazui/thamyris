@@ -1,34 +1,27 @@
-import { useEffect, useState } from "react";
-
+import { useQuery } from "@tanstack/react-query";
 import { api } from "@/utils";
 
+type RolesResponse = {
+  isAdmin: boolean;
+  
+};
+
 export const useAdmin = () => {
-	const [hasAdminPerms, setIsAdmin] = useState(false);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
+  const { data, error, isLoading } = useQuery<RolesResponse>({
+    queryKey: ["userRoles"],
+    queryFn: async () => {
+      const response = await api.admin.roles.$get();
+      if (!response.ok) {
+        throw new Error("Failed to fetch roles");
+      }
+      return response.json();
+    },
+  });
 
-	useEffect(() => {
-		const checkAdminStatus = async () => {
-			try {
-				const response = await api.admin.check.$get();
-				// Check if the response is OK (200-299)
-				if (response.ok) {
-					setIsAdmin(true);
-				} else {
-					// This handles 403 without throwing an error to the console
-					setIsAdmin(false);
-				}
-			} catch {
-				// This will only trigger for network errors
-				setError("Failed to verify admin status");
-				setIsAdmin(false);
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
-		checkAdminStatus();
-	}, []);
-
-	return { hasAdminPerms, isLoading, error };
+  return {
+    hasAdminPerms: data?.isAdmin ?? false,
+   
+    isLoading,
+    error,
+  };
 };
