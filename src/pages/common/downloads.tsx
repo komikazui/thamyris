@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-import { useRoles } from "@/hooks/admin/use-admin";
+import { useRoles } from "@/hooks/admin";
 import { useFiles } from "@/hooks/users/use-files";
 
 const Downloads = () => {

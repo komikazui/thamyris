@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import Header from "@/components/common/header";
 import Spinner from "@/components/common/spinner";
 import TableComponent from "@/components/common/table";
-import { useRoles } from "@/hooks/admin/use-admin";
+import { useRoles } from "@/hooks/admin";
 import {
 	useAddFavorite,
 	useChunithmSongs,
@@ -42,9 +42,9 @@ const ChunithmFavorites = () => {
 	const { mutate: removeFavorite } = useRemoveFavorite();
 	const [searchQuery, setSearchQuery] = useState("");
 
-	const { hasAdminPerms, hasSpecialPerms } = useRoles();
+	const { hasAdminPerms } = useRoles();
 
-	const allowedOptions = getAllowedChunithmOptions(hasSpecialPerms, hasAdminPerms);
+	const allowedOptions = getAllowedChunithmOptions(hasAdminPerms);
 
 	const handleToggleFavorite = (songId: number) => {
 		const isFavorited = favoriteSongIds.some((fav) => fav.favId === songId);

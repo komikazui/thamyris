@@ -4,7 +4,7 @@ import React from "react";
 import Header from "@/components/common/header";
 import Spinner from "@/components/common/spinner";
 import TableComponent from "@/components/common/table";
-import { useRoles } from "@/hooks/admin/use-admin";
+import { useRoles } from "@/hooks/admin";
 import { useChunithmSongs, useChunithmVersion } from "@/hooks/chunithm";
 import { cdnUrl } from "@/lib/constants";
 import { getAllowedChunithmOptions, getDifficultyFromChunithmChart } from "@/utils/helpers";
@@ -27,9 +27,9 @@ const ChunithmAllSongs = () => {
 	const version = useChunithmVersion();
 	const [searchQuery, setSearchQuery] = useState("");
 
-	const { hasAdminPerms, hasSpecialPerms } = useRoles();
+	const { hasAdminPerms } = useRoles();
 
-	const allowedOptions = getAllowedChunithmOptions(hasAdminPerms, hasSpecialPerms);
+	const allowedOptions = getAllowedChunithmOptions(hasAdminPerms);
 
 	const columns = {
 		Song: (row: ChunithmSong) => (

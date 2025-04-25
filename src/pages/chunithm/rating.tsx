@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Header from "@/components/common/header";
 import QouteCard from "@/components/common/qoutecard";
 import TableComponent from "@/components/common/table";
-import { useRoles } from "@/hooks/admin/use-admin";
+import { useRoles } from "@/hooks/admin";
 import {
 	useChunithmVersion,
 	useHighestRating,
@@ -40,9 +40,9 @@ const ChunithmRatingFrames = () => {
 
 	const isVerseOrAbove = Number(version) >= 17;
 
-	const { hasAdminPerms, hasSpecialPerms } = useRoles();
+	const { hasAdminPerms } = useRoles();
 
-	const allowedOptions = getAllowedChunithmOptions(hasAdminPerms, hasSpecialPerms);
+	const allowedOptions = getAllowedChunithmOptions(hasAdminPerms);
 
 	const columns = {
 		Song: (row: ChunithmRatingData) => <span className="text-primary truncate">{row.title}</span>,

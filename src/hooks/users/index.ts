@@ -6,7 +6,9 @@ import {
 	useUsers,
 } from "./use-arcade";
 import { useCurrentUser } from "./use-current-user";
+import { useFiles } from "./use-files";
 import { useUpdateAimecard } from "./use-update-aimecard";
+import { useUpdateUserRole } from "./use-update-user-role";
 
 export {
 	useCurrentUser,
@@ -16,4 +18,6 @@ export {
 	useUpdateArcadeOwnership,
 	useCurrentArcade,
 	useUpdateArcadeLocation,
+	useUpdateUserRole,
+	useFiles,
 };

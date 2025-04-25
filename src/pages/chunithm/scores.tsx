@@ -4,7 +4,7 @@ import React from "react";
 import Header from "@/components/common/header";
 import Spinner from "@/components/common/spinner";
 import TableComponent from "@/components/common/table";
-import { useRoles } from "@/hooks/admin/use-admin";
+import { useRoles } from "@/hooks/admin";
 import { useChunithmScores, useChunithmVersion } from "@/hooks/chunithm";
 import { cdnUrl } from "@/lib/constants";
 import {
@@ -29,7 +29,7 @@ interface ChunithmScore {
 
 const ChunithmScorePage = () => {
 	const [searchQuery, setSearchQuery] = useState("");
-	const { hasAdminPerms, hasSpecialPerms } = useRoles();
+	const { hasAdminPerms } = useRoles();
 
 	const { data: scores = [], isLoading: isLoadingScores } = useChunithmScores() as {
 		data: ChunithmScore[];
@@ -37,7 +37,7 @@ const ChunithmScorePage = () => {
 	};
 
 	const version = useChunithmVersion();
-	const allowedOptions = getAllowedChunithmOptions(hasAdminPerms, hasSpecialPerms);
+	const allowedOptions = getAllowedChunithmOptions(hasAdminPerms);
 
 	const filteredScores = scores.filter((score) => {
 		const isAllowed = allowedOptions.includes(score.option || "");

@@ -4,6 +4,7 @@ import KeychipGenerator from "@/components/admin/keychip-generator";
 import Header from "@/components/common/header";
 import AimeCardSwap from "@/components/settings/common/aime-card";
 import ArcadeOwnership from "@/components/settings/common/arcade-ownership";
+import UserRoles from "@/components/settings/common/user-roles";
 import { useRoles } from "@/hooks/admin/use-admin";
 
 const Account = () => {
@@ -26,6 +27,8 @@ const Account = () => {
 		<div className="relative flex-1 overflow-auto">
 			<Header title={hasAdminPerms ? "Admin Dashboard" : "Account Dashboard"} />
 			<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
+				{hasAdminPerms && <UserRoles />}
+
 				{hasAdminPerms && <KeychipGenerator />}
 				{hasAdminPerms && <ArcadeOwnership />}
 

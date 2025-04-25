@@ -2099,7 +2099,10 @@ export enum DaphnisUserOptionKey {
 	OngekiVersion = DaphnisUserOptionVersionKey.Ongeki,
 	ChunithmVersion = DaphnisUserOptionVersionKey.Chunithm,
 	MaimaiDXVersion = DaphnisUserOptionVersionKey.MaimaiDX,
-
+	hasAdmin = "has_admin",
+	hasUpload = "has_upload",
+	hasDownload = "has_download",
+	hasSpecial = "has_special",
 	MaxTickets = "max_tickets",
 	UnlockAllSongs = "unlock_all_songs",
 }
