@@ -27,7 +27,7 @@ import {
 	SidebarMenuItem,
 	SidebarMenuSub,
 } from "@/components/ui/sidebar";
-import { useRoles } from "@/hooks/admin/use-admin";
+import { useRoles } from "@/hooks/admin";
 import { useAuth } from "@/hooks/auth";
 
 // Import the useRoles hook
@@ -205,7 +205,7 @@ export function SidebarComponent() {
 					<SidebarGroupContent>
 						<SidebarMenu>
 							{sidebarItems.map((item, index) => {
-								if (item.name === "Downloads" && !(hasAdminPerms || hasDownloadPerms)) {
+								if (item.name === "Downloads" && !hasAdminPerms) {
 									return null;
 								}
 
