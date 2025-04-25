@@ -134,7 +134,7 @@ const sidebarItems = [
 	{
 		name: "Downloads",
 		icon: DownloadCloud,
-		color: "#8B5CF6",
+		color: " #71cd5b",
 		href: "/downloads",
 	},
 	{
