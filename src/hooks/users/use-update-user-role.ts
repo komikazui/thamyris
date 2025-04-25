@@ -15,7 +15,7 @@ interface UpdateUserRoleVariables {
 export function useUpdateUserRole() {
   return useMutation<UpdateUserRoleResponse, Error, UpdateUserRoleVariables>({
     mutationFn: async ({ userId, role, value }) => {
-      const response = await api.admin.user.role.update.$post({
+      const response = await api.users.role.update.$post({
         json: { userId, role, value },
       });
 
