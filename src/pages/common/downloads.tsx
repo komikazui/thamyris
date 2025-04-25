@@ -9,7 +9,6 @@ const Downloads = () => {
 	const [currentPath, setCurrentPath] = useState("");
 	const { data = [], isLoading, error } = useFiles(currentPath);
 
-	// Helper function to format file size
 	const formatFileSize = (bytes: number) => {
 		if (bytes === 0) return "0 Bytes";
 
@@ -66,7 +65,6 @@ const Downloads = () => {
 			)}
 			{isLoading && <p className="text-gray-500">Loading files...</p>}
 			{error && <p className="text-red-500">Failed to load files.</p>}
-			{/* Scrollable list container */}
 			<div className="flex-1 overflow-y-auto">
 				<ul className="space-y-4">
 					{data.map((file: any) => (
