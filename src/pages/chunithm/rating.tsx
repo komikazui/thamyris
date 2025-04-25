@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Header from "@/components/common/header";
 import QouteCard from "@/components/common/qoutecard";
 import TableComponent from "@/components/common/table";
-import { useRoles } from "@/hooks/admin";
+import { useAdmin } from "@/hooks/admin";
 import {
 	useChunithmVersion,
 	useHighestRating,
@@ -40,7 +40,7 @@ const ChunithmRatingFrames = () => {
 
 	const isVerseOrAbove = Number(version) >= 17;
 
-	const { hasAdminPerms } = useRoles();
+	const { hasAdminPerms } = useAdmin();
 
 	const allowedOptions = getAllowedChunithmOptions(hasAdminPerms);
 

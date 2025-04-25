@@ -8,25 +8,19 @@ import { validateJson } from "@/api/middleware/validator";
 import { z } from "zod";
 
 const AdminRoutes = new Hono()
-.get("/roles", async (c) => {
+.get("/check", async (c) => {
     try {
-      const { userId, permissions } = c.payload;
-      
-      if (!userId) {
-        throw new HTTPException(403);
-      }
-      
-      const roles = {
-        hasAdminPerms: permissions === UserRole.Admin,
-        hasSpecialPerms: permissions === UserRole.Special,
-        hasDownloadPerms: permissions === UserRole.Downloads
-      };
-      
-      return c.json(roles);
+        const { userId, permissions } = c.payload;
+
+        if (!userId || permissions !== UserRole.Admin) {
+            throw new HTTPException(403);
+        }
+
+        return c.json({ isAdmin: true });
     } catch (error) {
-      throw rethrowWithMessage("Failed to check user roles", error);
+        throw rethrowWithMessage("Failed to check admin status", error);
     }
-  })
+})
 
   .get("/user/roles", async (c) => {
     try {
@@ -35,6 +29,7 @@ const AdminRoutes = new Hono()
         throw new HTTPException(400, { message: "Missing userId" });
       }
   
+      // Fetch all roles for the user
       const roles = await db.query(
         `SELECT \`key\`, value FROM daphnis_user_option WHERE user = ?`,
         [userId]

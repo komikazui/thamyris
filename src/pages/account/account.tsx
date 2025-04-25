@@ -5,10 +5,10 @@ import Header from "@/components/common/header";
 import AimeCardSwap from "@/components/settings/common/aime-card";
 import ArcadeOwnership from "@/components/settings/common/arcade-ownership";
 import UserRoles from "@/components/settings/common/user-roles";
-import { useRoles } from "@/hooks/admin/use-admin";
+import { useAdmin } from "@/hooks/admin";
 
 const Account = () => {
-	const { hasAdminPerms, isLoading: isCheckingAdmin } = useRoles();
+	const { hasAdminPerms, isLoading: isCheckingAdmin } = useAdmin();
 
 	if (isCheckingAdmin) {
 		return (

@@ -3,21 +3,25 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-import { useRoles } from "@/hooks/admin";
+import { useAdmin } from "@/hooks/admin";
 import { useFiles } from "@/hooks/users/use-files";
 
 const Downloads = () => {
 	const navigate = useNavigate();
-	const { hasAdminPerms, hasDownloadPerms } = useRoles();
+	const { hasAdminPerms } = useAdmin();
 
 	const [currentPath, setCurrentPath] = useState("");
 	const { data = [], isLoading, error } = useFiles(currentPath);
 
 	useEffect(() => {
-		if (!(hasAdminPerms || hasDownloadPerms)) {
+		if (!isLoading && !hasAdminPerms) {
 			navigate("/");
 		}
-	}, [hasAdminPerms, hasDownloadPerms, navigate]);
+	}, [hasAdminPerms, isLoading, navigate]);
+
+	if (isLoading) {
+		return <div>Loading...</div>;
+	}
 
 	const formatFileSize = (bytes: number) => {
 		if (bytes === 0) return "0 Bytes";

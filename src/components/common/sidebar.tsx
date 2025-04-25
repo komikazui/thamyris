@@ -27,7 +27,7 @@ import {
 	SidebarMenuItem,
 	SidebarMenuSub,
 } from "@/components/ui/sidebar";
-import { useRoles } from "@/hooks/admin";
+import { useAdmin } from "@/hooks/admin";
 import { useAuth } from "@/hooks/auth";
 
 // Import the useRoles hook
@@ -170,8 +170,7 @@ export function SidebarComponent() {
 	const [openCategories, setOpenCategories] = React.useState<Record<string, boolean>>({});
 	const [openSubCategories, setOpenSubCategories] = React.useState<Record<string, boolean>>({});
 	const { user } = useAuth();
-	const { hasAdminPerms } = useRoles();
-
+	const { hasAdminPerms } = useAdmin();
 	const toggleCategory = (categoryName: string) => {
 		setOpenCategories((prev) => ({
 			...prev,

@@ -2,10 +2,10 @@ import React from "react";
 
 import Header from "@/components/common/header";
 import ArcadeConfiguration from "@/components/settings/common/arcade-configuration";
-import { useRoles } from "@/hooks/admin/use-admin";
+import { useAdmin } from "@/hooks/admin";
 
 const Arcade = () => {
-	const { hasAdminPerms, isLoading: isCheckingAdmin } = useRoles();
+	const { hasAdminPerms, isLoading: isCheckingAdmin } = useAdmin();
 
 	if (isCheckingAdmin) {
 		return (
