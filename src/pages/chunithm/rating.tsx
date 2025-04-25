@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Header from "@/components/common/header";
 import QouteCard from "@/components/common/qoutecard";
 import TableComponent from "@/components/common/table";
+import { useRoles } from "@/hooks/admin/use-admin";
 import {
 	useChunithmVersion,
 	useHighestRating,
@@ -13,8 +14,6 @@ import {
 	useUserRatingBaseNextList,
 } from "@/hooks/chunithm";
 import { ChunitmRating, getAllowedChunithmOptions, getDifficultyFromChunithmChart } from "@/utils/helpers";
-import { useAdmin } from "@/hooks/admin";
-import { useSpecial } from "@/hooks/admin/use-admin";
 
 interface ChunithmRatingData {
 	title: string;
@@ -41,8 +40,7 @@ const ChunithmRatingFrames = () => {
 
 	const isVerseOrAbove = Number(version) >= 17;
 
-	const { isSpecial } = useSpecial();
-	const { isAdmin } = useAdmin();
+	const { isAdmin, isSpecial } = useRoles();
 
 	const allowedOptions = getAllowedChunithmOptions(isSpecial, isAdmin);
 
@@ -60,10 +58,7 @@ const ChunithmRatingFrames = () => {
 	const filterData = (data: ChunithmRatingData[]) => {
 		return data.filter((song) => {
 			const isAllowed = allowedOptions.includes(song.option || "");
-			return (
-				song.title?.toLowerCase().includes(searchQuery.toLowerCase()) &&
-				(isAdmin || isSpecial || isAllowed)
-			);
+			return song.title?.toLowerCase().includes(searchQuery.toLowerCase()) && (isAdmin || isSpecial || isAllowed);
 		});
 	};
 
@@ -74,8 +69,9 @@ const ChunithmRatingFrames = () => {
 				<div className="container mx-auto space-y-6">
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
 						<QouteCard
-							header={`Single track ratings are calculated from fumen constants and scores. Player rating is the average of ${isVerseOrAbove ? "50" : "30"
-								} unique fumen ratings, including:`}
+							header={`Single track ratings are calculated from fumen constants and scores. Player rating is the average of ${
+								isVerseOrAbove ? "50" : "30"
+							} unique fumen ratings, including:`}
 							welcomeMessage={
 								<div className="flex flex-col space-y-1">
 									{isVerseOrAbove ? (
@@ -105,10 +101,19 @@ const ChunithmRatingFrames = () => {
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
 						{isVerseOrAbove ? (
 							<>
-								<TableComponent data={filterData(newSongs)} columns={columns} onSearch={handleSearch} title="Top 20 current fumen" />
-								<TableComponent data={filterData(nextSongs)} columns={columns} onSearch={handleSearch} title="Potential fumens" />
+								<TableComponent
+									data={filterData(newSongs)}
+									columns={columns}
+									onSearch={handleSearch}
+									title="Top 20 current fumen"
+								/>
+								<TableComponent
+									data={filterData(nextSongs)}
+									columns={columns}
+									onSearch={handleSearch}
+									title="Potential fumens"
+								/>
 								<TableComponent data={filterData(hotSongs)} columns={columns} onSearch={handleSearch} title="Recent 10 fumen" />
-
 							</>
 						) : (
 							<>

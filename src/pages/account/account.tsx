@@ -4,10 +4,10 @@ import KeychipGenerator from "@/components/admin/keychip-generator";
 import Header from "@/components/common/header";
 import AimeCardSwap from "@/components/settings/common/aime-card";
 import ArcadeOwnership from "@/components/settings/common/arcade-ownership";
-import { useAdmin } from "@/hooks/admin";
+import { useRoles } from "@/hooks/admin/use-admin";
 
 const Account = () => {
-	const { isAdmin, isLoading: isCheckingAdmin } = useAdmin();
+	const { isAdmin, isLoading: isCheckingAdmin } = useRoles();
 
 	if (isCheckingAdmin) {
 		return (

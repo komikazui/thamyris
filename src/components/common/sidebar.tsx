@@ -3,6 +3,7 @@ import React from "react";
 import {
 	BoomBox,
 	ChevronDown,
+	DownloadCloud,
 	HeartIcon,
 	Home,
 	List,
@@ -129,6 +130,12 @@ const sidebarItems = [
 		icon: Newspaper,
 		color: "#8B5CF6",
 		href: "/news",
+	},
+	{
+		name: "Downloads",
+		icon: DownloadCloud,
+		color: "#8B5CF6",
+		href: "/downloads",
 	},
 	{
 		name: "SEGA",

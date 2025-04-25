@@ -6,33 +6,25 @@ import { UserRole } from "@/api/types/enums";
 import { rethrowWithMessage } from "@/api/utils/error";
 
 const AdminRoutes = new Hono()
-	.get("/isadmin", async (c) => {
-		try {
-			const { userId, permissions } = c.payload;
-
-			if (!userId || (permissions !== UserRole.Admin)) {
-				throw new HTTPException(403);
-			}
-
-			return c.json({ isAdmin: true });
-		} catch (error) {
-			throw rethrowWithMessage("Failed to check admin status", error);
-		}
-	})
-
-	.get("/isspecial", async (c) => {
-		try {
-			const { userId, permissions } = c.payload;
-
-			if (!userId || permissions !== UserRole.Special) {
-				throw new HTTPException(403);
-			}
-
-			return c.json({ isAdmin: true });
-		} catch (error) {
-			throw rethrowWithMessage("Failed to check admin status", error);
-		}
-	})
+.get("/roles", async (c) => {
+    try {
+      const { userId, permissions } = c.payload;
+      
+      if (!userId) {
+        throw new HTTPException(403);
+      }
+      
+      const roles = {
+        isAdmin: permissions === UserRole.Admin,
+        isSpecial: permissions === UserRole.Special,
+        hasDownloads: permissions === UserRole.Downloads
+      };
+      
+      return c.json(roles);
+    } catch (error) {
+      throw rethrowWithMessage("Failed to check user roles", error);
+    }
+  })
 
 	.post("/keychip/generate", async (c) => {
 		try {

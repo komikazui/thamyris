@@ -1,9 +1,23 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { AvatarParts } from "@/types";
 import { api } from "@/utils";
+ 
+interface AvatarParts {
+	head: number;
+	back: number;
+	wear: number;
+	face: number;
+	item: number;
+	image: string;
+	label: string;
+	avatarHeadTexture?: string;
+	avatarFaceTexture?: string;
+	avatarBackTexture?: string;
+	avatarWearTexture?: string;
+	avatarItemTexture?: string;
+	avatarAccessoryId?: number;
+}
 
-// Fetch current avatar
 export function useCurrentAvatar() {
 	return useQuery({
 		queryKey: ["avatar", "current"],
@@ -23,7 +37,6 @@ export function useUpdateAvatar() {
 
 	return useMutation({
 		mutationFn: async (avatarParts: AvatarParts) => {
-			// Send the object as is without spreading or wrapping
 			const response = await api.chunithm.avatar.update.$post({
 				json: avatarParts,
 			});
@@ -40,7 +53,6 @@ export function useUpdateAvatar() {
 	});
 }
 
-// Hook to fetch all avatar parts
 export function useAllAvatarParts() {
 	return useQuery({
 		queryKey: ["avatar", "parts", "all"],

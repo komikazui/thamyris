@@ -23,6 +23,7 @@ import ChunithmRivals from "./pages/chunithm/rivals";
 import ChunithmScorePage from "./pages/chunithm/scores";
 import ChunithmSettingsPage from "./pages/chunithm/settings";
 import ChunithmUserbox from "./pages/chunithm/userbox";
+import Downloads from "./pages/common/downloads";
 import { NotFound } from "./pages/common/not-found";
 import OverviewPage from "./pages/common/overview-page";
 import ServerNews from "./pages/common/server-news";
@@ -90,6 +91,7 @@ const app = (
 
 								<Route path="/maimaidx/scores" element={<Mai2ScorePage />} />
 								<Route path="/maimaidx/settings" element={<MaimaiDxSettings />} />
+								<Route path="/downloads" element={<Downloads />} />
 							</Route>
 						</Route>
 

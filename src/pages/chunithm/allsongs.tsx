@@ -2,13 +2,12 @@ import { useState } from "react";
 import React from "react";
 
 import Header from "@/components/common/header";
-import QouteCard from "@/components/common/qoutecard";
 import Spinner from "@/components/common/spinner";
 import TableComponent from "@/components/common/table";
+import { useRoles } from "@/hooks/admin/use-admin";
 import { useChunithmSongs, useChunithmVersion } from "@/hooks/chunithm";
 import { cdnUrl } from "@/lib/constants";
 import { getAllowedChunithmOptions, getDifficultyFromChunithmChart } from "@/utils/helpers";
-import { useAdmin, useSpecial } from "@/hooks/admin/use-admin";
 
 interface ChunithmSong {
 	title: string;
@@ -28,8 +27,7 @@ const ChunithmAllSongs = () => {
 	const version = useChunithmVersion();
 	const [searchQuery, setSearchQuery] = useState("");
 
-	const { isSpecial } = useSpecial();
-	const { isAdmin } = useAdmin();
+	const { isAdmin, isSpecial } = useRoles();
 
 	const allowedOptions = getAllowedChunithmOptions(isSpecial, isAdmin);
 
@@ -53,14 +51,10 @@ const ChunithmAllSongs = () => {
 	};
 
 	const filterData = (data: ChunithmSong[]) => {
-		return data
-			.filter((song) => {
-				const isAllowed = allowedOptions.includes(song.option || "");
-				return (
-					song.title?.toLowerCase().includes(searchQuery.toLowerCase()) &&
-					(isSpecial || isSpecial || isAllowed)
-				);
-			})
+		return data.filter((song) => {
+			const isAllowed = allowedOptions.includes(song.option || "");
+			return song.title?.toLowerCase().includes(searchQuery.toLowerCase()) && (isSpecial || isSpecial || isAllowed);
+		});
 	};
 
 	if (isLoadingSongs) {
@@ -79,8 +73,7 @@ const ChunithmAllSongs = () => {
 			<Header title="All Songs" />
 			{version ? (
 				<div className="container mx-auto space-y-6">
-					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
-					</div>
+					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0"></div>
 
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
 						<TableComponent
