@@ -8,16 +8,16 @@ import { useFiles } from "@/hooks/users/use-files";
 
 const Downloads = () => {
 	const navigate = useNavigate();
-	const { isAdmin, hasDownloads } = useRoles();
+	const { hasAdminPerms, hasDownloadPerms } = useRoles();
 
 	const [currentPath, setCurrentPath] = useState("");
 	const { data = [], isLoading, error } = useFiles(currentPath);
 
 	useEffect(() => {
-		if (!(isAdmin || hasDownloads)) {
+		if (!(hasAdminPerms || hasDownloadPerms)) {
 			navigate("/");
 		}
-	}, [isAdmin, hasDownloads, navigate]);
+	}, [hasAdminPerms, hasDownloadPerms, navigate]);
 
 	const formatFileSize = (bytes: number) => {
 		if (bytes === 0) return "0 Bytes";

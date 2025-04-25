@@ -15,9 +15,9 @@ const AdminRoutes = new Hono()
       }
       
       const roles = {
-        isAdmin: permissions === UserRole.Admin,
-        isSpecial: permissions === UserRole.Special,
-        hasDownloads: permissions === UserRole.Downloads
+        hasAdminPerms: permissions === UserRole.Admin,
+        hasSpecialPerms: permissions === UserRole.Special,
+        hasDownloadPerms: permissions === UserRole.Downloads
       };
       
       return c.json(roles);

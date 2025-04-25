@@ -2,9 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@/utils";
 
 type RolesResponse = {
-  isAdmin: boolean;
-  isSpecial: boolean;
-  hasDownloads: boolean;
+  hasAdminPerms: boolean;
+  hasSpecialPerms: boolean;
+  hasDownloadPerms: boolean;
 };
 
 export const useRoles = () => {
@@ -20,9 +20,9 @@ export const useRoles = () => {
   });
 
   return {
-    isAdmin: data?.isAdmin ?? false,
-    isSpecial: data?.isSpecial ?? false,
-    hasDownloads: data?.hasDownloads ?? false,
+    hasAdminPerms: data?.hasAdminPerms ?? false,
+    hasSpecialPerms: data?.hasSpecialPerms ?? false,
+    hasDownloadPerms: data?.hasDownloadPerms ?? false,
     isLoading,
     error,
   };

@@ -40,9 +40,9 @@ const ChunithmRatingFrames = () => {
 
 	const isVerseOrAbove = Number(version) >= 17;
 
-	const { isAdmin, isSpecial } = useRoles();
+	const { hasAdminPerms, hasSpecialPerms } = useRoles();
 
-	const allowedOptions = getAllowedChunithmOptions(isSpecial, isAdmin);
+	const allowedOptions = getAllowedChunithmOptions(hasAdminPerms, hasSpecialPerms);
 
 	const columns = {
 		Song: (row: ChunithmRatingData) => <span className="text-primary truncate">{row.title}</span>,
@@ -58,7 +58,7 @@ const ChunithmRatingFrames = () => {
 	const filterData = (data: ChunithmRatingData[]) => {
 		return data.filter((song) => {
 			const isAllowed = allowedOptions.includes(song.option || "");
-			return song.title?.toLowerCase().includes(searchQuery.toLowerCase()) && (isAdmin || isSpecial || isAllowed);
+			return song.title?.toLowerCase().includes(searchQuery.toLowerCase()) && isAllowed;
 		});
 	};
 

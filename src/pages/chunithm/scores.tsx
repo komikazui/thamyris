@@ -29,7 +29,7 @@ interface ChunithmScore {
 
 const ChunithmScorePage = () => {
 	const [searchQuery, setSearchQuery] = useState("");
-	const { isAdmin, isSpecial } = useRoles();
+	const { hasAdminPerms, hasSpecialPerms } = useRoles();
 
 	const { data: scores = [], isLoading: isLoadingScores } = useChunithmScores() as {
 		data: ChunithmScore[];
@@ -37,11 +37,11 @@ const ChunithmScorePage = () => {
 	};
 
 	const version = useChunithmVersion();
-	const allowedOptions = getAllowedChunithmOptions(isSpecial, isAdmin);
+	const allowedOptions = getAllowedChunithmOptions(hasAdminPerms, hasSpecialPerms);
 
 	const filteredScores = scores.filter((score) => {
 		const isAllowed = allowedOptions.includes(score.option || "");
-		return score.title?.toLowerCase().includes(searchQuery.toLowerCase()) && (isAdmin || isSpecial || isAllowed);
+		return score.title?.toLowerCase().includes(searchQuery.toLowerCase()) && isAllowed;
 	});
 	const columns = {
 		Song: (row: ChunithmScore) => (

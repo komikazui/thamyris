@@ -42,9 +42,9 @@ const ChunithmFavorites = () => {
 	const { mutate: removeFavorite } = useRemoveFavorite();
 	const [searchQuery, setSearchQuery] = useState("");
 
-	const { isAdmin, isSpecial } = useRoles();
+	const { hasAdminPerms, hasSpecialPerms } = useRoles();
 
-	const allowedOptions = getAllowedChunithmOptions(isSpecial, isAdmin);
+	const allowedOptions = getAllowedChunithmOptions(hasSpecialPerms, hasAdminPerms);
 
 	const handleToggleFavorite = (songId: number) => {
 		const isFavorited = favoriteSongIds.some((fav) => fav.favId === songId);
@@ -72,11 +72,7 @@ const ChunithmFavorites = () => {
 
 	const filteredSongs = songs.filter((song) => {
 		const isAllowed = allowedOptions.includes(song.option || "");
-		return (
-			song.chartId === 3 &&
-			song.title?.toLowerCase().includes(searchQuery.toLowerCase()) &&
-			(isAdmin || isSpecial || isAllowed)
-		);
+		return song.chartId === 3 && song.title?.toLowerCase().includes(searchQuery.toLowerCase()) && isAllowed;
 	});
 
 	const columns = {

@@ -27,9 +27,9 @@ const ChunithmAllSongs = () => {
 	const version = useChunithmVersion();
 	const [searchQuery, setSearchQuery] = useState("");
 
-	const { isAdmin, isSpecial } = useRoles();
+	const { hasAdminPerms, hasSpecialPerms } = useRoles();
 
-	const allowedOptions = getAllowedChunithmOptions(isSpecial, isAdmin);
+	const allowedOptions = getAllowedChunithmOptions(hasAdminPerms, hasSpecialPerms);
 
 	const columns = {
 		Song: (row: ChunithmSong) => (
@@ -53,7 +53,7 @@ const ChunithmAllSongs = () => {
 	const filterData = (data: ChunithmSong[]) => {
 		return data.filter((song) => {
 			const isAllowed = allowedOptions.includes(song.option || "");
-			return song.title?.toLowerCase().includes(searchQuery.toLowerCase()) && (isSpecial || isSpecial || isAllowed);
+			return song.title?.toLowerCase().includes(searchQuery.toLowerCase()) && isAllowed;
 		});
 	};
 

@@ -170,7 +170,7 @@ export function SidebarComponent() {
 	const [openCategories, setOpenCategories] = React.useState<Record<string, boolean>>({});
 	const [openSubCategories, setOpenSubCategories] = React.useState<Record<string, boolean>>({});
 	const { user } = useAuth();
-	const { isAdmin, isSpecial, hasDownloads } = useRoles();
+	const { hasAdminPerms, hasDownloadPerms } = useRoles();
 
 	const toggleCategory = (categoryName: string) => {
 		setOpenCategories((prev) => ({
@@ -205,7 +205,7 @@ export function SidebarComponent() {
 					<SidebarGroupContent>
 						<SidebarMenu>
 							{sidebarItems.map((item, index) => {
-								if (item.name === "Downloads" && !(isAdmin || isSpecial || hasDownloads)) {
+								if (item.name === "Downloads" && !(hasAdminPerms || hasDownloadPerms)) {
 									return null;
 								}
 

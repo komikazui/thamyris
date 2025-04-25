@@ -220,11 +220,11 @@ enum blacklistedChunithmOptions {
 
 }
 
-export const getAllowedChunithmOptions = (isSpecial: boolean, isAdmin: boolean): string[] => {
+export const getAllowedChunithmOptions = (hasSpecialPerms: boolean, hasAdminPerms: boolean): string[] => {
 	const whiteListedOptions = Object.values(whitelistedChunithmOptions);
 	const blacklistedOptions = Object.values(blacklistedChunithmOptions);
 
-	if (isSpecial || isAdmin) {
+	if (hasSpecialPerms || hasAdminPerms) {
 		return [...whiteListedOptions, ...blacklistedOptions];
 	}
 
