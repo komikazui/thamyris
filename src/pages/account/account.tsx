@@ -7,7 +7,7 @@ import ArcadeOwnership from "@/components/settings/common/arcade-ownership";
 import { useRoles } from "@/hooks/admin/use-admin";
 
 const Account = () => {
-	const { isAdmin, isLoading: isCheckingAdmin } = useRoles();
+	const { hasAdminPerms, isLoading: isCheckingAdmin } = useRoles();
 
 	if (isCheckingAdmin) {
 		return (
@@ -24,10 +24,10 @@ const Account = () => {
 
 	return (
 		<div className="relative flex-1 overflow-auto">
-			<Header title={isAdmin ? "Admin Dashboard" : "Account Dashboard"} />
+			<Header title={hasAdminPerms ? "Admin Dashboard" : "Account Dashboard"} />
 			<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
-				{isAdmin && <KeychipGenerator />}
-				{isAdmin && <ArcadeOwnership />}
+				{hasAdminPerms && <KeychipGenerator />}
+				{hasAdminPerms && <ArcadeOwnership />}
 
 				<AimeCardSwap />
 			</div>
