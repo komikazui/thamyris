@@ -30,8 +30,7 @@ import {
 import { useAdmin } from "@/hooks/admin";
 import { useAuth } from "@/hooks/auth";
 import { useUserRoles } from "@/hooks/users";
-import { PermissionValue } from "@/types/enums";
-import { UserRoles } from "@/types/types";
+import { hasDownloadAccess } from "@/utils/permissions";
 
 // Import the useRoles hook
 import { NavUser } from "./nav-user";
@@ -175,18 +174,9 @@ export function SidebarComponent() {
 	const { user } = useAuth();
 
 	const { data: systemAdmin } = useAdmin();
-	const hasAdminPerms = systemAdmin?.isAdmin ?? false;
+	const { data: userRoles } = useUserRoles();
 
-	const { data: userRoles } = useUserRoles() as {
-		data: UserRoles | undefined;
-		isLoading: boolean;
-	};
-
-	const hasSpecialAccess =
-		hasAdminPerms ||
-		userRoles?.special === PermissionValue.Enabled ||
-		userRoles?.download === PermissionValue.Enabled ||
-		userRoles?.upload === PermissionValue.Enabled;
+	const canDownload = hasDownloadAccess(systemAdmin, userRoles);
 
 	const toggleCategory = (categoryName: string) => {
 		setOpenCategories((prev) => ({
@@ -221,7 +211,7 @@ export function SidebarComponent() {
 					<SidebarGroupContent>
 						<SidebarMenu>
 							{sidebarItems.map((item, index) => {
-								if (item.name === "Downloads" && !hasSpecialAccess) {
+								if (item.name === "Downloads" && !canDownload) {
 									return null;
 								}
 

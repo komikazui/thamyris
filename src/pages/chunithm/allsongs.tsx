@@ -8,9 +8,8 @@ import { useAdmin } from "@/hooks/admin";
 import { useChunithmSongs, useChunithmVersion } from "@/hooks/chunithm";
 import { useUserRoles } from "@/hooks/users";
 import { cdnUrl } from "@/lib/constants";
-import { PermissionValue } from "@/types/enums";
-import { UserRoles } from "@/types/types";
 import { getAllowedChunithmOptions, getDifficultyFromChunithmChart } from "@/utils/helpers";
+import { hasSpecialAccess } from "@/utils/permissions";
 
 interface ChunithmSong {
 	title: string;
@@ -31,14 +30,10 @@ const ChunithmAllSongs = () => {
 	const version = useChunithmVersion();
 	const [searchQuery, setSearchQuery] = useState("");
 	const { data: systemAdmin } = useAdmin();
-	const hasAdminPerms = systemAdmin?.isAdmin ?? false;
-	const { data: userRoles, isLoading: isLoadingRoles } = useUserRoles() as {
-		data: UserRoles | undefined;
-		isLoading: boolean;
-	};
+	const { data: userRoles } = useUserRoles();
 
-	const hasSpecialAccess = hasAdminPerms || userRoles?.special === PermissionValue.Enabled;
-	const allowedOptions = getAllowedChunithmOptions(hasSpecialAccess);
+	const specialAccess = hasSpecialAccess(systemAdmin, userRoles);
+	const allowedOptions = getAllowedChunithmOptions(specialAccess);
 
 	const columns = {
 		Song: (row: ChunithmSong) => (
@@ -66,7 +61,7 @@ const ChunithmAllSongs = () => {
 		});
 	};
 
-	if (isLoadingSongs || isLoadingRoles) {
+	if (isLoadingSongs) {
 		return (
 			<div className="relative flex-1 overflow-auto">
 				<Header title="All Songs" />

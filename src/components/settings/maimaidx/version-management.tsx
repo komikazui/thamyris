@@ -4,7 +4,7 @@ import { toast } from "sonner";
 
 import VersionManagement from "@/components/common/version-management";
 import { useMaimaiDxVersion, useMaimaiDxVersions, useUpdateMaimaiDxVersion } from "@/hooks/maimaidx";
-import { MaimaiDxVersions } from "@/types/enums";
+import { MaimaiDxVersions } from "@/utils/enums";
 
 const MaimaiDxVersionManager = () => {
 	const version = useMaimaiDxVersion();

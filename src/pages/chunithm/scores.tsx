@@ -8,14 +8,13 @@ import { useAdmin } from "@/hooks/admin";
 import { useChunithmScores, useChunithmVersion } from "@/hooks/chunithm";
 import { useUserRoles } from "@/hooks/users";
 import { cdnUrl } from "@/lib/constants";
-import { PermissionValue } from "@/types/enums";
-import { UserRoles } from "@/types/types";
 import {
 	getAllowedChunithmOptions,
 	getChunithmComboStatus,
 	getChunithmGrade,
 	getDifficultyFromChunithmChart,
 } from "@/utils/helpers";
+import { hasSpecialAccess } from "@/utils/permissions";
 
 interface ChunithmScore {
 	id: number;
@@ -37,19 +36,12 @@ const ChunithmScorePage = () => {
 		data: ChunithmScore[];
 		isLoading: boolean;
 	};
-
 	const { data: systemAdmin } = useAdmin();
-	const hasAdminPerms = systemAdmin?.isAdmin ?? false;
-
-	const { data: userRoles } = useUserRoles() as {
-		data: UserRoles | undefined;
-		isLoading: boolean;
-	};
-
-	const hasSpecialAccess = hasAdminPerms || userRoles?.special === PermissionValue.Enabled;
-	const allowedOptions = getAllowedChunithmOptions(hasSpecialAccess);
-
+	const { data: userRoles } = useUserRoles();
 	const version = useChunithmVersion();
+
+	const specialAccess = hasSpecialAccess(systemAdmin, userRoles);
+	const allowedOptions = getAllowedChunithmOptions(specialAccess);
 
 	const filteredScores = scores.filter((score) => {
 		const isAllowed = allowedOptions.includes(score.option || "");

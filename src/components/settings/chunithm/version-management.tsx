@@ -4,7 +4,7 @@ import { toast } from "sonner";
 
 import VersionManagement from "@/components/common/version-management";
 import { useChunithmVersion, useChunithmVersions, useUpdateChunithmVersion } from "@/hooks/chunithm";
-import { ChunithmVersions } from "@/types/enums";
+import { ChunithmVersions } from "@/utils/enums";
 
 const ChunithmVersionManager = () => {
 	const version = useChunithmVersion();

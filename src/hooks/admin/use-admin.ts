@@ -1,9 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/utils";
 
-
-
-
 export const useAdmin = () => {
   return useQuery({
       queryKey: ["adminRoles"],

@@ -4,7 +4,7 @@ import { toast } from "sonner";
 
 import VersionManagement from "@/components/common/version-management";
 import { useOngekiVersion, useOngekiVersions, useUpdateOngekiVersion } from "@/hooks/ongeki";
-import { OngekiVersions } from "@/types/enums";
+import { OngekiVersions } from "@/utils/enums";
 
 const OngekiVersionManager = () => {
 	const version = useOngekiVersion();

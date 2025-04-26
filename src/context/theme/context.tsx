@@ -1,6 +1,6 @@
 import { createContext } from "react";
 
-import { Theme } from "@/types/enums";
+import { Theme } from "@/utils/enums";
 
 export type ThemeContextValue = {
 	theme: Theme;

@@ -9,13 +9,13 @@ import Spinner from "@/components/common/spinner";
 import { useUpdateUserRole } from "@/hooks/users";
 import { useUsers } from "@/hooks/users/use-arcade";
 
-const ROLE_OPTIONS = ["upload", "download", "special"] as const;
+const ROLE_OPTIONS = ["has_upload", "has_download", "has_special"] as const;
 type RoleType = (typeof ROLE_OPTIONS)[number];
 
 const ROLE_LABELS: Record<RoleType, string> = {
-	upload: "Upload Permissions",
-	download: "Download Permissions",
-	special: "Special User",
+	has_upload: "Upload Permissions",
+	has_download: "Download Permissions",
+	has_special: "Special User",
 };
 
 const UserRoles = () => {

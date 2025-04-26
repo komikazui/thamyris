@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { useEffect, useState } from "react";
 
-import { Theme } from "@/types/enums";
+import { Theme } from "@/utils/enums";
 
 import { ThemeContext } from "./context";
 

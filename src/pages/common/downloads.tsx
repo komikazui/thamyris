@@ -6,8 +6,8 @@ import { toast } from "sonner";
 import { useAdmin } from "@/hooks/admin/use-admin";
 import { useUserRoles } from "@/hooks/users";
 import { useFiles } from "@/hooks/users/use-files";
-import { PermissionValue } from "@/types/enums";
 import { UserRoles } from "@/types/types";
+import { PermissionValue } from "@/utils/enums";
 
 const Downloads = () => {
 	const navigate = useNavigate();

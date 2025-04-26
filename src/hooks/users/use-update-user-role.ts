@@ -8,7 +8,7 @@ interface UpdateUserRoleResponse {
 
 interface UpdateUserRoleVariables {
   userId: number;
-  role: 'upload' | 'download' | 'special';
+  role: 'has_upload' | 'has_download' | 'has_special';
   value: 0 | 1;
 }
 
