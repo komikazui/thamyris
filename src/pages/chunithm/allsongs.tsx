@@ -20,6 +20,17 @@ interface ChunithmSong {
 	genre?: string;
 	option?: string;
 }
+
+interface UserRoles {
+	upload: number;
+	download: number;
+	special: number;
+}
+enum PermissionValue {
+	Disabled = 0,
+	Enabled = 1,
+}
+
 const ChunithmAllSongs = () => {
 	const { data: songs = [], isLoading: isLoadingSongs } = useChunithmSongs() as {
 		data: ChunithmSong[];
@@ -27,15 +38,18 @@ const ChunithmAllSongs = () => {
 	};
 	const version = useChunithmVersion();
 	const [searchQuery, setSearchQuery] = useState("");
-
 	const { data: systemAdmin } = useAdmin();
 	const hasAdminPerms = systemAdmin?.isAdmin ?? false;
+	const { data: userRoles, isLoading: isLoadingRoles } = useUserRoles() as {
+		data: UserRoles | undefined;
+		isLoading: boolean;
+	};
 
-	const { data: userRoles, isLoading: isLoadingRoles } = useUserRoles();
+	console.log(userRoles?.special);
 
-	console.log(userRoles);
+	const hasSpecialAccess = hasAdminPerms || userRoles?.special === PermissionValue.Enabled;
 
-	const allowedOptions = getAllowedChunithmOptions(hasAdminPerms);
+	const allowedOptions = getAllowedChunithmOptions(hasSpecialAccess);
 
 	const columns = {
 		Song: (row: ChunithmSong) => (
@@ -63,7 +77,7 @@ const ChunithmAllSongs = () => {
 		});
 	};
 
-	if (isLoadingSongs) {
+	if (isLoadingSongs || isLoadingRoles) {
 		return (
 			<div className="relative flex-1 overflow-auto">
 				<Header title="All Songs" />
@@ -80,7 +94,6 @@ const ChunithmAllSongs = () => {
 			{version ? (
 				<div className="container mx-auto space-y-6">
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0"></div>
-
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
 						<TableComponent
 							data={filterData(songs)}

@@ -1,11 +1,21 @@
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
-
 import { db } from "@/api/db";
 import { UserRole } from "@/api/types/enums";
 import { rethrowWithMessage } from "@/api/utils/error";
 import { validateJson } from "@/api/middleware/validator";
 import { z } from "zod";
+
+enum PermissionType {
+  Upload = "has_upload",
+  Download = "has_download",
+  Special = "has_special"
+}
+
+enum PermissionValue {
+  Disabled = 0,
+  Enabled = 1
+}
 
 const UserRoutes = new Hono()
   .post("/verify", async (c) => {
@@ -15,30 +25,34 @@ const UserRoutes = new Hono()
       throw rethrowWithMessage("Failed to verify user", error);
     }
   })
-
-
   .get("/roles", async (c) => {
-	try {
-	  const { userId } = c.payload;
-	  if (!userId) throw new HTTPException(403);
-  
-	  const rows = await db.select<{ key: string; value: number }>(
-		"SELECT `key`, value FROM daphnis_user_option WHERE user = ? AND `key` IN ('has_upload', 'has_download', 'has_special')",
-		[userId]
-	  );
-  
-	  // Default all roles to false
-	  const roles = { upload: false, download: false, special: false };
-	  for (const row of rows) {
-		if (row.key === "has_upload" && row.value === 1) roles.upload = true;
-		if (row.key === "has_download" && row.value === 1) roles.download = true;
-		if (row.key === "has_special" && row.value === 1) roles.special = true;
-	  }
-  
-	  return c.json({ userId, roles });
-	} catch (error) {
-	  throw rethrowWithMessage("Failed to get user roles", error);
-	}
+    try {
+      const userId = c.payload.userId;
+      if (!userId) throw new HTTPException(403);
+
+      const rows = await db.select<{ key: string; value: number }>(
+        "SELECT `key`, value FROM daphnis_user_option WHERE user = ? AND `key` IN ('has_upload', 'has_download', 'has_special')",
+        [userId]
+      );
+
+      // Initialize with default values (all disabled)
+      const roles = {
+        upload: PermissionValue.Disabled,
+        download: PermissionValue.Disabled,
+        special: PermissionValue.Disabled
+      };
+
+      // Assign the actual values from database
+      for (const row of rows) {
+        if (row.key === PermissionType.Upload) roles.upload = row.value;
+        if (row.key === PermissionType.Download) roles.download = row.value;
+        if (row.key === PermissionType.Special) roles.special = row.value;
+      }
+
+      return c.json(roles);
+    } catch (error) {
+      throw rethrowWithMessage("Failed to get user roles", error);
+    }
   })
   .post(
     "/role/update",
@@ -58,29 +72,33 @@ const UserRoutes = new Hono()
           throw new HTTPException(403);
         }
 
-        const roleKeys: Record<string, string> = {
-          upload: "has_upload",
-          download: "has_download",
-          special: "has_special",
+        const roles: Record<string, PermissionType> = {
+          "upload": PermissionType.Upload,
+          "download": PermissionType.Download,
+          "special": PermissionType.Special,
         };
 
-        const roleKey = roleKeys[role];
-        if (!roleKey) {
+        const permissionKey = roles[role];
+        if (!permissionKey) {
           throw new HTTPException(400, { message: "Invalid role specified" });
         }
 
+        if (value !== PermissionValue.Disabled && value !== PermissionValue.Enabled) {
+          throw new HTTPException(400, { message: "Invalid permission value" });
+        }
+
         const result = await db.update(
-          `UPDATE daphnis_user_option 
-          SET value = ? 
-          WHERE user = ? AND \`key\` = ?`,
-          [value, userId, roleKey]
+          `UPDATE daphnis_user_option
+           SET value = ?
+           WHERE user = ? AND \`key\` = ?`,
+          [value, userId, permissionKey]
         );
 
         if (result.affectedRows === 0) {
           await db.query(
-            `INSERT INTO daphnis_user_option (user, \`key\`, value) 
-            VALUES (?, ?, ?)`,
-            [userId, roleKey, value]
+            `INSERT INTO daphnis_user_option (user, \`key\`, value)
+             VALUES (?, ?, ?)`,
+            [userId, permissionKey, value]
           );
         }
 
@@ -91,4 +109,4 @@ const UserRoutes = new Hono()
     }
   );
 
-export { UserRoutes };
+export { UserRoutes};
