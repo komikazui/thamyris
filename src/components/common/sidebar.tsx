@@ -183,7 +183,10 @@ export function SidebarComponent() {
 	};
 
 	const hasSpecialAccess =
-		hasAdminPerms || userRoles?.special === PermissionValue.Enabled || userRoles?.download === PermissionValue.Enabled;
+		hasAdminPerms ||
+		userRoles?.special === PermissionValue.Enabled ||
+		userRoles?.download === PermissionValue.Enabled ||
+		userRoles?.upload === PermissionValue.Enabled;
 
 	const toggleCategory = (categoryName: string) => {
 		setOpenCategories((prev) => ({

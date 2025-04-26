@@ -21,7 +21,10 @@ const Downloads = () => {
 	};
 
 	const hasSpecialAccess =
-		hasAdminPerms || userRoles?.special === PermissionValue.Enabled || userRoles?.download === PermissionValue.Enabled;
+		hasAdminPerms ||
+		userRoles?.special === PermissionValue.Enabled ||
+		userRoles?.download === PermissionValue.Enabled ||
+		userRoles?.upload === PermissionValue.Enabled;
 
 	const [currentPath, setCurrentPath] = useState("");
 	const { data = [], isLoading, error } = useFiles(currentPath);
