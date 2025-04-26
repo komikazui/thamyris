@@ -15,7 +15,10 @@ import {
 	useFavorites,
 	useRemoveFavorite,
 } from "@/hooks/chunithm";
+import { useUserRoles } from "@/hooks/users";
 import { cdnUrl } from "@/lib/constants";
+import { PermissionValue } from "@/types/enums";
+import { UserRoles } from "@/types/types";
 import { getAllowedChunithmOptions } from "@/utils/helpers";
 
 interface ChunithmFavorite {
@@ -31,6 +34,7 @@ interface ChunithmFavorite {
 	favKind?: number;
 	option?: string;
 }
+
 const ChunithmFavorites = () => {
 	const version = useChunithmVersion();
 	const { data: songs = [], isLoading: isLoadingSongs } = useChunithmSongs() as {
@@ -45,7 +49,13 @@ const ChunithmFavorites = () => {
 	const { data: systemAdmin } = useAdmin();
 	const hasAdminPerms = systemAdmin?.isAdmin ?? false;
 
-	const allowedOptions = getAllowedChunithmOptions(hasAdminPerms);
+	const { data: userRoles, isLoading: isLoadingRoles } = useUserRoles() as {
+		data: UserRoles | undefined;
+		isLoading: boolean;
+	};
+
+	const hasSpecialAccess = hasAdminPerms || userRoles?.special === PermissionValue.Enabled;
+	const allowedOptions = getAllowedChunithmOptions(hasSpecialAccess);
 
 	const handleToggleFavorite = (songId: number) => {
 		const isFavorited = favoriteSongIds.some((fav) => fav.favId === songId);
@@ -99,7 +109,7 @@ const ChunithmFavorites = () => {
 		},
 	};
 
-	if (isLoadingSongs || isLoadingFavorites) {
+	if (isLoadingSongs || isLoadingFavorites || isLoadingRoles) {
 		return (
 			<div className="relative flex-1 overflow-auto">
 				<Header title="Favorites" />

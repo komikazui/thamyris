@@ -34,3 +34,9 @@ export enum MaimaiDxVersions {
 	MaimaiDxPrism = 23,
 	MaimaiDxPrismPlus = 24,
 }
+
+export enum PermissionValue {
+	Disabled = 0,
+	Enabled = 1,
+}
+

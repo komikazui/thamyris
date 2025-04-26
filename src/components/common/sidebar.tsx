@@ -29,6 +29,9 @@ import {
 } from "@/components/ui/sidebar";
 import { useAdmin } from "@/hooks/admin";
 import { useAuth } from "@/hooks/auth";
+import { useUserRoles } from "@/hooks/users";
+import { PermissionValue } from "@/types/enums";
+import { UserRoles } from "@/types/types";
 
 // Import the useRoles hook
 import { NavUser } from "./nav-user";
@@ -170,8 +173,17 @@ export function SidebarComponent() {
 	const [openCategories, setOpenCategories] = React.useState<Record<string, boolean>>({});
 	const [openSubCategories, setOpenSubCategories] = React.useState<Record<string, boolean>>({});
 	const { user } = useAuth();
+
 	const { data: systemAdmin } = useAdmin();
 	const hasAdminPerms = systemAdmin?.isAdmin ?? false;
+
+	const { data: userRoles } = useUserRoles() as {
+		data: UserRoles | undefined;
+		isLoading: boolean;
+	};
+
+	const hasSpecialAccess =
+		hasAdminPerms || userRoles?.special === PermissionValue.Enabled || userRoles?.download === PermissionValue.Enabled;
 
 	const toggleCategory = (categoryName: string) => {
 		setOpenCategories((prev) => ({
@@ -206,7 +218,7 @@ export function SidebarComponent() {
 					<SidebarGroupContent>
 						<SidebarMenu>
 							{sidebarItems.map((item, index) => {
-								if (item.name === "Downloads" && !hasAdminPerms) {
+								if (item.name === "Downloads" && !hasSpecialAccess) {
 									return null;
 								}
 

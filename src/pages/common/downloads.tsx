@@ -4,21 +4,33 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 import { useAdmin } from "@/hooks/admin/use-admin";
+import { useUserRoles } from "@/hooks/users";
 import { useFiles } from "@/hooks/users/use-files";
+import { PermissionValue } from "@/types/enums";
+import { UserRoles } from "@/types/types";
 
 const Downloads = () => {
 	const navigate = useNavigate();
+
 	const { data: systemAdmin } = useAdmin();
 	const hasAdminPerms = systemAdmin?.isAdmin ?? false;
+
+	const { data: userRoles } = useUserRoles() as {
+		data: UserRoles | undefined;
+		isLoading: boolean;
+	};
+
+	const hasSpecialAccess =
+		hasAdminPerms || userRoles?.special === PermissionValue.Enabled || userRoles?.download === PermissionValue.Enabled;
 
 	const [currentPath, setCurrentPath] = useState("");
 	const { data = [], isLoading, error } = useFiles(currentPath);
 
 	useEffect(() => {
-		if (!hasAdminPerms) {
+		if (!hasSpecialAccess) {
 			navigate("/");
 		}
-	}, [hasAdminPerms, navigate]);
+	}, [hasSpecialAccess, navigate]);
 
 	const formatFileSize = (bytes: number) => {
 		if (bytes === 0) return "0 Bytes";

@@ -8,6 +8,8 @@ import { useAdmin } from "@/hooks/admin";
 import { useChunithmSongs, useChunithmVersion } from "@/hooks/chunithm";
 import { useUserRoles } from "@/hooks/users";
 import { cdnUrl } from "@/lib/constants";
+import { PermissionValue } from "@/types/enums";
+import { UserRoles } from "@/types/types";
 import { getAllowedChunithmOptions, getDifficultyFromChunithmChart } from "@/utils/helpers";
 
 interface ChunithmSong {
@@ -19,16 +21,6 @@ interface ChunithmSong {
 	chartId?: number;
 	genre?: string;
 	option?: string;
-}
-
-interface UserRoles {
-	upload: number;
-	download: number;
-	special: number;
-}
-enum PermissionValue {
-	Disabled = 0,
-	Enabled = 1,
 }
 
 const ChunithmAllSongs = () => {
@@ -45,10 +37,7 @@ const ChunithmAllSongs = () => {
 		isLoading: boolean;
 	};
 
-	console.log(userRoles?.special);
-
 	const hasSpecialAccess = hasAdminPerms || userRoles?.special === PermissionValue.Enabled;
-
 	const allowedOptions = getAllowedChunithmOptions(hasSpecialAccess);
 
 	const columns = {

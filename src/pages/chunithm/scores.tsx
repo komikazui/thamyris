@@ -6,7 +6,10 @@ import Spinner from "@/components/common/spinner";
 import TableComponent from "@/components/common/table";
 import { useAdmin } from "@/hooks/admin";
 import { useChunithmScores, useChunithmVersion } from "@/hooks/chunithm";
+import { useUserRoles } from "@/hooks/users";
 import { cdnUrl } from "@/lib/constants";
+import { PermissionValue } from "@/types/enums";
+import { UserRoles } from "@/types/types";
 import {
 	getAllowedChunithmOptions,
 	getChunithmComboStatus,
@@ -29,16 +32,24 @@ interface ChunithmScore {
 
 const ChunithmScorePage = () => {
 	const [searchQuery, setSearchQuery] = useState("");
-	const { data: systemAdmin } = useAdmin();
-	const hasAdminPerms = systemAdmin?.isAdmin ?? false;
 
 	const { data: scores = [], isLoading: isLoadingScores } = useChunithmScores() as {
 		data: ChunithmScore[];
 		isLoading: boolean;
 	};
 
+	const { data: systemAdmin } = useAdmin();
+	const hasAdminPerms = systemAdmin?.isAdmin ?? false;
+
+	const { data: userRoles } = useUserRoles() as {
+		data: UserRoles | undefined;
+		isLoading: boolean;
+	};
+
+	const hasSpecialAccess = hasAdminPerms || userRoles?.special === PermissionValue.Enabled;
+	const allowedOptions = getAllowedChunithmOptions(hasSpecialAccess);
+
 	const version = useChunithmVersion();
-	const allowedOptions = getAllowedChunithmOptions(hasAdminPerms);
 
 	const filteredScores = scores.filter((score) => {
 		const isAllowed = allowedOptions.includes(score.option || "");
