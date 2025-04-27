@@ -113,13 +113,13 @@ const ChunithmRatingFrames = () => {
 									onSearch={handleSearch}
 									title="Top 20 current fumen"
 								/>
+								<TableComponent data={filterData(hotSongs)} columns={columns} onSearch={handleSearch} title="Recent 10 fumen" />
 								<TableComponent
 									data={filterData(nextSongs)}
 									columns={columns}
 									onSearch={handleSearch}
 									title="Potential fumens"
 								/>
-								<TableComponent data={filterData(hotSongs)} columns={columns} onSearch={handleSearch} title="Recent 10 fumen" />
 							</>
 						) : (
 							<>
