@@ -177,7 +177,7 @@ export default defineConfig({
 			BUILD_TIME_12_HOUR: buildTime12HourFormat(new Date().toISOString()),
 			CHUNI_CDN_URL: env.CHUNI_CDN_URL,
 			BUNNY_CDN_PULLZONE: env.BUNNY_CDN_PULLZONE,
-			BUNNY_API_URL: env.BUNNY_API_URL,
+			BUNNY_STORAGE_ZONE: env.BUNNY_STORAGE_ZONE,
 			BUNNY_API_KEY: env.BUNNY_API_KEY,
 			USE_REACT_STRICT: JSON.stringify(env.NODE_ENV === "development"),
 			BUILD_HASH: buildHash,

@@ -14,8 +14,8 @@ export const env = createEnv({
 		SERVER_PORT: z.coerce.number().default(3000),
 		CHUNI_CDN_URL: z.string(),
 		BUNNY_CDN_PULLZONE: z.string(),
-		BUNNY_API_URL: z.string(),
 		BUNNY_API_KEY: z.string(),
+		BUNNY_STORAGE_ZONE: z.string(),
 		// Development database
 		DEV_MYSQL_HOST: z.string().optional(),
 		DEV_MYSQL_USERNAME: z.string().optional(),

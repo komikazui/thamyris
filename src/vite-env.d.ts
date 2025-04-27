@@ -10,8 +10,8 @@ interface ClientEnv {
 	readonly CFTurnstileKey: string;
 	readonly BUILD_DATE_YEAR_MONTH_DAY: string;
 	readonly BUILD_TIME_12_HOUR: string;
-	readonly BUNNY_API_URL: string;
 	readonly BUNNY_API_KEY: string;
+	readonly BUNNY_STORAGE_ZONE: string;
 	// Meh, could just expose the NODE_ENV
 	// directly instead of this
 	readonly USE_REACT_STRICT: boolean;
