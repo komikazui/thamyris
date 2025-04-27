@@ -50,11 +50,18 @@ const ChunithmRatingFrames = () => {
 
 	const allowedOptions = getAllowedChunithmOptions(specialAccess || adminAccess);
 
-	const columns = {
+	const ratingTable = {
 		Song: (row: ChunithmRatingData) => <span className="text-primary truncate">{row.title}</span>,
-		Rating: (row: ChunithmRatingData) => ((ChunitmRating(row.level!, row.score!) ?? 0) / 100).toFixed(2),
-		Score: (row: ChunithmRatingData) => row.score?.toLocaleString(),
 		Difficulty: (row: ChunithmRatingData) => getDifficultyFromChunithmChart(row.chartId ?? 0),
+		Level: (row: ChunithmRatingData) => row.level,
+		Score: (row: ChunithmRatingData) => row.score?.toLocaleString(),
+		Rating: (row: ChunithmRatingData) => ((ChunitmRating(row.level!, row.score!) ?? 0) / 100).toFixed(2),
+	};
+
+	const recommenedTable = {
+		Song: (row: ChunithmRatingData) => <span className="text-primary truncate">{row.title}</span>,
+		Difficulty: (row: ChunithmRatingData) => getDifficultyFromChunithmChart(row.chartId ?? 0),
+		Level: (row: ChunithmRatingData) => row.level,
 	};
 
 	const handleSearch = (search: { value?: string }) => {
@@ -109,22 +116,37 @@ const ChunithmRatingFrames = () => {
 							<>
 								<TableComponent
 									data={filterData(newSongs)}
-									columns={columns}
+									columns={ratingTable}
 									onSearch={handleSearch}
 									title="Top 20 current fumen"
 								/>
-								<TableComponent data={filterData(hotSongs)} columns={columns} onSearch={handleSearch} title="Recent 10 fumen" />
+								<TableComponent
+									data={filterData(hotSongs)}
+									columns={ratingTable}
+									onSearch={handleSearch}
+									title="Recent 10 fumen"
+								/>
 								<TableComponent
 									data={filterData(nextSongs)}
-									columns={columns}
+									columns={recommenedTable}
 									onSearch={handleSearch}
 									title="Potential fumens"
 								/>
 							</>
 						) : (
 							<>
-								<TableComponent data={filterData(baseSongs)} columns={columns} onSearch={handleSearch} title="Top 30 fumen" />
-								<TableComponent data={filterData(hotSongs)} columns={columns} onSearch={handleSearch} title="Recent 10 fumen" />
+								<TableComponent
+									data={filterData(baseSongs)}
+									columns={ratingTable}
+									onSearch={handleSearch}
+									title="Top 30 fumen"
+								/>
+								<TableComponent
+									data={filterData(hotSongs)}
+									columns={ratingTable}
+									onSearch={handleSearch}
+									title="Recent 10 fumen"
+								/>
 							</>
 						)}
 					</div>
