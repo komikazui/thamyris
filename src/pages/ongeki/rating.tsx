@@ -117,7 +117,6 @@ const OngekiRatingFrames = () => {
 		Song: (row: OngekiRatingData) => <span className="text-primary truncate">{row.title}</span>,
 		Difficulty: (row: OngekiRatingData) => getDifficultyFromOngekiChart(row.chartId ?? 0),
 		Level: (row: OngekiRatingData) => row.level,
-		"Technical Score": (row: OngekiRatingData) => row.techScoreMax?.toLocaleString(),
 		Rate: (row: OngekiRatingData) => {
 			return isRefreshOrAbove
 				? (
