@@ -15,3 +15,7 @@ export function hasDownloadAccess(systemAdmin: any, userRoles: UserRoles | undef
   const hasAdminPerms = systemAdmin?.hasAdminAccess ?? false;
   return hasAdminPerms || userRoles?.download === PermissionValue.Enabled;
 }
+export function hasAdminAccess(systemAdmin: any): boolean {
+  const hasAdminPerms = systemAdmin?.hasAdminAccess ?? false;
+  return hasAdminPerms 
+}

@@ -6,34 +6,24 @@ import { toast } from "sonner";
 import { useAdmin } from "@/hooks/admin/use-admin";
 import { useUserRoles } from "@/hooks/users";
 import { useFiles } from "@/hooks/users/use-files";
-import { UserRoles } from "@/types/types";
-import { PermissionValue } from "@/utils/enums";
+import { hasDownloadAccess } from "@/utils/permissions";
 
 const Downloads = () => {
 	const navigate = useNavigate();
 
 	const { data: systemAdmin } = useAdmin();
-	const hasAdminPerms = systemAdmin?.isAdmin ?? false;
+	const { data: downloadAccess } = useUserRoles();
 
-	const { data: userRoles } = useUserRoles() as {
-		data: UserRoles | undefined;
-		isLoading: boolean;
-	};
-
-	const hasSpecialAccess =
-		hasAdminPerms ||
-		userRoles?.special === PermissionValue.Enabled ||
-		userRoles?.download === PermissionValue.Enabled ||
-		userRoles?.upload === PermissionValue.Enabled;
+	const specialAccess = hasDownloadAccess(systemAdmin, downloadAccess);
 
 	const [currentPath, setCurrentPath] = useState("");
 	const { data = [], isLoading, error } = useFiles(currentPath);
 
 	useEffect(() => {
-		if (!hasSpecialAccess) {
+		if (!specialAccess) {
 			navigate("/");
 		}
-	}, [hasSpecialAccess, navigate]);
+	}, [specialAccess, navigate]);
 
 	const formatFileSize = (bytes: number) => {
 		if (bytes === 0) return "0 Bytes";
