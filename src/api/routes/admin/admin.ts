@@ -16,7 +16,7 @@ const AdminRoutes = new Hono()
       }
       
       const roles = {
-        isAdmin: permissions === UserRole.Admin,
+        hasAdminAccess: permissions === UserRole.Admin,
    
       };
       

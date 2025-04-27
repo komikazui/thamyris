@@ -7,11 +7,11 @@ interface UserRoles {
 }
 
 export function hasSpecialAccess(systemAdmin: any, userRoles: UserRoles | undefined): boolean {
-  const hasAdminPerms = systemAdmin?.isAdmin ?? false;
+  const hasAdminPerms = systemAdmin?.hasAdminAccess ?? false;
   return hasAdminPerms || userRoles?.special === PermissionValue.Enabled;
 }
 
 export function hasDownloadAccess(systemAdmin: any, userRoles: UserRoles | undefined): boolean {
-  const hasAdminPerms = !!(systemAdmin?.isAdmin);
+  const hasAdminPerms = systemAdmin?.hasAdminAccess ?? false;
   return hasAdminPerms || userRoles?.download === PermissionValue.Enabled;
 }
