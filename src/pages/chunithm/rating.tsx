@@ -15,7 +15,7 @@ import {
 } from "@/hooks/chunithm";
 import { useUserRoles } from "@/hooks/users";
 import { ChunitmRating, getAllowedChunithmOptions, getDifficultyFromChunithmChart } from "@/utils/helpers";
-import { hasSpecialAccess } from "@/utils/permissions";
+import { hasAdminAccess, hasSpecialAccess } from "@/utils/permissions";
 
 interface ChunithmRatingData {
 	title: string;
@@ -45,8 +45,10 @@ const ChunithmRatingFrames = () => {
 	const { data: systemAdmin } = useAdmin();
 	const { data: userRoles } = useUserRoles();
 
-	const specialAccess = hasSpecialAccess(systemAdmin, userRoles);
-	const allowedOptions = getAllowedChunithmOptions(specialAccess);
+	const specialAccess = hasSpecialAccess(userRoles);
+	const adminAccess = hasAdminAccess(systemAdmin);
+
+	const allowedOptions = getAllowedChunithmOptions(specialAccess || adminAccess);
 
 	const columns = {
 		Song: (row: ChunithmRatingData) => <span className="text-primary truncate">{row.title}</span>,

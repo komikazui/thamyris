@@ -30,7 +30,7 @@ import {
 import { useAdmin } from "@/hooks/admin";
 import { useAuth } from "@/hooks/auth";
 import { useUserRoles } from "@/hooks/users";
-import { hasDownloadAccess } from "@/utils/permissions";
+import { hasAdminAccess, hasDownloadAccess } from "@/utils/permissions";
 
 // Import the useRoles hook
 import { NavUser } from "./nav-user";
@@ -176,7 +176,8 @@ export function SidebarComponent() {
 	const { data: systemAdmin } = useAdmin();
 	const { data: userRoles } = useUserRoles();
 
-	const canDownload = hasDownloadAccess(systemAdmin, userRoles);
+	const adminAccess = hasAdminAccess(systemAdmin);
+	const downloadAccess = hasDownloadAccess(userRoles);
 
 	const toggleCategory = (categoryName: string) => {
 		setOpenCategories((prev) => ({
@@ -211,7 +212,7 @@ export function SidebarComponent() {
 					<SidebarGroupContent>
 						<SidebarMenu>
 							{sidebarItems.map((item, index) => {
-								if (item.name === "Downloads" && !canDownload) {
+								if (item.name === "Downloads" && !downloadAccess && !adminAccess) {
 									return null;
 								}
 

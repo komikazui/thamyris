@@ -9,7 +9,7 @@ import { useChunithmSongs, useChunithmVersion } from "@/hooks/chunithm";
 import { useUserRoles } from "@/hooks/users";
 import { cdnUrl } from "@/lib/constants";
 import { getAllowedChunithmOptions, getDifficultyFromChunithmChart } from "@/utils/helpers";
-import { hasSpecialAccess } from "@/utils/permissions";
+import { hasAdminAccess, hasSpecialAccess } from "@/utils/permissions";
 
 interface ChunithmSong {
 	title: string;
@@ -32,8 +32,10 @@ const ChunithmAllSongs = () => {
 	const { data: systemAdmin } = useAdmin();
 	const { data: userRoles } = useUserRoles();
 
-	const specialAccess = hasSpecialAccess(systemAdmin, userRoles);
-	const allowedOptions = getAllowedChunithmOptions(specialAccess);
+	const specialAccess = hasSpecialAccess(userRoles);
+	const adminAccess = hasAdminAccess(systemAdmin);
+
+	const allowedOptions = getAllowedChunithmOptions(specialAccess || adminAccess);
 
 	const columns = {
 		Song: (row: ChunithmSong) => (

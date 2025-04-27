@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { useAdmin } from "@/hooks/admin/use-admin";
 import { useUserRoles } from "@/hooks/users";
 import { useFiles } from "@/hooks/users/use-files";
-import { hasDownloadAccess } from "@/utils/permissions";
+import { hasAdminAccess, hasDownloadAccess } from "@/utils/permissions";
 
 const Downloads = () => {
 	const navigate = useNavigate();
@@ -14,13 +14,14 @@ const Downloads = () => {
 	const { data: systemAdmin } = useAdmin();
 	const { data: downloadAccess } = useUserRoles();
 
-	const specialAccess = hasDownloadAccess(systemAdmin, downloadAccess);
+	const specialAccess = hasDownloadAccess(downloadAccess);
+	const adminAccess = hasAdminAccess(systemAdmin);
 
 	const [currentPath, setCurrentPath] = useState("");
 	const { data = [], isLoading, error } = useFiles(currentPath);
 
 	useEffect(() => {
-		if (!specialAccess) {
+		if (!specialAccess && !adminAccess) {
 			navigate("/");
 		}
 	}, [specialAccess, navigate]);

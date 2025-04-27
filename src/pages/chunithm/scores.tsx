@@ -14,7 +14,7 @@ import {
 	getChunithmGrade,
 	getDifficultyFromChunithmChart,
 } from "@/utils/helpers";
-import { hasSpecialAccess } from "@/utils/permissions";
+import { hasAdminAccess, hasSpecialAccess } from "@/utils/permissions";
 
 interface ChunithmScore {
 	id: number;
@@ -40,8 +40,10 @@ const ChunithmScorePage = () => {
 	const { data: userRoles } = useUserRoles();
 	const version = useChunithmVersion();
 
-	const specialAccess = hasSpecialAccess(systemAdmin, userRoles);
-	const allowedOptions = getAllowedChunithmOptions(specialAccess);
+	const specialAccess = hasSpecialAccess(userRoles);
+	const adminAccess = hasAdminAccess(systemAdmin);
+
+	const allowedOptions = getAllowedChunithmOptions(specialAccess || adminAccess);
 
 	const filteredScores = scores.filter((score) => {
 		const isAllowed = allowedOptions.includes(score.option || "");
