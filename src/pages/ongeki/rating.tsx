@@ -113,6 +113,26 @@ const OngekiRatingFrames = () => {
 		},
 	};
 
+	const recommendedTable = {
+		Song: (row: OngekiRatingData) => <span className="text-primary truncate">{row.title}</span>,
+		Difficulty: (row: OngekiRatingData) => getDifficultyFromOngekiChart(row.chartId ?? 0),
+		Level: (row: OngekiRatingData) => row.level,
+		"Technical Score": (row: OngekiRatingData) => row.techScoreMax?.toLocaleString(),
+		Rate: (row: OngekiRatingData) => {
+			return isRefreshOrAbove
+				? (
+						OngekiGekForceRating(
+							row.level ?? 0,
+							row.techScoreMax ?? 0,
+							row.isFullCombo ?? 0,
+							row.isAllBreake ?? 0,
+							row.isFullBell ?? 0
+						) / 1000
+					).toFixed(3)
+				: (OngekiRating(row.level ?? 0, row.techScoreMax ?? 0) / 100).toFixed(2);
+		},
+	};
+
 	const pScoreTableColumns = {
 		Song: (row: OngekiRatingData) => <span className="text-primary truncate">{row.title}</span>,
 		Difficulty: (row: OngekiRatingData) => getDifficultyFromOngekiChart(row.chartId ?? 0),
@@ -215,7 +235,7 @@ const OngekiRatingFrames = () => {
 								/>
 								<TableComponent
 									data={filterData(newNextSongs)}
-									columns={ratingTableColumns}
+									columns={recommendedTable}
 									onSearch={handleSearch}
 									title="Recommended fumens"
 								/>
