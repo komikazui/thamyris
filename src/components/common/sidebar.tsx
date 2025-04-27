@@ -3,6 +3,7 @@ import React from "react";
 import {
 	BoomBox,
 	ChevronDown,
+	DownloadCloud,
 	HeartIcon,
 	Home,
 	List,
@@ -26,9 +27,11 @@ import {
 	SidebarMenuItem,
 	SidebarMenuSub,
 } from "@/components/ui/sidebar";
+import { useAdmin } from "@/hooks/admin";
 import { useAuth } from "@/hooks/auth";
+import { useUserRoles } from "@/hooks/users";
+import { hasAdminAccess, hasDownloadAccess } from "@/utils/permissions";
 
-// Import the useRoles hook
 import { NavUser } from "./nav-user";
 
 const chunithmSubnav = [
@@ -131,7 +134,12 @@ const sidebarItems = [
 		color: "#8B5CF6",
 		href: "/news",
 	},
-
+	{
+		name: "Downloads",
+		icon: DownloadCloud,
+		color: " #71cd5b",
+		href: "/downloads",
+	},
 	{
 		name: "SEGA",
 		icon: ChevronDown,
@@ -163,6 +171,12 @@ export function SidebarComponent() {
 	const [openCategories, setOpenCategories] = React.useState<Record<string, boolean>>({});
 	const [openSubCategories, setOpenSubCategories] = React.useState<Record<string, boolean>>({});
 	const { user } = useAuth();
+
+	const { data: systemAdmin } = useAdmin();
+	const { data: userRoles } = useUserRoles();
+
+	const adminAccess = hasAdminAccess(systemAdmin);
+	const downloadAccess = hasDownloadAccess(userRoles);
 
 	const toggleCategory = (categoryName: string) => {
 		setOpenCategories((prev) => ({
@@ -197,6 +211,10 @@ export function SidebarComponent() {
 					<SidebarGroupContent>
 						<SidebarMenu>
 							{sidebarItems.map((item, index) => {
+								if (item.name === "Downloads" && !downloadAccess && !adminAccess) {
+									return null;
+								}
+
 								return (
 									<SidebarMenuItem key={index}>
 										{item.subnav ? (

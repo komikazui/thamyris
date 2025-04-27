@@ -1,6 +1,7 @@
 import React from "react";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Download } from "lucide-react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 
@@ -23,6 +24,7 @@ import ChunithmRivals from "./pages/chunithm/rivals";
 import ChunithmScorePage from "./pages/chunithm/scores";
 import ChunithmSettingsPage from "./pages/chunithm/settings";
 import ChunithmUserbox from "./pages/chunithm/userbox";
+import Downloads from "./pages/common/downloads";
 import { NotFound } from "./pages/common/not-found";
 import OverviewPage from "./pages/common/overview-page";
 import ServerNews from "./pages/common/server-news";
@@ -70,6 +72,7 @@ const app = (
 								<Route path="/news" element={<ServerNews />} />
 								<Route path="/account" element={<Account />} />
 								<Route path="/arcade" element={<Arcade />} />
+								<Route path="/downloads" element={<Downloads />} />
 
 								<Route path="/chunithm/settings" element={<ChunithmSettingsPage />} />
 								<Route path="/chunithm/userbox" element={<ChunithmUserbox />} />
@@ -90,6 +93,7 @@ const app = (
 
 								<Route path="/maimaidx/scores" element={<Mai2ScorePage />} />
 								<Route path="/maimaidx/settings" element={<MaimaiDxSettings />} />
+								<Route path="/maimaidx/allsongs" element={<ChunithmAllSongs />} />
 							</Route>
 						</Route>
 
