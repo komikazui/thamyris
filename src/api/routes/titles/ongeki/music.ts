@@ -16,7 +16,6 @@ const OngekiStaticMusic = new Hono().get("music", async (c) => {
 				 ORDER BY id DESC`,
 			[version]
 		);
-		console.log("ongeki static music", results);
 		return c.json(results);
 	} catch (error) {
 		throw rethrowWithMessage("Failed to get static music", error);
