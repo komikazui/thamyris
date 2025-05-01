@@ -42,7 +42,7 @@ const OngekiScorePage = () => {
 	const columns = {
 		Song: (row: OngekiScore) => (
 			<div className="flex items-center gap-3">
-				<img width={40} height={40} src={`${cdnUrl}ongeki/jacket/${row.jacketPath}`} className="flex-shrink-0" />
+				<img width={40} height={40} src={`${cdnUrl}/ongeki/jacket/${row.jacketPath}`} className="flex-shrink-0" />
 				<span className="text-primary truncate">{row.title}</span>
 			</div>
 		),
