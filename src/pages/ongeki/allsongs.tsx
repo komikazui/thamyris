@@ -7,6 +7,7 @@ import Spinner from "@/components/common/spinner";
 import TableComponent from "@/components/common/table";
 import { useOngekiSongs, useOngekiVersion } from "@/hooks/ongeki";
 import { getDifficultyFromOngekiChart } from "@/utils/helpers";
+import { cdnUrl } from "@/lib/constants";
 
 interface OngekiSong {
 	title: string;
@@ -25,17 +26,15 @@ const OngekiAllSongs = () => {
 	};
 	const version = useOngekiVersion();
 	const [searchQuery, setSearchQuery] = useState("");
-
 	const columns = {
 		Song: (row: OngekiSong) => (
 			<div className="flex items-center gap-3">
-				{/* <img
+				<img
 					width={40}
 					height={40}
-					src={`${cdnUrl}/assets/jacket/${row.jacketPath?.replace(".dds", ".png")}`}
-					alt={row.title}
+					src={`${cdnUrl}/ongeki/assets/jacket/${row.jacketPath}`}
 					className="flex-shrink-0"
-				/> */}
+				/>
 				<span className="text-primary truncate">{row.title}</span>
 			</div>
 		),

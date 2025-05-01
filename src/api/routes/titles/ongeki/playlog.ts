@@ -5,12 +5,12 @@ import { DB } from "@/api/types";
 import { rethrowWithMessage } from "@/api/utils/error";
 
 const OngekiProfilePlaylog = new Hono().get("playlog", async (c) => {
-	try {
-		const { userId, versions } = c.payload;
-		const version = versions.ongeki_version;
+    try {
+        const { userId, versions } = c.payload;
+        const version = versions.ongeki_version;
 
-		const results = await db.select<DB.OngekiScorePlaylog>(
-			`
+        const results = await db.select<DB.OngekiScorePlaylog>(
+            `
                 WITH RankedScores AS (
                     SELECT 
                         csp.id,
@@ -35,6 +35,7 @@ const OngekiProfilePlaylog = new Hono().get("playlog", async (c) => {
                         csm.title, 
                         csm.level, 
                         csm.genre, 
+                        csm.jacketPath,
                         csm.noteCount,
                         csm.artist,
                         IF(csp.techScore > LAG(csp.techScore, 1) OVER (ORDER BY csp.userPlayDate), 'Increase', 
@@ -81,6 +82,7 @@ const OngekiProfilePlaylog = new Hono().get("playlog", async (c) => {
                     battlescore_change,
                     rating_change,
                     platinumScore,
+                    jacketPath,
                     platinumScoreMax,
                     platinumScoreStar
                 FROM 
@@ -88,12 +90,12 @@ const OngekiProfilePlaylog = new Hono().get("playlog", async (c) => {
                 ORDER BY 
                     userPlayDate DESC;
                     `,
-			[version, userId, version]
-		);
-		return c.json(results);
-	} catch (error) {
-		throw rethrowWithMessage("Failed to fetch ongeki playlog", error);
-	}
+            [version, userId, version]
+        );
+        return c.json(results);
+    } catch (error) {
+        throw rethrowWithMessage("Failed to fetch ongeki playlog", error);
+    }
 });
 
 export { OngekiProfilePlaylog };

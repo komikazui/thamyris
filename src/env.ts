@@ -12,7 +12,7 @@ export const env = createEnv({
 		RATELIMIT_KEY: z.string(),
 		CLIENT_PORT: z.coerce.number().default(3000),
 		SERVER_PORT: z.coerce.number().default(3000),
-		CHUNI_CDN_URL: z.string(),
+		CDN_URL: z.string(),
 		// Development database
 		DEV_MYSQL_HOST: z.string().optional(),
 		DEV_MYSQL_USERNAME: z.string().optional(),

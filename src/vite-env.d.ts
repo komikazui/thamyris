@@ -3,8 +3,7 @@
 interface ClientEnv {
 	// Any custom env variables set in
 	// vite.config.ts -> define -> env
-	readonly CHUNI_CDN_URL: string;
-	readonly BUNNY_CDN_PULLZONE: string;
+	readonly CDN_URL: string;
 	readonly BUILD_HASH: string;
 	readonly BUILD_HASH: string;
 	readonly CFTurnstileKey: string;

@@ -1,4 +1,4 @@
-export const cdnUrl = env.CHUNI_CDN_URL;
+export const cdnUrl = env.CDN_URL;
 export const turnstile = env.CFTurnstileKey;
 
 export enum TrophyRareType {
@@ -23,19 +23,19 @@ export enum TrophyRareType {
 }
 
 export const honorBackgrounds: Record<TrophyRareType, string> = {
-	[TrophyRareType.Normal]: `${cdnUrl}/honorBackgrounds/honor_bg_normal.png`,
-	[TrophyRareType.Bronze]: `${cdnUrl}/honorBackgrounds/honor_bg_bronze.png`,
-	[TrophyRareType.Silver]: `${cdnUrl}/honorBackgrounds/honor_bg_silver.png`,
-	[TrophyRareType.Gold]: `${cdnUrl}/honorBackgrounds/honor_bg_gold.png`,
-	[TrophyRareType.Gold2]: `${cdnUrl}/honorBackgrounds/honor_bg_gold.png`,
-	[TrophyRareType.Platinum]: `${cdnUrl}/honorBackgrounds/honor_bg_platina.png`,
-	[TrophyRareType.Platinum2]: `${cdnUrl}/honorBackgrounds/honor_bg_platina.png`,
-	[TrophyRareType.Rainbow]: `${cdnUrl}/honorBackgrounds/honor_bg_rainbow.png`,
-	[TrophyRareType.Staff]: `${cdnUrl}/honorBackgrounds/honor_bg_staff.png`,
-	[TrophyRareType.Ongeki]: `${cdnUrl}/honorBackgrounds/honor_bg_ongeki.png`,
-	[TrophyRareType.Maimai]: `${cdnUrl}/honorBackgrounds/honor_bg_maimai.png`,
-	[TrophyRareType.Duals]: `${cdnUrl}/honorBackgrounds/honor_bg_platina.png`,
-	[TrophyRareType.Idori]: `${cdnUrl}/honorBackgrounds/honor_bg_platina.png`,
+	[TrophyRareType.Normal]: `${cdnUrl}/chunithm/honorBackgrounds/honor_bg_normal.png`,
+	[TrophyRareType.Bronze]: `${cdnUrl}/chunithm/honorBackgrounds/honor_bg_bronze.png`,
+	[TrophyRareType.Silver]: `${cdnUrl}/chunithm/honorBackgrounds/honor_bg_silver.png`,
+	[TrophyRareType.Gold]: `${cdnUrl}/chunithm/honorBackgrounds/honor_bg_gold.png`,
+	[TrophyRareType.Gold2]: `${cdnUrl}/chunithm/honorBackgrounds/honor_bg_gold.png`,
+	[TrophyRareType.Platinum]: `${cdnUrl}/chunithm/honorBackgrounds/honor_bg_platina.png`,
+	[TrophyRareType.Platinum2]: `${cdnUrl}/chunithm/honorBackgrounds/honor_bg_platina.png`,
+	[TrophyRareType.Rainbow]: `${cdnUrl}/chunithm/honorBackgrounds/honor_bg_rainbow.png`,
+	[TrophyRareType.Staff]: `${cdnUrl}/chunithm/honorBackgrounds/honor_bg_staff.png`,
+	[TrophyRareType.Ongeki]: `${cdnUrl}/chunithm/honorBackgrounds/honor_bg_ongeki.png`,
+	[TrophyRareType.Maimai]: `${cdnUrl}/chunithm/honorBackgrounds/honor_bg_maimai.png`,
+	[TrophyRareType.Duals]: `${cdnUrl}/chunithm/honorBackgrounds/honor_bg_platina.png`,
+	[TrophyRareType.Idori]: `${cdnUrl}/chunithm/honorBackgrounds/honor_bg_platina.png`,
 	[TrophyRareType.Lamp]: ``,
 	[TrophyRareType.Lamp2]: ``,
 	[TrophyRareType.Lamp3]: ``,

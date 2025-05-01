@@ -667,9 +667,9 @@ export namespace DB {
 		eventId: number | null;
 		playerRating: number | null;
 		isNewRecord: boolean | null;
-		isFullCombo:  number| null;
+		isFullCombo: number | null;
 		fullChainKind: number | null;
-		isAllJustice: number| null;
+		isAllJustice: number | null;
 		isContinue: boolean | null;
 		isFreeToPlay: boolean | null;
 		characterId: number | null;
@@ -1267,6 +1267,7 @@ export namespace DB {
 		artist: string | null;
 		genre: string | null;
 		level: number | null;
+		jacketPath: string | null;
 	};
 
 	export type OngekiStaticMusicRankingList = {

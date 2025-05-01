@@ -10,11 +10,12 @@ const OngekiStaticMusic = new Hono().get("music", async (c) => {
 		const version = versions.ongeki_version;
 
 		const results = await db.select<DB.OngekiStaticMusic>(
-			`SELECT id, songId, chartId, title, level, artist, genre  
+			`SELECT id, songId, chartId, title, level, artist, genre, jacketPath
        FROM ongeki_static_music
        WHERE version = ?`,
 			[version]
 		);
+		console.log("ongeki static music", results);
 		return c.json(results);
 	} catch (error) {
 		throw rethrowWithMessage("Failed to get static music", error);
