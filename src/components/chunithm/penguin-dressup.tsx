@@ -10,7 +10,6 @@ import { cdnUrl } from "@/lib/constants";
 
 import Spinner from "../common/spinner";
 
-
 interface AvatarParts {
 	head: number;
 	back: number;
@@ -162,7 +161,7 @@ const PenguinDressup = () => {
 			<div className="relative mb-6 h-[300px] w-full md:mb-0 md:h-[400px] md:w-[300px]">
 				<div className="avatar_base relative h-[400px] w-[300px]">
 					<div className="avatar_back">
-						<img loading="lazy" src={`${cdnUrl}/avatar/${selectedAccessories.back}.png`} />
+						<img loading="lazy" src={`${cdnUrl}/chunithm/avatar/${selectedAccessories.back}.png`} />
 					</div>
 					<div className="avatar_wear">
 						<img src={`${cdnUrl}/chunithm/avatar/${selectedAccessories.wear}.png`} />
