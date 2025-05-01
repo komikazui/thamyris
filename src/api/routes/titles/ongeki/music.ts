@@ -12,7 +12,8 @@ const OngekiStaticMusic = new Hono().get("music", async (c) => {
 		const results = await db.select<DB.OngekiStaticMusic>(
 			`SELECT id, songId, chartId, title, level, artist, genre, jacketPath
        FROM ongeki_static_music
-       WHERE version = ?`,
+       WHERE version = ?
+		   ORDER BY id DESC`,
 			[version]
 		);
 		return c.json(results);
