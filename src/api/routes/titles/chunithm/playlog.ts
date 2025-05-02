@@ -34,7 +34,6 @@ const ChunithmScorePlaylog = new Hono().get("playlog", async (c) => {
                     csm.genre,
                     csm.jacketPath,
                     csm.artist,
-                    csm.option,
                     IF(csp.score > LAG(csp.score, 1) OVER (ORDER BY csp.userPlayDate), 'Increase',
                     IF(csp.score < LAG(csp.score, 1) OVER (ORDER BY csp.userPlayDate), 'Decrease', 'Same')) AS score_change,
                     IF(csp.playerRating > LAG(csp.playerRating, 1) OVER (ORDER BY csp.userPlayDate), 'Increase',
@@ -73,8 +72,7 @@ const ChunithmScorePlaylog = new Hono().get("playlog", async (c) => {
                 artist,
                 score_change,
                 rating_change,
-                playerRating,
-                option
+                playerRating
                 FROM
                 RankedScores
                 ORDER BY

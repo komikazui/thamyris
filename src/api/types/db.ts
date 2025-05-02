@@ -787,8 +787,17 @@ export namespace DB {
 		genre: string | null;
 		jacketPath: string | null;
 		worldsEndTag: string | null;
-		option: string | null;
+		opt: bigint | null;
 	};
+
+	export interface ChuniStaticOpts {
+		id: bigint;
+		version: number;
+		name: string;
+		sequence: number;
+		whenRead: Date;
+		isEnable: boolean;
+	}
 
 	export type DaphnisStaticCharacter = {
 		id: number;

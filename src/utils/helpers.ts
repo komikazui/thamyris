@@ -73,13 +73,12 @@ export const getChunithmClearStatus = (isClear: number): string => {
 	return "";
 };
 
-
 export const getChunithmComboStatus = (isFullCombo: number, isAllJustice: number, score?: number): string => {
 	if (score && score >= 1010000 && isAllJustice === 1) return "AJC";
 	if (isAllJustice === 1) return "AJ";
 	if (isFullCombo === 1) return "FC";
 	return "";
-  };
+};
 
 export const getOngekiClearStatus = (clearStatus: number): string => {
 	if (clearStatus === 2) return "Won";
@@ -88,7 +87,12 @@ export const getOngekiClearStatus = (clearStatus: number): string => {
 	return "";
 };
 
-export const getOngekiComboStatus = ( isFullCombo: number, isAllBreake: number, isFullBell: number, techScoreMax?: number): string => {
+export const getOngekiComboStatus = (
+	isFullCombo: number,
+	isAllBreake: number,
+	isFullBell: number,
+	techScoreMax?: number
+): string => {
 	if (techScoreMax && techScoreMax >= 1010000 && isAllBreake === 1) return "AB+";
 	if (isAllBreake === 1 && isFullBell === 1) return "AB/FB";
 	if (isAllBreake === 1) return "AB";
@@ -195,41 +199,3 @@ export function ChunitmRating(level: number, score: number): number {
 		return 0;
 	}
 }
-
-enum whitelistedChunithmOptions {
-	A000 = "A000",
-	A001 = "A001",
-	A121 = "A121",
-	A122 = "A122",
-	A131 = "A131",
-	A132 = "A132",
-	A140 = "A140",
-	A141 = "A141",
-	A142 = "A142",
-	A143 = "A143",
-	A151 = "A151",
-	A152 = "A152",
-	A153 = "A153"
-}
-
-enum blacklistedChunithmOptions {
-	A161 = "A161",
-	A162 = "A162",
-	A163 = "A163",
-
-
-}
-
-export const getAllowedChunithmOptions = (hasAdminPerms: boolean): string[] => {
-	const whiteListedOptions = Object.values(whitelistedChunithmOptions);
-	const blacklistedOptions = Object.values(blacklistedChunithmOptions);
-
-	if (hasAdminPerms) {
-		return [...whiteListedOptions, ...blacklistedOptions];
-	}
-
-	return whiteListedOptions;
-};
-
-
-

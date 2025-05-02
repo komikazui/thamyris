@@ -1,15 +1,11 @@
-import { useState } from "react";
-import React from "react";
+import React, { useState } from "react";
 
 import Header from "@/components/common/header";
 import Spinner from "@/components/common/spinner";
 import TableComponent from "@/components/common/table";
-import { useAdmin } from "@/hooks/admin";
 import { useChunithmSongs, useChunithmVersion } from "@/hooks/chunithm";
-import { useUserRoles } from "@/hooks/users";
 import { cdnUrl } from "@/lib/constants";
-import { getAllowedChunithmOptions, getDifficultyFromChunithmChart } from "@/utils/helpers";
-import { hasAdminAccess, hasSpecialAccess } from "@/utils/permissions";
+import { getDifficultyFromChunithmChart } from "@/utils/helpers";
 
 interface ChunithmSong {
 	title: string;
@@ -19,7 +15,7 @@ interface ChunithmSong {
 	difficulty?: string;
 	chartId?: number;
 	genre?: string;
-	option?: string;
+	opt?: string | number;
 }
 
 const ChunithmAllSongs = () => {
@@ -27,15 +23,9 @@ const ChunithmAllSongs = () => {
 		data: ChunithmSong[];
 		isLoading: boolean;
 	};
+
 	const version = useChunithmVersion();
 	const [searchQuery, setSearchQuery] = useState("");
-	const { data: systemAdmin } = useAdmin();
-	const { data: userRoles } = useUserRoles();
-
-	const specialAccess = hasSpecialAccess(userRoles);
-	const adminAccess = hasAdminAccess(systemAdmin);
-
-	const allowedOptions = getAllowedChunithmOptions(specialAccess || adminAccess);
 
 	const columns = {
 		Song: (row: ChunithmSong) => (
@@ -56,12 +46,8 @@ const ChunithmAllSongs = () => {
 		Genre: (row: ChunithmSong) => row.genre || "N/A",
 	};
 
-	const filterData = (data: ChunithmSong[]) => {
-		return data.filter((song) => {
-			const isAllowed = allowedOptions.includes(song.option || "");
-			return song.title?.toLowerCase().includes(searchQuery.toLowerCase()) && isAllowed;
-		});
-	};
+	// Filter songs based on searchQuery only
+	const filteredSongs = songs.filter((song) => song.title?.toLowerCase().includes(searchQuery.toLowerCase()));
 
 	if (isLoadingSongs) {
 		return (
@@ -82,7 +68,7 @@ const ChunithmAllSongs = () => {
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0"></div>
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
 						<TableComponent
-							data={filterData(songs)}
+							data={filteredSongs}
 							columns={columns}
 							onSearch={(search) => setSearchQuery(search.value || "")}
 						/>

@@ -1,5 +1,4 @@
-import { useState } from "react";
-import React from "react";
+import React, { useState } from "react";
 
 import { Heart } from "lucide-react";
 import { toast } from "sonner";
@@ -7,7 +6,6 @@ import { toast } from "sonner";
 import Header from "@/components/common/header";
 import Spinner from "@/components/common/spinner";
 import TableComponent from "@/components/common/table";
-import { useAdmin } from "@/hooks/admin";
 import {
 	useAddFavorite,
 	useChunithmSongs,
@@ -15,10 +13,7 @@ import {
 	useFavorites,
 	useRemoveFavorite,
 } from "@/hooks/chunithm";
-import { useUserRoles } from "@/hooks/users";
 import { cdnUrl } from "@/lib/constants";
-import { getAllowedChunithmOptions } from "@/utils/helpers";
-import { hasAdminAccess, hasSpecialAccess } from "@/utils/permissions";
 
 interface ChunithmFavorite {
 	songId?: number;
@@ -44,42 +39,26 @@ const ChunithmFavorites = () => {
 	const { mutate: addFavorite } = useAddFavorite();
 	const { mutate: removeFavorite } = useRemoveFavorite();
 	const [searchQuery, setSearchQuery] = useState("");
-	const { data: systemAdmin } = useAdmin();
-	const { data: userRoles } = useUserRoles();
-
-	const specialAccess = hasSpecialAccess(userRoles);
-	const adminAccess = hasAdminAccess(systemAdmin);
-
-	const allowedOptions = getAllowedChunithmOptions(specialAccess || adminAccess);
 
 	const handleToggleFavorite = (songId: number) => {
 		const isFavorited = favoriteSongIds.some((fav) => fav.favId === songId);
 
 		if (isFavorited) {
 			removeFavorite(songId, {
-				onSuccess: () => {
-					toast.success("Removed from favorites");
-				},
-				onError: () => {
-					toast.error("Failed to remove from favorites");
-				},
+				onSuccess: () => toast.success("Removed from favorites"),
+				onError: () => toast.error("Failed to remove from favorites"),
 			});
 		} else {
 			addFavorite(songId, {
-				onSuccess: () => {
-					toast.success("Added to favorites");
-				},
-				onError: () => {
-					toast.error("Failed to add to favorites");
-				},
+				onSuccess: () => toast.success("Added to favorites"),
+				onError: () => toast.error("Failed to add to favorites"),
 			});
 		}
 	};
 
-	const filteredSongs = songs.filter((song) => {
-		const isAllowed = allowedOptions.includes(song.option || "");
-		return song.chartId === 3 && song.title?.toLowerCase().includes(searchQuery.toLowerCase()) && isAllowed;
-	});
+	const filteredSongs = songs.filter(
+		(song) => song.chartId === 3 && song.title?.toLowerCase().includes(searchQuery.toLowerCase())
+	);
 
 	const columns = {
 		Jacket: (row: ChunithmFavorite) => (

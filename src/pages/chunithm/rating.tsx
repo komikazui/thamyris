@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import Header from "@/components/common/header";
 import QouteCard from "@/components/common/qoutecard";
 import TableComponent from "@/components/common/table";
-import { useAdmin } from "@/hooks/admin";
 import {
 	useChunithmVersion,
 	useHighestRating,
@@ -13,9 +12,7 @@ import {
 	useUserRatingBaseNewList,
 	useUserRatingBaseNextList,
 } from "@/hooks/chunithm";
-import { useUserRoles } from "@/hooks/users";
-import { ChunitmRating, getAllowedChunithmOptions, getDifficultyFromChunithmChart } from "@/utils/helpers";
-import { hasAdminAccess, hasSpecialAccess } from "@/utils/permissions";
+import { ChunitmRating, getDifficultyFromChunithmChart } from "@/utils/helpers";
 
 interface ChunithmRatingData {
 	title: string;
@@ -42,37 +39,26 @@ const ChunithmRatingFrames = () => {
 
 	const isVerseOrAbove = Number(version) >= 17;
 
-	const { data: systemAdmin } = useAdmin();
-	const { data: userRoles } = useUserRoles();
+	const handleSearch = (search: { value?: string }) => {
+		setSearchQuery(search.value || "");
+	};
 
-	const specialAccess = hasSpecialAccess(userRoles);
-	const adminAccess = hasAdminAccess(systemAdmin);
-
-	const allowedOptions = getAllowedChunithmOptions(specialAccess || adminAccess);
+	const filterData = (data: ChunithmRatingData[]) => {
+		return data.filter((song) => song.title?.toLowerCase().includes(searchQuery.toLowerCase()));
+	};
 
 	const ratingTable = {
 		Song: (row: ChunithmRatingData) => <span className="text-primary truncate">{row.title}</span>,
 		Difficulty: (row: ChunithmRatingData) => getDifficultyFromChunithmChart(row.chartId ?? 0),
-		Level: (row: ChunithmRatingData) => row.level,
-		Score: (row: ChunithmRatingData) => row.score?.toLocaleString(),
+		Level: (row: ChunithmRatingData) => row.level ?? "N/A",
+		Score: (row: ChunithmRatingData) => row.score?.toLocaleString() ?? "N/A",
 		Rating: (row: ChunithmRatingData) => ((ChunitmRating(row.level!, row.score!) ?? 0) / 100).toFixed(2),
 	};
 
 	const recommenedTable = {
 		Song: (row: ChunithmRatingData) => <span className="text-primary truncate">{row.title}</span>,
 		Difficulty: (row: ChunithmRatingData) => getDifficultyFromChunithmChart(row.chartId ?? 0),
-		Level: (row: ChunithmRatingData) => row.level,
-	};
-
-	const handleSearch = (search: { value?: string }) => {
-		setSearchQuery(search.value || "");
-	};
-
-	const filterData = (data: ChunithmRatingData[]) => {
-		return data.filter((song) => {
-			const isAllowed = allowedOptions.includes(song.option || "");
-			return song.title?.toLowerCase().includes(searchQuery.toLowerCase()) && isAllowed;
-		});
+		Level: (row: ChunithmRatingData) => row.level ?? "N/A",
 	};
 
 	return (
@@ -99,10 +85,10 @@ const ChunithmRatingFrames = () => {
 									)}
 									<div className="flex flex-col">
 										<span className="text-primary font-bold">
-											Player Rating: {((playerRating[0]?.playerRating ?? 0) / 100).toFixed(2) || "Loading..."}
+											Player Rating: {((playerRating[0]?.playerRating ?? 0) / 100).toFixed(2)}
 										</span>
 										<span className="text-primary font-bold">
-											Highest Rating: {((highestRating[0]?.highestRating ?? 0) / 100).toFixed(2) || "Loading..."}
+											Highest Rating: {((highestRating[0]?.highestRating ?? 0) / 100).toFixed(2)}
 										</span>
 									</div>
 								</div>

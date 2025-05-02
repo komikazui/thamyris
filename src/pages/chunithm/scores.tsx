@@ -1,20 +1,11 @@
-import { useState } from "react";
-import React from "react";
+import React, { useState } from "react";
 
 import Header from "@/components/common/header";
 import Spinner from "@/components/common/spinner";
 import TableComponent from "@/components/common/table";
-import { useAdmin } from "@/hooks/admin";
 import { useChunithmScores, useChunithmVersion } from "@/hooks/chunithm";
-import { useUserRoles } from "@/hooks/users";
 import { cdnUrl } from "@/lib/constants";
-import {
-	getAllowedChunithmOptions,
-	getChunithmComboStatus,
-	getChunithmGrade,
-	getDifficultyFromChunithmChart,
-} from "@/utils/helpers";
-import { hasAdminAccess, hasSpecialAccess } from "@/utils/permissions";
+import { getChunithmComboStatus, getChunithmGrade, getDifficultyFromChunithmChart } from "@/utils/helpers";
 
 interface ChunithmScore {
 	id: number;
@@ -24,7 +15,6 @@ interface ChunithmScore {
 	playerRating?: number;
 	chartId?: number;
 	userPlayDate?: string;
-	option?: string;
 	isFullCombo?: number;
 	isAllJustice?: number;
 }
@@ -36,19 +26,11 @@ const ChunithmScorePage = () => {
 		data: ChunithmScore[];
 		isLoading: boolean;
 	};
-	const { data: systemAdmin } = useAdmin();
-	const { data: userRoles } = useUserRoles();
+
 	const version = useChunithmVersion();
 
-	const specialAccess = hasSpecialAccess(userRoles);
-	const adminAccess = hasAdminAccess(systemAdmin);
+	const filteredScores = scores.filter((score) => score.title?.toLowerCase().includes(searchQuery.toLowerCase()));
 
-	const allowedOptions = getAllowedChunithmOptions(specialAccess || adminAccess);
-
-	const filteredScores = scores.filter((score) => {
-		const isAllowed = allowedOptions.includes(score.option || "");
-		return score.title?.toLowerCase().includes(searchQuery.toLowerCase()) && isAllowed;
-	});
 	const columns = {
 		Song: (row: ChunithmScore) => (
 			<div className="flex items-center gap-3">
@@ -75,7 +57,6 @@ const ChunithmScorePage = () => {
 				} else if (comboStatus.includes("AJ")) {
 					colorClass = "text-yellow-400";
 				}
-
 				return <span className={colorClass}>{comboStatus}</span>;
 			}
 			return "-";
@@ -92,9 +73,7 @@ const ChunithmScorePage = () => {
 			<div className="relative flex-1 overflow-auto">
 				<Header title="Overview" />
 				<div className="flex h-[calc(100vh-64px)] items-center justify-center">
-					<div className="text-lg text-gray-400">
-						<Spinner size={24} color="#ffffff" />
-					</div>
+					<Spinner size={24} color="#ffffff" />
 				</div>
 			</div>
 		);
