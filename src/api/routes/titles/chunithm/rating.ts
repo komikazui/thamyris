@@ -36,7 +36,6 @@ const UserRatingFramesRoutes = new Hono()
 					m.title,
 					m.artist,
 					m.level,
-					m.option,
 					m.genre,
 					m.chartId,
 					m.jacketPath
@@ -79,7 +78,6 @@ const UserRatingFramesRoutes = new Hono()
 					m.title,
 					m.artist,
 					m.level,
-					m.option,
 					m.genre,
 					m.chartId,
 					m.jacketPath
@@ -121,7 +119,6 @@ const UserRatingFramesRoutes = new Hono()
 					m.title,
 					m.artist,
 					m.level,
-					m.option,
 					m.genre,
 					m.chartId,
 					m.jacketPath
@@ -166,7 +163,6 @@ const UserRatingFramesRoutes = new Hono()
 					m.title,
 					m.artist,
 					m.level,
-					m.option,
 					m.genre,
 					m.chartId,
 					m.jacketPath

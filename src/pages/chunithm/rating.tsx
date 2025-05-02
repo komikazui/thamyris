@@ -39,26 +39,28 @@ const ChunithmRatingFrames = () => {
 
 	const isVerseOrAbove = Number(version) >= 17;
 
-	const handleSearch = (search: { value?: string }) => {
-		setSearchQuery(search.value || "");
-	};
-
-	const filterData = (data: ChunithmRatingData[]) => {
-		return data.filter((song) => song.title?.toLowerCase().includes(searchQuery.toLowerCase()));
-	};
-
 	const ratingTable = {
 		Song: (row: ChunithmRatingData) => <span className="text-primary truncate">{row.title}</span>,
 		Difficulty: (row: ChunithmRatingData) => getDifficultyFromChunithmChart(row.chartId ?? 0),
-		Level: (row: ChunithmRatingData) => row.level ?? "N/A",
-		Score: (row: ChunithmRatingData) => row.score?.toLocaleString() ?? "N/A",
+		Level: (row: ChunithmRatingData) => row.level,
+		Score: (row: ChunithmRatingData) => row.score?.toLocaleString(),
 		Rating: (row: ChunithmRatingData) => ((ChunitmRating(row.level!, row.score!) ?? 0) / 100).toFixed(2),
 	};
 
 	const recommenedTable = {
 		Song: (row: ChunithmRatingData) => <span className="text-primary truncate">{row.title}</span>,
 		Difficulty: (row: ChunithmRatingData) => getDifficultyFromChunithmChart(row.chartId ?? 0),
-		Level: (row: ChunithmRatingData) => row.level ?? "N/A",
+		Level: (row: ChunithmRatingData) => row.level,
+	};
+
+	const handleSearch = (search: { value?: string }) => {
+		setSearchQuery(search.value || "");
+	};
+
+	const filterData = (data: ChunithmRatingData[]) => {
+		return data.filter((song) => {
+			return song.title?.toLowerCase().includes(searchQuery.toLowerCase());
+		});
 	};
 
 	return (
@@ -85,10 +87,10 @@ const ChunithmRatingFrames = () => {
 									)}
 									<div className="flex flex-col">
 										<span className="text-primary font-bold">
-											Player Rating: {((playerRating[0]?.playerRating ?? 0) / 100).toFixed(2)}
+											Player Rating: {((playerRating[0]?.playerRating ?? 0) / 100).toFixed(2) || "Loading..."}
 										</span>
 										<span className="text-primary font-bold">
-											Highest Rating: {((highestRating[0]?.highestRating ?? 0) / 100).toFixed(2)}
+											Highest Rating: {((highestRating[0]?.highestRating ?? 0) / 100).toFixed(2) || "Loading..."}
 										</span>
 									</div>
 								</div>
