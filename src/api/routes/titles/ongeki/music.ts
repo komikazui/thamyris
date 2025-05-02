@@ -10,10 +10,23 @@ const OngekiStaticMusic = new Hono().get("music", async (c) => {
 		const version = versions.ongeki_version;
 
 		const results = await db.select<DB.OngekiStaticMusic>(
-			`SELECT id, songId, chartId, title, level, artist, genre, jacketPath
-       FROM ongeki_static_music
-       WHERE version = ?
-		   ORDER BY id DESC`,
+			`SELECT 
+			m.songId,
+			m.title,
+			m.artist,
+			m.jacketPath,
+			m.genre,
+			m.level,
+			m.chartId,
+			m.opt
+		FROM 
+			chuni_static_music m
+		LEFT JOIN 
+			chuni_static_opts o ON m.opt = o.id
+		WHERE 
+			m.version = ? AND o.isEnable = 1
+		ORDER BY 
+			m.id DESC`,
 			[version]
 		);
 		return c.json(results);
