@@ -46,7 +46,6 @@ const ChunithmAllSongs = () => {
 		Genre: (row: ChunithmSong) => row.genre || "N/A",
 	};
 
-	// Filter songs based on searchQuery only
 	const filteredSongs = songs.filter((song) => song.title?.toLowerCase().includes(searchQuery.toLowerCase()));
 
 	if (isLoadingSongs) {
