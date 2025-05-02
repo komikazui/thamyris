@@ -20,9 +20,9 @@ const OngekiStaticMusic = new Hono().get("music", async (c) => {
 			m.chartId,
 			m.opt
 		FROM 
-			chuni_static_music m
+			ongeki_static_music m
 		LEFT JOIN 
-			chuni_static_opts o ON m.opt = o.id
+			ongeki_static_opts o ON m.opt = o.id
 		WHERE 
 			m.version = ? AND o.isEnable = 1
 		ORDER BY 
