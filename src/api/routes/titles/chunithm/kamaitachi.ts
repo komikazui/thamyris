@@ -56,7 +56,7 @@ const ChunithmKamaitachiRoutes = new Hono().get("export", async (c) => {
 		const profile = profileResults.length > 0 ? profileResults[0] : null;
 
 		const playlogResults = await db.query(
-			`SELECT romVersion, userPlayDate, musicId, level, score, maxCombo,
+			`SELECT DISTINCT romVersion, userPlayDate, musicId, level, score, maxCombo,
 				judgeGuilty, judgeAttack, judgeJustice, judgeCritical, judgeHeaven,
 				isFullCombo, isAllJustice, isClear, s.categoryId AS skillCategoryId
 			FROM chuni_score_playlog p
