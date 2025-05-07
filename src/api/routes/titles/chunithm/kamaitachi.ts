@@ -8,12 +8,14 @@ import { rethrowWithMessage } from "@/api/utils/error";
 const TACHI_CLASSES = [undefined, "DAN_I", "DAN_II", "DAN_III", "DAN_IV", "DAN_V", "DAN_INFINITE"] as const;
 const TACHI_DIFFICULTIES = ["BASIC", "ADVANCED", "EXPERT", "MASTER", "ULTIMA"] as const;
 
-type BatchManualLamp = "ALL JUSTICE CRITICAL" | "ALL JUSTICE" | "FULL COMBO" | "CLEAR" | "FAILED";
+type BatchManualClearLamp = "CATASTROPHY" | "ABSOLUTE" | "BRAVE" | "HARD" | "CLEAR" | "FAILED";
+type BatchManualNoteLamp = "ALL JUSTICE CRITICAL" | "ALL JUSTICE" | "FULL COMBO" | "NONE";
 interface BatchManualScore {
 	identifier: string;
 	matchType: "inGameID";
 	score: number;
-	lamp: BatchManualLamp;
+	noteLamp: BatchManualNoteLamp;
+	clearLamp: BatchManualClearLamp;
 	difficulty: "BASIC" | "ADVANCED" | "EXPERT" | "MASTER" | "ULTIMA";
 	timeAchieved?: number;
 	judgements?: {
@@ -55,10 +57,12 @@ const ChunithmKamaitachiRoutes = new Hono().get("export", async (c) => {
 
 		const playlogResults = await db.query(
 			`SELECT romVersion, userPlayDate, musicId, level, score, maxCombo,
-              judgeGuilty, judgeAttack, judgeJustice, judgeCritical, judgeHeaven,
-              isFullCombo, isAllJustice, isClear
-       FROM chuni_score_playlog
-       WHERE user = ?`,
+				judgeGuilty, judgeAttack, judgeJustice, judgeCritical, judgeHeaven,
+				isFullCombo, isAllJustice, isClear, s.categoryId AS skillCategoryId
+			FROM chuni_score_playlog p
+			LEFT JOIN daphnis_static_skill s ON s.skillId = p.skillId
+			WHERE user = ?
+			GROUP BY p.id`,
 			[userId]
 		);
 
@@ -91,6 +95,7 @@ const ChunithmKamaitachiRoutes = new Hono().get("export", async (c) => {
 				isAllJustice,
 				isFullCombo,
 				isClear,
+				skillCategoryId,
 			} = log;
 
 			if (
@@ -115,21 +120,35 @@ const ChunithmKamaitachiRoutes = new Hono().get("export", async (c) => {
 				continue;
 			}
 
-			let lamp: BatchManualLamp = "FAILED";
+			let noteLamp: BatchManualNoteLamp = "NONE";
+			let clearLamp: BatchManualClearLamp = "FAILED";
 
-			if (isAllJustice && judgeJustice === 0) {
-				lamp = "ALL JUSTICE CRITICAL";
+			if (isAllJustice && score === 1_010_000) {
+				noteLamp = "ALL JUSTICE CRITICAL";
 			} else if (isAllJustice) {
-				lamp = "ALL JUSTICE";
+				noteLamp = "ALL JUSTICE";
 			} else if (isFullCombo) {
-				lamp = "FULL COMBO";
-			} else if (isClear) {
-				lamp = "CLEAR";
+				noteLamp = "FULL COMBO";
+			}
+
+			if (isClear) {
+				if (skillCategoryId === 10) {
+					clearLamp = "CATASTROPHY";
+				} else if (skillCategoryId === 9) {
+					clearLamp = "ABSOLUTE";
+				} else if (skillCategoryId === 16) {
+					clearLamp = "BRAVE";
+				} else if (skillCategoryId === 6 || skillCategoryId === 7 || skillCategoryId === 15) {
+					clearLamp = "HARD";
+				} else {
+					clearLamp = "CLEAR";
+				}
 			}
 
 			const tachiScore: BatchManualScore = {
 				score,
-				lamp,
+				noteLamp,
+				clearLamp,
 				identifier: musicId.toString(),
 				matchType: "inGameID",
 				difficulty: TACHI_DIFFICULTIES[level],
