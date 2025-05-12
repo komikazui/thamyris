@@ -12,6 +12,7 @@ import {
 	useUserRatingBaseNewList,
 	useUserRatingBaseNextList,
 } from "@/hooks/chunithm";
+import { cdnUrl } from "@/lib/constants";
 import { ChunitmRating, getDifficultyFromChunithmChart } from "@/utils/helpers";
 
 interface ChunithmRatingData {
@@ -23,7 +24,7 @@ interface ChunithmRatingData {
 	playerRating?: number;
 	highestRating?: number;
 	chartId?: number;
-	option?: string;
+	jacketPath: string;
 }
 
 const ChunithmRatingFrames = () => {
@@ -40,7 +41,18 @@ const ChunithmRatingFrames = () => {
 	const isVerseOrAbove = Number(version) >= 17;
 
 	const ratingTable = {
-		Song: (row: ChunithmRatingData) => <span className="text-primary truncate">{row.title}</span>,
+		Song: (row: ChunithmRatingData) => (
+			<div className="flex items-center gap-3">
+				<img
+					width={40}
+					height={40}
+					src={`${cdnUrl}/chunithm/jacket/${row.jacketPath?.replace(".dds", ".png")}`}
+					alt={row.title}
+					className="flex-shrink-0"
+				/>
+				<span className="text-primary truncate">{row.title}</span>
+			</div>
+		),
 		Difficulty: (row: ChunithmRatingData) => getDifficultyFromChunithmChart(row.chartId ?? 0),
 		Level: (row: ChunithmRatingData) => row.level,
 		Score: (row: ChunithmRatingData) => row.score?.toLocaleString(),
@@ -48,7 +60,18 @@ const ChunithmRatingFrames = () => {
 	};
 
 	const recommenedTable = {
-		Song: (row: ChunithmRatingData) => <span className="text-primary truncate">{row.title}</span>,
+		Song: (row: ChunithmRatingData) => (
+			<div className="flex items-center gap-3">
+				<img
+					width={40}
+					height={40}
+					src={`${cdnUrl}/chunithm/jacket/${row.jacketPath?.replace(".dds", ".png")}`}
+					alt={row.title}
+					className="flex-shrink-0"
+				/>
+				<span className="text-primary truncate">{row.title}</span>
+			</div>
+		),
 		Difficulty: (row: ChunithmRatingData) => getDifficultyFromChunithmChart(row.chartId ?? 0),
 		Level: (row: ChunithmRatingData) => row.level,
 	};

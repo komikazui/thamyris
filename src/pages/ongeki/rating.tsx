@@ -20,6 +20,7 @@ import {
 	useUserRatingBaseNextList,
 } from "@/hooks/ongeki";
 import { useUserNewRatingBasePScoreList } from "@/hooks/ongeki/use-new-rating";
+import { cdnUrl } from "@/lib/constants";
 import {
 	OngekiGekForceRating,
 	OngekiRating,
@@ -38,6 +39,7 @@ interface OngekiRatingData {
 	isFullCombo?: number;
 	isAllBreake?: number;
 	isFullBell?: number;
+	jacketPath: string;
 }
 
 const OngekiRatingFrames = () => {
@@ -64,7 +66,12 @@ const OngekiRatingFrames = () => {
 	const isRefreshOrAbove = Number(version) >= 8;
 
 	const ratingTableColumns = {
-		Song: (row: OngekiRatingData) => <span className="text-primary truncate">{row.title}</span>,
+		Song: (row: OngekiRatingData) => (
+			<div className="flex items-center gap-3">
+				<img width={40} height={40} src={`${cdnUrl}/ongeki/jacket/${row.jacketPath}`} className="flex-shrink-0" />
+				<span className="text-primary truncate">{row.title}</span>
+			</div>
+		),
 		Difficulty: (row: OngekiRatingData) => getDifficultyFromOngekiChart(row.chartId ?? 0),
 		Level: (row: OngekiRatingData) => row.level,
 		"Technical Score": (row: OngekiRatingData) => row.techScoreMax?.toLocaleString(),
@@ -114,13 +121,23 @@ const OngekiRatingFrames = () => {
 	};
 
 	const recommendedTable = {
-		Song: (row: OngekiRatingData) => <span className="text-primary truncate">{row.title}</span>,
+		Song: (row: OngekiRatingData) => (
+			<div className="flex items-center gap-3">
+				<img width={40} height={40} src={`${cdnUrl}/ongeki/jacket/${row.jacketPath}`} className="flex-shrink-0" />
+				<span className="text-primary truncate">{row.title}</span>
+			</div>
+		),
 		Difficulty: (row: OngekiRatingData) => getDifficultyFromOngekiChart(row.chartId ?? 0),
 		Level: (row: OngekiRatingData) => row.level,
 	};
 
 	const pScoreTableColumns = {
-		Song: (row: OngekiRatingData) => <span className="text-primary truncate">{row.title}</span>,
+		Song: (row: OngekiRatingData) => (
+			<div className="flex items-center gap-3">
+				<img width={40} height={40} src={`${cdnUrl}/ongeki/jacket/${row.jacketPath}`} className="flex-shrink-0" />
+				<span className="text-primary truncate">{row.title}</span>
+			</div>
+		),
 		Difficulty: (row: OngekiRatingData) => getDifficultyFromOngekiChart(row.chartId ?? 0),
 		Level: (row: OngekiRatingData) => row.level,
 		"P-Score": (row: OngekiRatingData) => {

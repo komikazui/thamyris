@@ -42,7 +42,8 @@ const NewUserRatingFramesRoutes = new Hono()
           m.noteCount,
           m.level,
           m.genre,
-          m.chartId
+          m.chartId,
+          m.jacketPath
         FROM ongeki_profile_rating r
         JOIN ongeki_score_best b 
           ON r.musicId = b.musicId 
@@ -86,7 +87,8 @@ const NewUserRatingFramesRoutes = new Hono()
           m.level,
           m.genre,
           m.chartId,
-          m.noteCount
+          m.noteCount,
+          m.jacketPath
         FROM ongeki_profile_rating r
         JOIN ongeki_score_best b 
           ON r.musicId = b.musicId 
@@ -131,7 +133,8 @@ const NewUserRatingFramesRoutes = new Hono()
           m.level,
           m.genre,
           m.chartId,
-          m.noteCount
+          m.noteCount,
+          m.jacketPath
         FROM ongeki_profile_rating r
         JOIN ongeki_score_best b 
           ON r.musicId = b.musicId 
@@ -176,7 +179,8 @@ const NewUserRatingFramesRoutes = new Hono()
           m.level,
           m.genre,
           m.chartId,
-          m.noteCount
+          m.noteCount,
+          m.jacketPath
         FROM ongeki_profile_rating r
         JOIN ongeki_score_best b 
           ON r.musicId = b.musicId 
