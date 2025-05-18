@@ -17,7 +17,8 @@ interface TableProps<T> {
 	title?: string;
 }
 
-const TableComponent: React.FC<TableProps<any>> = ({ columns, data, onSearch, title }) => { // Add title to props
+const TableComponent: React.FC<TableProps<any>> = ({ columns, data, onSearch, title }) => {
+	// Add title to props
 	const [searchQuery, setSearchQuery] = useState<string>("");
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const itemsPerPage = 10;
@@ -33,7 +34,7 @@ const TableComponent: React.FC<TableProps<any>> = ({ columns, data, onSearch, ti
 
 	return (
 		<div className="bg-card w-full rounded-md p-2 sm:p-4">
-			        <h2 className="text-primary mb-4 text-xl font-semibold">{title}</h2>
+			<h2 className="text-primary mb-4 text-xl font-semibold">{title}</h2>
 
 			<div className="mb-4">
 				<input

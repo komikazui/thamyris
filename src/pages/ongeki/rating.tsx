@@ -2,9 +2,12 @@ import React, { useState } from "react";
 
 import { Star } from "lucide-react";
 
+import GridComponent, { ScoreGrid } from "@/components/common/grid";
 import Header from "@/components/common/header";
 import QouteCard from "@/components/common/qoutecard";
 import TableComponent from "@/components/common/table";
+import ViewToggle from "@/components/common/view-toggle";
+// Import the new ViewToggle component
 import {
 	useHighestRating,
 	useNewHighestRating,
@@ -43,7 +46,15 @@ interface OngekiRatingData {
 }
 
 const OngekiRatingFrames = () => {
-	const [searchQuery, setSearchQuery] = useState("");
+	const [searchQueries, setSearchQueries] = useState({
+		base: "",
+		pScore: "",
+		new: "",
+		next: "",
+		combined: "", // For combined table view
+	});
+
+	const [viewMode, setViewMode] = useState<"separate" | "combined">("separate"); // "separate" or "combined"
 
 	const version = useOngekiVersion();
 
@@ -158,12 +169,76 @@ const OngekiRatingFrames = () => {
 			),
 	};
 
-	const handleSearch = (search: { value?: string }) => {
-		setSearchQuery(search.value || "");
+	// Generic handler function for all search inputs
+	const handleSearch = (key: keyof typeof searchQueries) => (search: { value?: string }) => {
+		setSearchQueries((prev) => ({ ...prev, [key]: search.value || "" }));
 	};
 
-	const filterData = (data: any[]) =>
-		data.filter((song) => song.title?.toLowerCase().includes(searchQuery.toLowerCase()));
+	// Generic filter function for all data filtering
+	const filterData = (data: any[], key: keyof typeof searchQueries) =>
+		data.filter((song) => song.title?.toLowerCase().includes(searchQueries[key].toLowerCase()));
+
+	const handleBaseSearch = handleSearch("base");
+	const handlePScoreSearch = handleSearch("pScore");
+	const handleNewSearch = handleSearch("new");
+	const handleNextSearch = handleSearch("next");
+	const handleCombinedSearch = handleSearch("combined");
+
+	const filterBaseData = (data: any[]) => filterData(data, "base");
+	const filterPScoreData = (data: any[]) => filterData(data, "pScore");
+	const filterNewData = (data: any[]) => filterData(data, "new");
+	const filterNextData = (data: any[]) => filterData(data, "next");
+	const filterCombinedData = (data: any[]) => filterData(data, "combined");
+
+	const getCombinedData = () => {
+		if (isRefreshOrAbove) {
+			// For newer version
+			const combinedData = [
+				...newBaseSongs.map((song) => ({
+					...song,
+					source: "Top 50 fumen",
+					hasLamp: true,
+					hasTechScore: true,
+					hasRate: true,
+				})),
+				...newPscoreSongs.map((song) => ({
+					...song,
+					source: "Top 50 PScore",
+					hasPscore: true,
+					hasRating: true,
+					hasStars: true,
+				})),
+				...newNewSongs.map((song) => ({
+					...song,
+					source: "Top 10 current fumens",
+					hasLamp: true,
+					hasTechScore: true,
+					hasRate: true,
+				})),
+			];
+			return filterCombinedData(combinedData);
+		} else {
+			// For older version
+			const combinedData = [
+				...baseSongs.map((song) => ({ ...song, source: "Top 30 fumen", hasLamp: true, hasTechScore: true, hasRate: true })),
+				...newSongs.map((song) => ({
+					...song,
+					source: "Recent 15 fumen",
+					hasLamp: true,
+					hasTechScore: true,
+					hasRate: true,
+				})),
+				...hotSongs.map((song) => ({
+					...song,
+					source: "Recent 10 current fumen",
+					hasLamp: true,
+					hasTechScore: true,
+					hasRate: true,
+				})),
+			];
+			return filterCombinedData(combinedData);
+		}
+	};
 
 	return (
 		<div className="relative flex-1 overflow-auto">
@@ -175,19 +250,6 @@ const OngekiRatingFrames = () => {
 							header="Single track ratings are calculated from fumen constants and scores."
 							welcomeMessage={
 								<div className="flex flex-col space-y-1">
-									{/* {isRefreshOrAbove ? (
-										<>
-											<span>• (sum of NEW top 10) ÷ 50</span>
-											<span>• (sum of BEST top 50) ÷ 50</span>
-											<span>• (sum of PLATINUM top 50) ÷ 50</span>
-										</>
-									) : (
-										<>
-											<span>• 30 highest ratings from old version fumens</span>
-											<span>• 15 highest ratings from new version fumens</span>
-											<span>• 10 highest ratings from recent plays, excluding Lunatic difficulty</span>
-										</>
-									)} */}
 									<div className="flex flex-col">
 										{isRefreshOrAbove ? (
 											<>
@@ -215,61 +277,86 @@ const OngekiRatingFrames = () => {
 						/>
 					</div>
 
+					{/* View Mode Toggle */}
+					<ViewToggle viewMode={viewMode} onToggle={() => setViewMode(viewMode === "separate" ? "combined" : "separate")} />
+
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
-						{isRefreshOrAbove ? (
-							<>
-								<TableComponent
-									data={filterData(newBaseSongs)}
-									columns={ratingTableColumns}
-									onSearch={handleSearch}
-									title="Top 50 fumen"
-								/>
-								<TableComponent
-									data={filterData(newPscoreSongs)}
-									columns={pScoreTableColumns}
-									onSearch={handleSearch}
-									title="Top 50 PScore"
-								/>
-								<TableComponent
-									data={filterData(newNewSongs)}
-									columns={ratingTableColumns}
-									onSearch={handleSearch}
-									title="Top 10 current fumens"
-								/>
-								<TableComponent
-									data={filterData(newNextSongs)}
-									columns={recommendedTable}
-									onSearch={handleSearch}
-									title="Recommended fumens"
-								/>
-							</>
+						{viewMode === "separate" ? (
+							// Separate Tables View
+							isRefreshOrAbove ? (
+								<>
+									<TableComponent
+										data={filterBaseData(newBaseSongs)}
+										columns={ratingTableColumns}
+										onSearch={handleBaseSearch}
+										title="Top 50 fumen"
+									/>
+									<TableComponent
+										data={filterPScoreData(newPscoreSongs)}
+										columns={pScoreTableColumns}
+										onSearch={handlePScoreSearch}
+										title="Top 50 PScore"
+									/>
+									<TableComponent
+										data={filterNewData(newNewSongs)}
+										columns={ratingTableColumns}
+										onSearch={handleNewSearch}
+										title="Top 10 current fumens"
+									/>
+									<TableComponent
+										data={filterNextData(newNextSongs)}
+										columns={recommendedTable}
+										onSearch={handleNextSearch}
+										title="Recommended fumens"
+									/>
+								</>
+							) : (
+								<>
+									<TableComponent
+										data={filterBaseData(baseSongs)}
+										columns={ratingTableColumns}
+										onSearch={handleBaseSearch}
+										title="Top 30 fumen"
+									/>
+									<TableComponent
+										data={filterNewData(newSongs)}
+										columns={ratingTableColumns}
+										onSearch={handleNewSearch}
+										title="Recent 15 fumen"
+									/>
+									<TableComponent
+										data={filterNextData(hotSongs)}
+										columns={ratingTableColumns}
+										onSearch={handleNextSearch}
+										title="Recent 10 current fumen"
+									/>
+									<TableComponent
+										data={filterNextData(nextSongs)}
+										columns={ratingTableColumns}
+										onSearch={handleNextSearch}
+										title="Recommended fumens"
+									/>
+								</>
+							)
 						) : (
-							<>
-								<TableComponent
-									data={filterData(baseSongs)}
-									columns={ratingTableColumns}
-									onSearch={handleSearch}
-									title="Top 30 fumen"
-								/>
-								<TableComponent
-									data={filterData(newSongs)}
-									columns={ratingTableColumns}
-									onSearch={handleSearch}
-									title="Recent 15 fumen"
-								/>
-								<TableComponent
-									data={filterData(hotSongs)}
-									columns={ratingTableColumns}
-									onSearch={handleSearch}
-									title="Recent 10 current fumen"
-								/>
-								<TableComponent
-									data={filterData(nextSongs)}
-									columns={ratingTableColumns}
-									onSearch={handleSearch}
-									title="Recommended fumens"
-								/>
-							</>
+							// Combined Grid View
+							<GridComponent
+								data={getCombinedData()}
+								onSearch={handleCombinedSearch}
+								title="All Fumen Data"
+								renderItem={(item, index) => (
+									<ScoreGrid
+										key={index}
+										item={item}
+										gameType="ongeki"
+										getDifficulty={getDifficultyFromOngekiChart}
+										getComboStatus={getOngekiComboStatus}
+										isRefreshOrAbove={isRefreshOrAbove}
+										getOngekiRating={OngekiRating}
+										getOngekiGekForceRating={OngekiGekForceRating}
+									/>
+								)}
+							/>
 						)}
 					</div>
 				</div>

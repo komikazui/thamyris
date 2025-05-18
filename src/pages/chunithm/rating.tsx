@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 
+import GridComponent, { ScoreGrid } from "@/components/common/grid";
 import Header from "@/components/common/header";
 import QouteCard from "@/components/common/qoutecard";
 import TableComponent from "@/components/common/table";
+import ViewToggle from "@/components/common/view-toggle";
+// Import the new ViewToggle component
 import {
 	useChunithmVersion,
 	useHighestRating,
@@ -13,7 +16,7 @@ import {
 	useUserRatingBaseNextList,
 } from "@/hooks/chunithm";
 import { cdnUrl } from "@/lib/constants";
-import { ChunitmRating, getDifficultyFromChunithmChart } from "@/utils/helpers";
+import { ChunitmRating, getChunithmComboStatus, getDifficultyFromChunithmChart } from "@/utils/helpers";
 
 interface ChunithmRatingData {
 	title: string;
@@ -25,10 +28,25 @@ interface ChunithmRatingData {
 	highestRating?: number;
 	chartId?: number;
 	jacketPath: string;
+	source?: string;
+	hasScore?: boolean;
+	hasRating?: boolean;
+	hasType?: boolean;
+	isFullCombo?: number;
+	isClear?: number;
+	isAllJustice?: number;
 }
 
 const ChunithmRatingFrames = () => {
-	const [searchQuery, setSearchQuery] = useState("");
+	const [searchQueries, setSearchQueries] = useState({
+		base: "",
+		current: "",
+		recent: "",
+		potential: "",
+		combined: "",
+	});
+
+	const [viewMode, setViewMode] = useState<"separate" | "combined">("separate"); // "separate" or "combined"
 
 	const version = useChunithmVersion();
 	const { data: baseSongs = [] } = useUserRatingBaseList();
@@ -55,6 +73,20 @@ const ChunithmRatingFrames = () => {
 		),
 		Difficulty: (row: ChunithmRatingData) => getDifficultyFromChunithmChart(row.chartId ?? 0),
 		Level: (row: ChunithmRatingData) => row.level,
+
+		"Combo Lamp": (row: ChunithmRatingData) => {
+			const comboStatus = getChunithmComboStatus(row.isFullCombo ?? 0, row.isAllJustice ?? 0);
+			if (comboStatus) {
+				let colorClass = "text-gray-200";
+				if (comboStatus.includes("FC")) {
+					colorClass = "text-cyan-400";
+				} else if (comboStatus.includes("AJ")) {
+					colorClass = "text-yellow-400";
+				}
+				return <span className={colorClass}>{comboStatus}</span>;
+			}
+			return "-";
+		},
 		Score: (row: ChunithmRatingData) => row.score?.toLocaleString(),
 		Rating: (row: ChunithmRatingData) => ((ChunitmRating(row.level!, row.score!) ?? 0) / 100).toFixed(2),
 	};
@@ -76,14 +108,100 @@ const ChunithmRatingFrames = () => {
 		Level: (row: ChunithmRatingData) => row.level,
 	};
 
-	const handleSearch = (search: { value?: string }) => {
-		setSearchQuery(search.value || "");
+	const handleBaseSearch = (search: { value?: string }) => {
+		setSearchQueries((prev) => ({ ...prev, base: search.value || "" }));
 	};
 
-	const filterData = (data: ChunithmRatingData[]) => {
+	const handleCurrentSearch = (search: { value?: string }) => {
+		setSearchQueries((prev) => ({ ...prev, current: search.value || "" }));
+	};
+
+	const handleRecentSearch = (search: { value?: string }) => {
+		setSearchQueries((prev) => ({ ...prev, recent: search.value || "" }));
+	};
+
+	const handlePotentialSearch = (search: { value?: string }) => {
+		setSearchQueries((prev) => ({ ...prev, potential: search.value || "" }));
+	};
+
+	const handleCombinedSearch = (search: { value?: string }) => {
+		setSearchQueries((prev) => ({ ...prev, combined: search.value || "" }));
+	};
+
+	const filterBaseData = (data: ChunithmRatingData[]) => {
 		return data.filter((song) => {
-			return song.title?.toLowerCase().includes(searchQuery.toLowerCase());
+			return song.title?.toLowerCase().includes(searchQueries.base.toLowerCase());
 		});
+	};
+
+	const filterCurrentData = (data: ChunithmRatingData[]) => {
+		return data.filter((song) => {
+			return song.title?.toLowerCase().includes(searchQueries.current.toLowerCase());
+		});
+	};
+
+	const filterRecentData = (data: ChunithmRatingData[]) => {
+		return data.filter((song) => {
+			return song.title?.toLowerCase().includes(searchQueries.recent.toLowerCase());
+		});
+	};
+
+	const filterPotentialData = (data: ChunithmRatingData[]) => {
+		return data.filter((song) => {
+			return song.title?.toLowerCase().includes(searchQueries.potential.toLowerCase());
+		});
+	};
+
+	const filterCombinedData = (data: ChunithmRatingData[]) => {
+		return data.filter((song) => {
+			return song.title?.toLowerCase().includes(searchQueries.combined.toLowerCase());
+		});
+	};
+
+	// Function to combine all data with source information
+	const getCombinedData = () => {
+		if (isVerseOrAbove) {
+			// For newer version
+			const combinedData = [
+				...newSongs.map((song) => ({
+					...song,
+					source: "Top 20 current fumen",
+					hasScore: true,
+					hasRating: true,
+					hasLamp: true,
+					hasType: isVerseOrAbove,
+				})),
+				...hotSongs.map((song) => ({
+					...song,
+					source: "Recent 10 fumen",
+					hasScore: true,
+					hasRating: true,
+					hasLamp: true,
+					hasType: isVerseOrAbove,
+				})),
+				// Removed nextSongs (recommended fumens) from the combined view
+			];
+			return filterCombinedData(combinedData);
+		} else {
+			// For older version
+			const combinedData = [
+				...baseSongs.map((song) => ({
+					...song,
+					source: "Top 30 fumen",
+					hasScore: true,
+					hasRating: true,
+					hasLamp: true,
+				})),
+				...hotSongs.map((song) => ({
+					...song,
+					source: "Recent 10 fumen",
+					hasScore: true,
+					hasRating: true,
+					hasLamp: true,
+				})),
+			];
+			return filterCombinedData(combinedData);
+		}
 	};
 
 	return (
@@ -122,43 +240,66 @@ const ChunithmRatingFrames = () => {
 						/>
 					</div>
 
+					{/* View Mode Toggle */}
+					<ViewToggle viewMode={viewMode} onToggle={() => setViewMode(viewMode === "separate" ? "combined" : "separate")} />
+
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
-						{isVerseOrAbove ? (
-							<>
-								<TableComponent
-									data={filterData(newSongs)}
-									columns={ratingTable}
-									onSearch={handleSearch}
-									title="Top 20 current fumen"
-								/>
-								<TableComponent
-									data={filterData(hotSongs)}
-									columns={ratingTable}
-									onSearch={handleSearch}
-									title="Recent 10 fumen"
-								/>
-								<TableComponent
-									data={filterData(nextSongs)}
-									columns={recommenedTable}
-									onSearch={handleSearch}
-									title="Potential fumens"
-								/>
-							</>
+						{viewMode === "separate" ? (
+							// Separate Tables View
+							isVerseOrAbove ? (
+								<>
+									<TableComponent
+										data={filterCurrentData(newSongs)}
+										columns={ratingTable}
+										onSearch={handleCurrentSearch}
+										title="Top 20 current fumen"
+									/>
+									<TableComponent
+										data={filterRecentData(hotSongs)}
+										columns={ratingTable}
+										onSearch={handleRecentSearch}
+										title="Recent 10 fumen"
+									/>
+									<TableComponent
+										data={filterPotentialData(nextSongs)}
+										columns={recommenedTable}
+										onSearch={handlePotentialSearch}
+										title="Potential fumens"
+									/>
+								</>
+							) : (
+								<>
+									<TableComponent
+										data={filterBaseData(baseSongs)}
+										columns={ratingTable}
+										onSearch={handleBaseSearch}
+										title="Top 30 fumen"
+									/>
+									<TableComponent
+										data={filterRecentData(hotSongs)}
+										columns={ratingTable}
+										onSearch={handleRecentSearch}
+										title="Recent 10 fumen"
+									/>
+								</>
+							)
 						) : (
-							<>
-								<TableComponent
-									data={filterData(baseSongs)}
-									columns={ratingTable}
-									onSearch={handleSearch}
-									title="Top 30 fumen"
-								/>
-								<TableComponent
-									data={filterData(hotSongs)}
-									columns={ratingTable}
-									onSearch={handleSearch}
-									title="Recent 10 fumen"
-								/>
-							</>
+							<GridComponent
+								data={getCombinedData()}
+								onSearch={handleCombinedSearch}
+								title="All Fumen Data"
+								renderItem={(item, index) => (
+									<ScoreGrid
+										key={index}
+										item={item}
+										gameType="chunithm"
+										getDifficulty={getDifficultyFromChunithmChart}
+										getChunithmRating={ChunitmRating}
+										getChunithmComboStatus={getChunithmComboStatus}
+										isVerseOrAbove={isVerseOrAbove}
+									/>
+								)}
+							/>
 						)}
 					</div>
 				</div>

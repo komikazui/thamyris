@@ -13,8 +13,8 @@ type ExtendedChuniProfileRating = DB.ChuniProfileRating & {
 	genre: string;
 	chartId: number;
 	jacketPath: string;
-	isFullCombo: boolean;
-	isAllJustice: boolean;
+	isFullCombo: number;
+	isAllJustice: number;
 };
 
 const UserRatingFramesRoutes = new Hono()

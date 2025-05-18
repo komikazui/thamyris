@@ -596,7 +596,7 @@ export namespace DB {
 		missCount: number | null;
 		maxComboCount: number | null;
 		isFullCombo: number;
-		isAllJustice: boolean | null;
+		isAllJustice: number;
 		isSuccess: number | null;
 		fullChain: number | null;
 		maxChain: number | null;
@@ -613,8 +613,8 @@ export namespace DB {
 		playCount: number | null;
 		scoreMax: number | null;
 		isFullCombo: number;
-		isAllJustice: boolean | null;
-		isSuccess: boolean | null;
+		isAllJustice: number;
+		isSuccess: number | null;
 		scoreRank: number | null;
 		eventId: number | null;
 		lastPlayDate: string | null;
@@ -667,9 +667,9 @@ export namespace DB {
 		eventId: number | null;
 		playerRating: number | null;
 		isNewRecord: boolean | null;
-		isFullCombo: number | null;
+		isFullCombo: number;
 		fullChainKind: number | null;
-		isAllJustice: number | null;
+		isAllJustice: number;
 		isContinue: boolean | null;
 		isFreeToPlay: boolean | null;
 		characterId: number | null;

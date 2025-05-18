@@ -79,7 +79,6 @@ export const getChunithmComboStatus = (isFullCombo: number, isAllJustice: number
 	if (isFullCombo === 1) return "FC";
 	return "";
 };
-
 export const getOngekiClearStatus = (clearStatus: number): string => {
 	if (clearStatus === 2) return "Won";
 	if (clearStatus === 1) return "Draw";
