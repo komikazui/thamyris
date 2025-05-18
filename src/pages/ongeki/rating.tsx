@@ -51,10 +51,10 @@ const OngekiRatingFrames = () => {
 		pScore: "",
 		new: "",
 		next: "",
-		combined: "", // For combined table view
+		combined: "",
 	});
 
-	const [viewMode, setViewMode] = useState<"separate" | "combined">("separate"); // "separate" or "combined"
+	const [viewMode, setViewMode] = useState<"separate" | "combined">("separate");
 
 	const version = useOngekiVersion();
 
@@ -306,7 +306,6 @@ const OngekiRatingFrames = () => {
 
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
 						{viewMode === "separate" ? (
-							// Separate Tables View
 							isRefreshOrAbove ? (
 								<>
 									<TableComponent
@@ -363,7 +362,6 @@ const OngekiRatingFrames = () => {
 								</>
 							)
 						) : (
-							// Combined Grid View
 							<GridComponent
 								data={getCombinedData()}
 								onSearch={handleCombinedSearch}

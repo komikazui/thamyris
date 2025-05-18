@@ -46,7 +46,7 @@ const ChunithmRatingFrames = () => {
 		combined: "",
 	});
 
-	const [viewMode, setViewMode] = useState<"separate" | "combined">("separate"); // "separate" or "combined"
+	const [viewMode, setViewMode] = useState<"separate" | "combined">("separate");
 
 	const version = useChunithmVersion();
 	const { data: baseSongs = [] } = useUserRatingBaseList();
@@ -158,7 +158,6 @@ const ChunithmRatingFrames = () => {
 		});
 	};
 
-	// Function to combine all data with source information
 	const getCombinedData = () => {
 		if (isVerseOrAbove) {
 			// For newer version
@@ -179,7 +178,6 @@ const ChunithmRatingFrames = () => {
 					hasLamp: true,
 					hasType: isVerseOrAbove,
 				})),
-				// Removed nextSongs (recommended fumens) from the combined view
 			];
 			return filterCombinedData(combinedData);
 		} else {
