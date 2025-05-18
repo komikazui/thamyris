@@ -168,14 +168,9 @@ const OngekiRatingFrames = () => {
 			),
 	};
 
-	// Generic handler function for all search inputs
 	const handleSearch = (key: keyof typeof searchQueries) => (search: { value?: string }) => {
 		setSearchQueries((prev) => ({ ...prev, [key]: search.value || "" }));
 	};
-
-	// Generic filter function for all data filtering
-	const filterData = (data: any[], key: keyof typeof searchQueries) =>
-		data.filter((song) => song.title?.toLowerCase().includes(searchQueries[key].toLowerCase()));
 
 	const handleBaseSearch = handleSearch("base");
 	const handlePScoreSearch = handleSearch("pScore");

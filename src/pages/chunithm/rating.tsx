@@ -107,25 +107,15 @@ const ChunithmRatingFrames = () => {
 		Level: (row: ChunithmRatingData) => row.level,
 	};
 
-	const handleBaseSearch = (search: { value?: string }) => {
-		setSearchQueries((prev) => ({ ...prev, base: search.value || "" }));
+	const handleSearch = (key: keyof typeof searchQueries) => (search: { value?: string }) => {
+		setSearchQueries((prev) => ({ ...prev, [key]: search.value || "" }));
 	};
 
-	const handleCurrentSearch = (search: { value?: string }) => {
-		setSearchQueries((prev) => ({ ...prev, current: search.value || "" }));
-	};
-
-	const handleRecentSearch = (search: { value?: string }) => {
-		setSearchQueries((prev) => ({ ...prev, recent: search.value || "" }));
-	};
-
-	const handlePotentialSearch = (search: { value?: string }) => {
-		setSearchQueries((prev) => ({ ...prev, potential: search.value || "" }));
-	};
-
-	const handleCombinedSearch = (search: { value?: string }) => {
-		setSearchQueries((prev) => ({ ...prev, combined: search.value || "" }));
-	};
+	const handleBaseSearch = handleSearch("base");
+	const handleCurrentSearch = handleSearch("current");
+	const handleRecentSearch = handleSearch("recent");
+	const handlePotentialSearch = handleSearch("potential");
+	const handleCombinedSearch = handleSearch("combined");
 
 	const filterBaseData = (data: ChunithmRatingData[]) => {
 		return data.filter((song) => {
