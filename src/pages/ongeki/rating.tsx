@@ -7,7 +7,6 @@ import Header from "@/components/common/header";
 import QouteCard from "@/components/common/qoutecard";
 import TableComponent from "@/components/common/table";
 import ViewToggle from "@/components/common/view-toggle";
-// Import the new ViewToggle component
 import {
 	useHighestRating,
 	useNewHighestRating,
