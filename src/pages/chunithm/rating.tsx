@@ -232,7 +232,6 @@ const ChunithmRatingFrames = () => {
 
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
 						{viewMode === "separate" ? (
-							// Separate Tables View
 							isVerseOrAbove ? (
 								<>
 									<TableComponent
