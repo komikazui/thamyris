@@ -315,8 +315,6 @@ export const ScoreGrid = (props: {
 						)}
 					</>
 				)}
-
-				{/* Source information (common to both) */}
 				<div className="col-span-2 mt-2 flex flex-col">
 					<span className="text-gray-400">Source</span>
 					<span className="text-primary">{item.source}</span>
