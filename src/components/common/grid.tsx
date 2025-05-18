@@ -33,11 +33,6 @@ const GridComponent: React.FC<GridProps<any>> = ({ data, onSearch, title, render
 				// Skip font handling which causes the error
 				fontEmbedCSS: "",
 				skipFonts: true,
-				// Custom filter to avoid problematic elements
-				filter: (node) => {
-					// Keep all non-image nodes
-					return true;
-				},
 			});
 
 			// Convert canvas to blob/data URL manually to avoid font processing issues

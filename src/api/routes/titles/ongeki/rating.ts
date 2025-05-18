@@ -11,12 +11,12 @@ type ExtendedOngekiProfileRating = DB.OngekiProfileRating & {
 	artist: string;
 	genre: string;
 	chartId: number;
-	jacketPath?: string;
+	jacketPath: string;
 	isFullBell?: number;
 	isFullCombo?: number;
 	noteCount: number;
 	platinumScoreStar?: number;
-	platinumScoreMax: number;
+	platinumScoreMax?: number;
 	isAllBreake?: number;
 };
 

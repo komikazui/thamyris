@@ -1042,11 +1042,11 @@ export namespace DB {
 		type: string;
 		index: number;
 		musicId: number | null;
-		platinumScoreMax: number | null;
-		platinumScoreStar: number | null;
+		platinumScoreMax: number ;
+		platinumScoreStar: number;
 		difficultId: number | null;
 		romVersionCode: number | null;
-		techScoreMax: number | null;
+		techScoreMax: number;
 	};
 	export type OngekiProfileRatingLog = {
 		id: number;
@@ -1075,7 +1075,7 @@ export namespace DB {
 	export type OngekiProfileTrainingRoom = {
 		id: number;
 		user: number | null;
-		roomId: number | null;
+		roomId: number | null;	
 		authKey: number | null;
 		cardId: number | null;
 		valueDate: string | null;
@@ -1099,7 +1099,7 @@ export namespace DB {
 		isLock: boolean;
 		clearStatus: number;
 		isStoryWatched: boolean;
-		platinumScoreMax: number | null;
+		platinumScoreMax: number;
 	};
 	export type OngekiScorePlaylog = {
 		id: number;
@@ -1167,8 +1167,8 @@ export namespace DB {
 		techScoreMax: number;
 		noteCount: number;
 		platinumScore: number | null;
-		platinumScoreMax: number | null;
-		platinumScoreStar: number | null;
+		platinumScoreMax: number;
+		platinumScoreStar: number;
 	};
 	export type OngekiScoreTechCount = {
 		id: number;
@@ -1276,7 +1276,7 @@ export namespace DB {
 		artist: string | null;
 		genre: string | null;
 		level: number | null;
-		jacketPath: string | null;
+		jacketPath: string;
 	};
 
 	export type OngekiStaticMusicRankingList = {
@@ -1392,8 +1392,8 @@ export namespace DB {
 		type: number | null;
 		musicId: number | null;
 		level: number | null;
-		techScoreMax: number | null;
-		platinumScoreMax: number | null;
+		techScoreMax: number;
+		platinumScoreMax: number;
 		techRecordDate: string | null;
 		isTechNewRecord: boolean | null;
 	};

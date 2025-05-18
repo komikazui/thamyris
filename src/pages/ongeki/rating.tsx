@@ -42,7 +42,7 @@ interface OngekiRatingData {
 	isFullCombo?: number;
 	isAllBreake?: number;
 	isFullBell?: number;
-	jacketPath: string;
+	jacketPath?: string;
 }
 
 const OngekiRatingFrames = () => {
@@ -184,11 +184,35 @@ const OngekiRatingFrames = () => {
 	const handleNextSearch = handleSearch("next");
 	const handleCombinedSearch = handleSearch("combined");
 
-	const filterBaseData = (data: any[]) => filterData(data, "base");
-	const filterPScoreData = (data: any[]) => filterData(data, "pScore");
-	const filterNewData = (data: any[]) => filterData(data, "new");
-	const filterNextData = (data: any[]) => filterData(data, "next");
-	const filterCombinedData = (data: any[]) => filterData(data, "combined");
+	const filterPScoreData = (data: OngekiRatingData[]) => {
+		return data.filter((song) => {
+			return song.title?.toLowerCase().includes(searchQueries.pScore.toLowerCase());
+		});
+	};
+
+	const filterBaseData = (data: OngekiRatingData[]) => {
+		return data.filter((song) => {
+			return song.title?.toLowerCase().includes(searchQueries.base.toLowerCase());
+		});
+	};
+
+	const filterNewData = (data: OngekiRatingData[]) => {
+		return data.filter((song) => {
+			return song.title?.toLowerCase().includes(searchQueries.new.toLowerCase());
+		});
+	};
+
+	const filterNextData = (data: OngekiRatingData[]) => {
+		return data.filter((song) => {
+			return song.title?.toLowerCase().includes(searchQueries.next.toLowerCase());
+		});
+	};
+
+	const filterCombinedData = (data: OngekiRatingData[]) => {
+		return data.filter((song) => {
+			return song.title?.toLowerCase().includes(searchQueries.combined.toLowerCase());
+		});
+	};
 
 	const getCombinedData = () => {
 		if (isRefreshOrAbove) {
