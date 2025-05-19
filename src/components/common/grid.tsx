@@ -115,7 +115,6 @@ export const ScoreGrid = (props: {
 		isRefreshOrAbove,
 		getChunithmRating,
 		getChunithmComboStatus,
-		isVerseOrAbove,
 	} = props;
 
 	const getImagePath = () => {
@@ -306,19 +305,8 @@ export const ScoreGrid = (props: {
 								<span className="text-primary">{((getChunithmRating(item.level!, item.score!) ?? 0) / 100).toFixed(2)}</span>
 							</div>
 						)}
-
-						{item.hasType && isVerseOrAbove && (
-							<div className="col-span-2 flex flex-col">
-								<span className="text-gray-400">Type</span>
-								<span className="text-primary">{item.type === 0 ? "Old Version" : "New Version"}</span>
-							</div>
-						)}
 					</>
 				)}
-				<div className="col-span-2 mt-2 flex flex-col">
-					<span className="text-gray-400">Source</span>
-					<span className="text-primary">{item.source}</span>
-				</div>
 			</div>
 		</div>
 	);

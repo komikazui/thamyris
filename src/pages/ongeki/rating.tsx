@@ -72,7 +72,6 @@ const OngekiRatingFrames = () => {
 	const handlePScoreSearch = handleSearch("pScore");
 	const handleNewSearch = handleSearch("new");
 	const handleNextSearch = handleSearch("next");
-	const handleCombinedSearch = handleSearch("combined");
 
 	const filterPScoreData = (data: OngekiRatingData[]) => {
 		return data.filter((song) => {
@@ -96,62 +95,6 @@ const OngekiRatingFrames = () => {
 		return data.filter((song) => {
 			return song.title?.toLowerCase().includes(searchQueries.next.toLowerCase());
 		});
-	};
-
-	const filterCombinedData = (data: OngekiRatingData[]) => {
-		return data.filter((song) => {
-			return song.title?.toLowerCase().includes(searchQueries.combined.toLowerCase());
-		});
-	};
-
-	const getCombinedData = () => {
-		if (isRefreshOrAbove) {
-			// For newer version
-			const combinedData = [
-				...newBaseSongs.map((song) => ({
-					...song,
-					source: "Top 50 fumen",
-					hasLamp: true,
-					hasTechScore: true,
-					hasRate: true,
-				})),
-				...newPscoreSongs.map((song) => ({
-					...song,
-					source: "Top 50 PScore",
-					hasPscore: true,
-					hasRating: true,
-					hasStars: true,
-				})),
-				...newNewSongs.map((song) => ({
-					...song,
-					source: "Top 10 current fumens",
-					hasLamp: true,
-					hasTechScore: true,
-					hasRate: true,
-				})),
-			];
-			return filterCombinedData(combinedData);
-		} else {
-			// For older version
-			const combinedData = [
-				...baseSongs.map((song) => ({ ...song, source: "Top 30 fumen", hasLamp: true, hasTechScore: true, hasRate: true })),
-				...newSongs.map((song) => ({
-					...song,
-					source: "Recent 15 fumen",
-					hasLamp: true,
-					hasTechScore: true,
-					hasRate: true,
-				})),
-				...hotSongs.map((song) => ({
-					...song,
-					source: "Recent 10 current fumen",
-					hasLamp: true,
-					hasTechScore: true,
-					hasRate: true,
-				})),
-			];
-			return filterCombinedData(combinedData);
-		}
 	};
 
 	const ratingColumns = {
@@ -257,23 +200,165 @@ const OngekiRatingFrames = () => {
 								</>
 							)
 						) : (
-							<GridComponent
-								data={getCombinedData()}
-								onSearch={handleCombinedSearch}
-								title="All Fumen Data"
-								renderItem={(item, index) => (
-									<ScoreGrid
-										key={index}
-										item={item}
-										gameType="ongeki"
-										getDifficulty={getDifficultyFromOngekiChart}
-										getComboStatus={getOngekiComboStatus}
-										isRefreshOrAbove={isRefreshOrAbove}
-										getOngekiRating={OngekiRating}
-										getOngekiGekForceRating={OngekiGekForceRating}
-									/>
+							<>
+								{isRefreshOrAbove ? (
+									<>
+										<GridComponent
+											data={filterBaseData(
+												newBaseSongs.map((song) => ({
+													...song,
+													source: "Top 50 fumen",
+													hasLamp: true,
+													hasTechScore: true,
+													hasRate: true,
+												}))
+											)}
+											onSearch={handleBaseSearch}
+											title="Top 50 fumen"
+											renderItem={(item, index) => (
+												<ScoreGrid
+													key={index}
+													item={item}
+													gameType="ongeki"
+													getDifficulty={getDifficultyFromOngekiChart}
+													getComboStatus={getOngekiComboStatus}
+													isRefreshOrAbove={isRefreshOrAbove}
+													getOngekiRating={OngekiRating}
+													getOngekiGekForceRating={OngekiGekForceRating}
+												/>
+											)}
+										/>
+										<GridComponent
+											data={filterPScoreData(
+												newPscoreSongs.map((song) => ({
+													...song,
+													source: "Top 50 PScore",
+													hasPscore: true,
+													hasRating: true,
+													hasStars: true,
+												}))
+											)}
+											onSearch={handlePScoreSearch}
+											title="Top 50 PScore"
+											renderItem={(item, index) => (
+												<ScoreGrid
+													key={index}
+													item={item}
+													gameType="ongeki"
+													getDifficulty={getDifficultyFromOngekiChart}
+													getComboStatus={getOngekiComboStatus}
+													isRefreshOrAbove={isRefreshOrAbove}
+													getOngekiRating={OngekiRating}
+													getOngekiGekForceRating={OngekiGekForceRating}
+												/>
+											)}
+										/>
+										<GridComponent
+											data={filterNewData(
+												newNewSongs.map((song) => ({
+													...song,
+													source: "Top 10 current fumens",
+													hasLamp: true,
+													hasTechScore: true,
+													hasRate: true,
+												}))
+											)}
+											onSearch={handleNewSearch}
+											title="Top 10 current fumens"
+											renderItem={(item, index) => (
+												<ScoreGrid
+													key={index}
+													item={item}
+													gameType="ongeki"
+													getDifficulty={getDifficultyFromOngekiChart}
+													getComboStatus={getOngekiComboStatus}
+													isRefreshOrAbove={isRefreshOrAbove}
+													getOngekiRating={OngekiRating}
+													getOngekiGekForceRating={OngekiGekForceRating}
+												/>
+											)}
+										/>
+									</>
+								) : (
+									<>
+										<GridComponent
+											data={filterBaseData(
+												baseSongs.map((song) => ({
+													...song,
+													source: "Top 30 fumen",
+													hasLamp: true,
+													hasTechScore: true,
+													hasRate: true,
+												}))
+											)}
+											onSearch={handleBaseSearch}
+											title="Top 30 fumen"
+											renderItem={(item, index) => (
+												<ScoreGrid
+													key={index}
+													item={item}
+													gameType="ongeki"
+													getDifficulty={getDifficultyFromOngekiChart}
+													getComboStatus={getOngekiComboStatus}
+													isRefreshOrAbove={isRefreshOrAbove}
+													getOngekiRating={OngekiRating}
+													getOngekiGekForceRating={OngekiGekForceRating}
+												/>
+											)}
+										/>
+										<GridComponent
+											data={filterNewData(
+												newSongs.map((song) => ({
+													...song,
+													source: "Recent 15 fumen",
+													hasLamp: true,
+													hasTechScore: true,
+													hasRate: true,
+												}))
+											)}
+											onSearch={handleNewSearch}
+											title="Recent 15 fumen"
+											renderItem={(item, index) => (
+												<ScoreGrid
+													key={index}
+													item={item}
+													gameType="ongeki"
+													getDifficulty={getDifficultyFromOngekiChart}
+													getComboStatus={getOngekiComboStatus}
+													isRefreshOrAbove={isRefreshOrAbove}
+													getOngekiRating={OngekiRating}
+													getOngekiGekForceRating={OngekiGekForceRating}
+												/>
+											)}
+										/>
+										<GridComponent
+											data={filterNextData(
+												hotSongs.map((song) => ({
+													...song,
+													source: "Recent 10 current fumen",
+													hasLamp: true,
+													hasTechScore: true,
+													hasRate: true,
+												}))
+											)}
+											onSearch={handleNextSearch}
+											title="Recent 10 current fumen"
+											renderItem={(item, index) => (
+												<ScoreGrid
+													key={index}
+													item={item}
+													gameType="ongeki"
+													getDifficulty={getDifficultyFromOngekiChart}
+													getComboStatus={getOngekiComboStatus}
+													isRefreshOrAbove={isRefreshOrAbove}
+													getOngekiRating={OngekiRating}
+													getOngekiGekForceRating={OngekiGekForceRating}
+												/>
+											)}
+										/>
+									</>
 								)}
-							/>
+							</>
 						)}
 					</div>
 				</div>

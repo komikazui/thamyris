@@ -46,7 +46,6 @@ const ChunithmRatingFrames = () => {
 	const handleCurrentSearch = handleSearch("current");
 	const handleRecentSearch = handleSearch("recent");
 	const handlePotentialSearch = handleSearch("potential");
-	const handleCombinedSearch = handleSearch("combined");
 
 	const filterBaseData = (data: ChunithmRatingData[]) => {
 		return data.filter((song) => {
@@ -70,56 +69,6 @@ const ChunithmRatingFrames = () => {
 		return data.filter((song) => {
 			return song.title?.toLowerCase().includes(searchQueries.potential.toLowerCase());
 		});
-	};
-
-	const filterCombinedData = (data: ChunithmRatingData[]) => {
-		return data.filter((song) => {
-			return song.title?.toLowerCase().includes(searchQueries.combined.toLowerCase());
-		});
-	};
-
-	const getCombinedData = () => {
-		if (isVerseOrAbove) {
-			// For newer version
-			const combinedData = [
-				...newSongs.map((song) => ({
-					...song,
-					source: "Top 20 current fumen",
-					hasScore: true,
-					hasRating: true,
-					hasLamp: true,
-					hasType: isVerseOrAbove,
-				})),
-				...hotSongs.map((song) => ({
-					...song,
-					source: "Recent 10 fumen",
-					hasScore: true,
-					hasRating: true,
-					hasLamp: true,
-					hasType: isVerseOrAbove,
-				})),
-			];
-			return filterCombinedData(combinedData);
-		} else {
-			// For older version
-			const combinedData = [
-				...baseSongs.map((song) => ({
-					...song,
-					source: "Top 30 fumen",
-					hasScore: true,
-					hasRating: true,
-					hasLamp: true,
-				})),
-				...hotSongs.map((song) => ({
-					...song,
-					source: "Recent 10 fumen",
-					hasScore: true,
-					hasRating: true,
-					hasLamp: true,
-				})),
-			];
-			return filterCombinedData(combinedData);
-		}
 	};
 
 	return (
@@ -201,22 +150,131 @@ const ChunithmRatingFrames = () => {
 								</>
 							)
 						) : (
-							<GridComponent
-								data={getCombinedData()}
-								onSearch={handleCombinedSearch}
-								title="All Fumen Data"
-								renderItem={(item, index) => (
-									<ScoreGrid
-										key={index}
-										item={item}
-										gameType="chunithm"
-										getDifficulty={getDifficultyFromChunithmChart}
-										getChunithmRating={ChunitmRating}
-										getChunithmComboStatus={getChunithmComboStatus}
-										isVerseOrAbove={isVerseOrAbove}
-									/>
+							<>
+								{isVerseOrAbove ? (
+									<>
+										<GridComponent
+											data={filterCurrentData(
+												newSongs.map((song) => ({
+													...song,
+													hasScore: true,
+													hasRating: true,
+													hasLamp: true,
+													hasType: isVerseOrAbove,
+												}))
+											)}
+											onSearch={handleCurrentSearch}
+											title="Top 20 current fumen"
+											renderItem={(item, index) => (
+												<ScoreGrid
+													key={index}
+													item={item}
+													gameType="chunithm"
+													getDifficulty={getDifficultyFromChunithmChart}
+													getChunithmRating={ChunitmRating}
+													getChunithmComboStatus={getChunithmComboStatus}
+													isVerseOrAbove={isVerseOrAbove}
+												/>
+											)}
+										/>
+										<GridComponent
+											data={filterRecentData(
+												hotSongs.map((song) => ({
+													...song,
+													hasScore: true,
+													hasRating: true,
+													hasLamp: true,
+												}))
+											)}
+											onSearch={handleRecentSearch}
+											title="Recent 10 fumen"
+											renderItem={(item, index) => (
+												<ScoreGrid
+													key={index}
+													item={item}
+													gameType="chunithm"
+													getDifficulty={getDifficultyFromChunithmChart}
+													getChunithmRating={ChunitmRating}
+													getChunithmComboStatus={getChunithmComboStatus}
+													isVerseOrAbove={isVerseOrAbove}
+												/>
+											)}
+										/>
+										<GridComponent
+											data={filterPotentialData(
+												nextSongs.map((song) => ({
+													...song,
+													hasScore: false,
+													hasRating: false,
+													hasLamp: false,
+												}))
+											)}
+											onSearch={handlePotentialSearch}
+											title="Potential fumens"
+											renderItem={(item, index) => (
+												<ScoreGrid
+													key={index}
+													item={item}
+													gameType="chunithm"
+													getDifficulty={getDifficultyFromChunithmChart}
+													getChunithmRating={ChunitmRating}
+													getChunithmComboStatus={getChunithmComboStatus}
+													isVerseOrAbove={isVerseOrAbove}
+												/>
+											)}
+										/>
+									</>
+								) : (
+									<>
+										<GridComponent
+											data={filterBaseData(
+												baseSongs.map((song) => ({
+													...song,
+													hasScore: true,
+													hasRating: true,
+													hasLamp: true,
+												}))
+											)}
+											onSearch={handleBaseSearch}
+											title="Top 30 fumen"
+											renderItem={(item, index) => (
+												<ScoreGrid
+													key={index}
+													item={item}
+													gameType="chunithm"
+													getDifficulty={getDifficultyFromChunithmChart}
+													getChunithmRating={ChunitmRating}
+													getChunithmComboStatus={getChunithmComboStatus}
+													isVerseOrAbove={isVerseOrAbove}
+												/>
+											)}
+										/>
+										<GridComponent
+											data={filterRecentData(
+												hotSongs.map((song) => ({
+													...song,
+													hasScore: true,
+													hasRating: true,
+													hasLamp: true,
+												}))
+											)}
+											onSearch={handleRecentSearch}
+											title="Recent 10 fumen"
+											renderItem={(item, index) => (
+												<ScoreGrid
+													key={index}
+													item={item}
+													gameType="chunithm"
+													getDifficulty={getDifficultyFromChunithmChart}
+													getChunithmRating={ChunitmRating}
+													getChunithmComboStatus={getChunithmComboStatus}
+													isVerseOrAbove={isVerseOrAbove}
+												/>
+											)}
+										/>
+									</>
 								)}
-							/>
+							</>
 						)}
 					</div>
 				</div>
