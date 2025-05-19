@@ -71,6 +71,16 @@ const ChunithmRatingFrames = () => {
 		});
 	};
 
+	// Determine which data to use based on version
+	const topFumens = isVerseOrAbove ? newSongs : baseSongs;
+	const topFumensTitle = isVerseOrAbove ? "Top 20 current fumen" : "Top 30 fumen";
+
+	const recentFumens = hotSongs;
+	const recentFumensTitle = "Recent 10 fumen";
+
+	const recommendedFumens = nextSongs;
+	const recommendedFumensTitle = "Potential fumens";
+
 	return (
 		<div className="relative flex-1 overflow-auto">
 			<Header title="Rating Frame" />
@@ -78,21 +88,8 @@ const ChunithmRatingFrames = () => {
 				<div className="container mx-auto space-y-6">
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
 						<QouteCard
-							header={`Single track ratings are calculated from fumen constants and scores. Player rating is the average of ${
-								isVerseOrAbove ? "50" : "30"
-							} unique fumen ratings, including:`}
 							welcomeMessage={
 								<div className="flex flex-col space-y-1">
-									{isVerseOrAbove ? (
-										<>
-											<span>• 30 highest ratings from old version fumens</span>
-											<span>• 20 highest ratings from new version fumens</span>
-										</>
-									) : (
-										<>
-											<span>• Based on best 30 plays</span>
-										</>
-									)}
 									<div className="flex flex-col">
 										<span className="text-primary font-bold">
 											Player Rating: {((playerRating[0]?.playerRating ?? 0) / 100).toFixed(2) || "Loading..."}
@@ -112,190 +109,111 @@ const ChunithmRatingFrames = () => {
 
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
 						{viewMode === "separate" ? (
-							isVerseOrAbove ? (
-								<>
+							<>
+								{/* Top fumens table - present in both versions */}
+								<TableComponent
+									data={filterCurrentData(topFumens)}
+									columns={ratingTable}
+									onSearch={isVerseOrAbove ? handleCurrentSearch : handleBaseSearch}
+									title={topFumensTitle}
+								/>
+
+								{/* Recent fumens table - present in both versions */}
+								<TableComponent
+									data={filterRecentData(recentFumens)}
+									columns={ratingTable}
+									onSearch={handleRecentSearch}
+									title={recentFumensTitle}
+								/>
+
+								{/* Recommended/potential fumens table - only present in Verse or above */}
+								{isVerseOrAbove && (
 									<TableComponent
-										data={filterCurrentData(newSongs)}
-										columns={ratingTable}
-										onSearch={handleCurrentSearch}
-										title="Top 20 current fumen"
-									/>
-									<TableComponent
-										data={filterRecentData(hotSongs)}
-										columns={ratingTable}
-										onSearch={handleRecentSearch}
-										title="Recent 10 fumen"
-									/>
-									<TableComponent
-										data={filterPotentialData(nextSongs)}
+										data={filterPotentialData(recommendedFumens)}
 										columns={recommendedTable}
 										onSearch={handlePotentialSearch}
-										title="Potential fumens"
+										title={recommendedFumensTitle}
 									/>
-								</>
-							) : (
-								<>
-									<TableComponent
-										data={filterBaseData(baseSongs)}
-										columns={ratingTable}
-										onSearch={handleBaseSearch}
-										title="Top 30 fumen"
-									/>
-									<TableComponent
-										data={filterRecentData(hotSongs)}
-										columns={ratingTable}
-										onSearch={handleRecentSearch}
-										title="Recent 10 fumen"
-									/>
-								</>
-							)
+								)}
+							</>
 						) : (
 							<>
-								{isVerseOrAbove ? (
-									<>
-										<GridComponent
-											data={filterCurrentData(
-												newSongs.map((song) => ({
-													...song,
-													hasScore: true,
-													hasRating: true,
-													hasLamp: true,
-													hasType: isVerseOrAbove,
-												}))
-											)}
-											onSearch={handleCurrentSearch}
-											title="Top 20 current fumen"
-											renderItem={(item, index) => (
-												<ScoreGrid
-													key={index}
-													item={item}
-													gameType="chunithm"
-													getDifficulty={getDifficultyFromChunithmChart}
-													getChunithmRating={ChunitmRating}
-													getChunithmComboStatus={getChunithmComboStatus}
-													isVerseOrAbove={isVerseOrAbove}
-												/>
-											)}
+								{/* Top fumens grid - present in both versions */}
+								<GridComponent
+									data={filterCurrentData(
+										topFumens.map((song) => ({
+											...song,
+											hasScore: true,
+											hasRating: true,
+											hasLamp: true,
+											hasType: isVerseOrAbove,
+										}))
+									)}
+									onSearch={isVerseOrAbove ? handleCurrentSearch : handleBaseSearch}
+									title={topFumensTitle}
+									renderItem={(item, index) => (
+										<ScoreGrid
+											key={index}
+											item={item}
+											gameType="chunithm"
+											getDifficulty={getDifficultyFromChunithmChart}
+											getChunithmRating={ChunitmRating}
+											getChunithmComboStatus={getChunithmComboStatus}
+											isVerseOrAbove={isVerseOrAbove}
 										/>
-										<GridComponent
-											data={filterRecentData(
-												hotSongs.map((song) => ({
-													...song,
-													hasScore: true,
-													hasRating: true,
-													hasLamp: true,
-												}))
-											)}
-											onSearch={handleRecentSearch}
-											title="Recent 10 fumen"
-											renderItem={(item, index) => (
-												<ScoreGrid
-													key={index}
-													item={item}
-													gameType="chunithm"
-													getDifficulty={getDifficultyFromChunithmChart}
-													getChunithmRating={ChunitmRating}
-													getChunithmComboStatus={getChunithmComboStatus}
-													isVerseOrAbove={isVerseOrAbove}
-												/>
-											)}
+									)}
+								/>
+
+								{/* Recent fumens grid - present in both versions */}
+								<GridComponent
+									data={filterRecentData(
+										recentFumens.map((song) => ({
+											...song,
+											hasScore: true,
+											hasRating: true,
+											hasLamp: true,
+										}))
+									)}
+									onSearch={handleRecentSearch}
+									title={recentFumensTitle}
+									renderItem={(item, index) => (
+										<ScoreGrid
+											key={index}
+											item={item}
+											gameType="chunithm"
+											getDifficulty={getDifficultyFromChunithmChart}
+											getChunithmRating={ChunitmRating}
+											getChunithmComboStatus={getChunithmComboStatus}
+											isVerseOrAbove={isVerseOrAbove}
 										/>
-										<GridComponent
-											data={filterPotentialData(
-												nextSongs.map((song) => ({
-													...song,
-													hasScore: false,
-													hasRating: false,
-													hasLamp: false,
-												}))
-											)}
-											onSearch={handlePotentialSearch}
-											title="Potential fumens"
-											renderItem={(item, index) => (
-												<ScoreGrid
-													key={index}
-													item={item}
-													gameType="chunithm"
-													getDifficulty={getDifficultyFromChunithmChart}
-													getChunithmRating={ChunitmRating}
-													getChunithmComboStatus={getChunithmComboStatus}
-													isVerseOrAbove={isVerseOrAbove}
-												/>
-											)}
-										/>
-									</>
-								) : (
-									<>
-										<GridComponent
-											data={filterBaseData(
-												baseSongs.map((song) => ({
-													...song,
-													hasScore: true,
-													hasRating: true,
-													hasLamp: true,
-												}))
-											)}
-											onSearch={handleBaseSearch}
-											title="Top 30 fumen"
-											renderItem={(item, index) => (
-												<ScoreGrid
-													key={index}
-													item={item}
-													gameType="chunithm"
-													getDifficulty={getDifficultyFromChunithmChart}
-													getChunithmRating={ChunitmRating}
-													getChunithmComboStatus={getChunithmComboStatus}
-													isVerseOrAbove={isVerseOrAbove}
-												/>
-											)}
-										/>
-										<GridComponent
-											data={filterRecentData(
-												hotSongs.map((song) => ({
-													...song,
-													hasScore: true,
-													hasRating: true,
-													hasLamp: true,
-												}))
-											)}
-											onSearch={handleRecentSearch}
-											title="Recent 10 fumen"
-											renderItem={(item, index) => (
-												<ScoreGrid
-													key={index}
-													item={item}
-													gameType="chunithm"
-													getDifficulty={getDifficultyFromChunithmChart}
-													getChunithmRating={ChunitmRating}
-													getChunithmComboStatus={getChunithmComboStatus}
-													isVerseOrAbove={isVerseOrAbove}
-												/>
-											)}
-										/>
-										<GridComponent
-											data={filterPotentialData(
-												nextSongs.map((song) => ({
-													...song,
-													hasScore: false,
-													hasRating: false,
-													hasLamp: false,
-												}))
-											)}
-											onSearch={handlePotentialSearch}
-											title="Potential fumens"
-											renderItem={(item, index) => (
-												<ScoreGrid
-													key={index}
-													item={item}
-													gameType="chunithm"
-													getDifficulty={getDifficultyFromChunithmChart}
-													getChunithmRating={ChunitmRating}
-													getChunithmComboStatus={getChunithmComboStatus}
-													isVerseOrAbove={isVerseOrAbove}
-												/>
-											)}
-										/>
-									</>
+									)}
+								/>
+
+								{/* Recommended/potential fumens grid - only in Verse or above */}
+								{isVerseOrAbove && (
+									<GridComponent
+										data={filterPotentialData(
+											recommendedFumens.map((song) => ({
+												...song,
+												hasScore: false,
+												hasRating: false,
+												hasLamp: false,
+											}))
+										)}
+										onSearch={handlePotentialSearch}
+										title={recommendedFumensTitle}
+										renderItem={(item, index) => (
+											<ScoreGrid
+												key={index}
+												item={item}
+												gameType="chunithm"
+												getDifficulty={getDifficultyFromChunithmChart}
+												getChunithmRating={ChunitmRating}
+												getChunithmComboStatus={getChunithmComboStatus}
+												isVerseOrAbove={isVerseOrAbove}
+											/>
+										)}
+									/>
 								)}
 							</>
 						)}

@@ -102,6 +102,24 @@ const OngekiRatingFrames = () => {
 		Rate: (row: OngekiRatingData) => ratingTableColumns.Rate(row, isRefreshOrAbove),
 	};
 
+	// Determine which data to use based on version
+	const topFumens = isRefreshOrAbove ? newBaseSongs : baseSongs;
+	const topFumensTitle = isRefreshOrAbove ? "Top 50 fumen" : "Top 30 fumen";
+
+	const currentFumens = isRefreshOrAbove ? newNewSongs : hotSongs;
+	const currentFumensTitle = isRefreshOrAbove ? "Top 10 current fumens" : "Recent 10 current fumen";
+
+	const recommendedFumens = isRefreshOrAbove ? newNextSongs : nextSongs;
+	const recommendedFumensTitle = "Recommended fumens";
+
+	// Only newer versions have PScore data
+	const pScoreData = newPscoreSongs;
+	const pScoreTitle = "Top 50 PScore";
+
+	// Additional data only in older versions
+	const recentFumens = newSongs;
+	const recentFumensTitle = "Recent 15 fumen";
+
 	return (
 		<div className="relative flex-1 overflow-auto">
 			<Header title="Rating Frame" />
@@ -109,7 +127,6 @@ const OngekiRatingFrames = () => {
 				<div className="container mx-auto space-y-6">
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
 						<QouteCard
-							header="Single track ratings are calculated from fumen constants and scores."
 							welcomeMessage={
 								<div className="flex flex-col space-y-1">
 									<div className="flex flex-col">
@@ -144,258 +161,186 @@ const OngekiRatingFrames = () => {
 
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
 						{viewMode === "separate" ? (
-							isRefreshOrAbove ? (
-								<>
+							<>
+								{/* Top fumens table - present in both versions */}
+								<TableComponent
+									data={filterBaseData(topFumens)}
+									columns={ratingColumns}
+									onSearch={handleBaseSearch}
+									title={topFumensTitle}
+								/>
+
+								{/* PScore table - only in newer versions */}
+								{isRefreshOrAbove && (
 									<TableComponent
-										data={filterBaseData(newBaseSongs)}
-										columns={ratingColumns}
-										onSearch={handleBaseSearch}
-										title="Top 50 fumen"
-									/>
-									<TableComponent
-										data={filterPScoreData(newPscoreSongs)}
+										data={filterPScoreData(pScoreData)}
 										columns={pScoreTableColumns}
 										onSearch={handlePScoreSearch}
-										title="Top 50 PScore"
+										title={pScoreTitle}
 									/>
+								)}
+
+								{/* Current fumens table - present in both versions */}
+								<TableComponent
+									data={filterNewData(currentFumens)}
+									columns={ratingColumns}
+									onSearch={handleNewSearch}
+									title={currentFumensTitle}
+								/>
+
+								{/* Recent fumens table - only in older versions */}
+								{!isRefreshOrAbove && (
 									<TableComponent
-										data={filterNewData(newNewSongs)}
+										data={filterNewData(recentFumens)}
 										columns={ratingColumns}
 										onSearch={handleNewSearch}
-										title="Top 10 current fumens"
+										title={recentFumensTitle}
 									/>
-									<TableComponent
-										data={filterNextData(newNextSongs)}
-										columns={recommendedTable}
-										onSearch={handleNextSearch}
-										title="Recommended fumens"
-									/>
-								</>
-							) : (
-								<>
-									<TableComponent
-										data={filterBaseData(baseSongs)}
-										columns={ratingColumns}
-										onSearch={handleBaseSearch}
-										title="Top 30 fumen"
-									/>
-									<TableComponent
-										data={filterNewData(newSongs)}
-										columns={ratingColumns}
-										onSearch={handleNewSearch}
-										title="Recent 15 fumen"
-									/>
-									<TableComponent
-										data={filterNextData(hotSongs)}
-										columns={ratingColumns}
-										onSearch={handleNextSearch}
-										title="Recent 10 current fumen"
-									/>
-									<TableComponent
-										data={filterNextData(nextSongs)}
-										columns={ratingColumns}
-										onSearch={handleNextSearch}
-										title="Recommended fumens"
-									/>
-								</>
-							)
+								)}
+
+								{/* Recommended fumens table - present in both versions */}
+								<TableComponent
+									data={filterNextData(recommendedFumens)}
+									columns={recommendedTable}
+									onSearch={handleNextSearch}
+									title={recommendedFumensTitle}
+								/>
+							</>
 						) : (
 							<>
-								{isRefreshOrAbove ? (
-									<>
-										<GridComponent
-											data={filterBaseData(
-												newBaseSongs.map((song) => ({
-													...song,
-													source: "Top 50 fumen",
-													hasLamp: true,
-													hasTechScore: true,
-													hasRate: true,
-												}))
-											)}
-											onSearch={handleBaseSearch}
-											title="Top 50 fumen"
-											renderItem={(item, index) => (
-												<ScoreGrid
-													key={index}
-													item={item}
-													gameType="ongeki"
-													getDifficulty={getDifficultyFromOngekiChart}
-													getComboStatus={getOngekiComboStatus}
-													isRefreshOrAbove={isRefreshOrAbove}
-													getOngekiRating={OngekiRating}
-													getOngekiGekForceRating={OngekiGekForceRating}
-												/>
-											)}
+								{/* Top fumens grid - present in both versions */}
+								<GridComponent
+									data={filterBaseData(
+										topFumens.map((song) => ({
+											...song,
+											source: topFumensTitle,
+											hasLamp: true,
+											hasTechScore: true,
+											hasRate: true,
+										}))
+									)}
+									onSearch={handleBaseSearch}
+									title={topFumensTitle}
+									renderItem={(item, index) => (
+										<ScoreGrid
+											key={index}
+											item={item}
+											gameType="ongeki"
+											getDifficulty={getDifficultyFromOngekiChart}
+											getComboStatus={getOngekiComboStatus}
+											isRefreshOrAbove={isRefreshOrAbove}
+											getOngekiRating={OngekiRating}
+											getOngekiGekForceRating={OngekiGekForceRating}
 										/>
-										<GridComponent
-											data={filterPScoreData(
-												newPscoreSongs.map((song) => ({
-													...song,
-													source: "Top 50 PScore",
-													hasPscore: true,
-													hasRating: true,
-													hasStars: true,
-												}))
-											)}
-											onSearch={handlePScoreSearch}
-											title="Top 50 PScore"
-											renderItem={(item, index) => (
-												<ScoreGrid
-													key={index}
-													item={item}
-													gameType="ongeki"
-													getDifficulty={getDifficultyFromOngekiChart}
-													getComboStatus={getOngekiComboStatus}
-													isRefreshOrAbove={isRefreshOrAbove}
-													getOngekiRating={OngekiRating}
-													getOngekiGekForceRating={OngekiGekForceRating}
-												/>
-											)}
-										/>
-										<GridComponent
-											data={filterNewData(
-												newNewSongs.map((song) => ({
-													...song,
-													source: "Top 10 current fumens",
-													hasLamp: true,
-													hasTechScore: true,
-													hasRate: true,
-												}))
-											)}
-											onSearch={handleNewSearch}
-											title="Top 10 current fumens"
-											renderItem={(item, index) => (
-												<ScoreGrid
-													key={index}
-													item={item}
-													gameType="ongeki"
-													getDifficulty={getDifficultyFromOngekiChart}
-													getComboStatus={getOngekiComboStatus}
-													isRefreshOrAbove={isRefreshOrAbove}
-													getOngekiRating={OngekiRating}
-													getOngekiGekForceRating={OngekiGekForceRating}
-												/>
-											)}
-										/>
-										<GridComponent
-											data={filterNextData(
-												newNextSongs.map((song) => ({
-													...song,
-													source: "Recommended fumens",
-												}))
-											)}
-											onSearch={handleNextSearch}
-											title="Recommended fumens"
-											renderItem={(item, index) => (
-												<ScoreGrid
-													key={index}
-													item={item}
-													gameType="ongeki"
-													getDifficulty={getDifficultyFromOngekiChart}
-													isRefreshOrAbove={isRefreshOrAbove}
-												/>
-											)}
-										/>
-									</>
-								) : (
-									<>
-										<GridComponent
-											data={filterBaseData(
-												baseSongs.map((song) => ({
-													...song,
-													source: "Top 30 fumen",
-													hasLamp: true,
-													hasTechScore: true,
-													hasRate: true,
-												}))
-											)}
-											onSearch={handleBaseSearch}
-											title="Top 30 fumen"
-											renderItem={(item, index) => (
-												<ScoreGrid
-													key={index}
-													item={item}
-													gameType="ongeki"
-													getDifficulty={getDifficultyFromOngekiChart}
-													getComboStatus={getOngekiComboStatus}
-													isRefreshOrAbove={isRefreshOrAbove}
-													getOngekiRating={OngekiRating}
-													getOngekiGekForceRating={OngekiGekForceRating}
-												/>
-											)}
-										/>
-										<GridComponent
-											data={filterNewData(
-												newSongs.map((song) => ({
-													...song,
-													source: "Recent 15 fumen",
-													hasLamp: true,
-													hasTechScore: true,
-													hasRate: true,
-												}))
-											)}
-											onSearch={handleNewSearch}
-											title="Recent 15 fumen"
-											renderItem={(item, index) => (
-												<ScoreGrid
-													key={index}
-													item={item}
-													gameType="ongeki"
-													getDifficulty={getDifficultyFromOngekiChart}
-													getComboStatus={getOngekiComboStatus}
-													isRefreshOrAbove={isRefreshOrAbove}
-													getOngekiRating={OngekiRating}
-													getOngekiGekForceRating={OngekiGekForceRating}
-												/>
-											)}
-										/>
-										<GridComponent
-											data={filterNextData(
-												hotSongs.map((song) => ({
-													...song,
-													source: "Recent 10 current fumen",
-													hasLamp: true,
-													hasTechScore: true,
-													hasRate: true,
-												}))
-											)}
-											onSearch={handleNextSearch}
-											title="Recent 10 current fumen"
-											renderItem={(item, index) => (
-												<ScoreGrid
-													key={index}
-													item={item}
-													gameType="ongeki"
-													getDifficulty={getDifficultyFromOngekiChart}
-													getComboStatus={getOngekiComboStatus}
-													isRefreshOrAbove={isRefreshOrAbove}
-													getOngekiRating={OngekiRating}
-													getOngekiGekForceRating={OngekiGekForceRating}
-												/>
-											)}
-										/>
-										<GridComponent
-											data={filterNextData(
-												nextSongs.map((song) => ({
-													...song,
-													source: "Recommended fumens",
-												}))
-											)}
-											onSearch={handleNextSearch}
-											title="Recommended fumens"
-											renderItem={(item, index) => (
-												<ScoreGrid
-													key={index}
-													item={item}
-													gameType="ongeki"
-													getDifficulty={getDifficultyFromOngekiChart}
-													isRefreshOrAbove={isRefreshOrAbove}
-												/>
-											)}
-										/>
-									</>
+									)}
+								/>
+
+								{/* PScore grid - only in newer versions */}
+								{isRefreshOrAbove && (
+									<GridComponent
+										data={filterPScoreData(
+											pScoreData.map((song) => ({
+												...song,
+												source: pScoreTitle,
+												hasPscore: true,
+												hasRating: true,
+												hasStars: true,
+											}))
+										)}
+										onSearch={handlePScoreSearch}
+										title={pScoreTitle}
+										renderItem={(item, index) => (
+											<ScoreGrid
+												key={index}
+												item={item}
+												gameType="ongeki"
+												getDifficulty={getDifficultyFromOngekiChart}
+												getComboStatus={getOngekiComboStatus}
+												isRefreshOrAbove={isRefreshOrAbove}
+												getOngekiRating={OngekiRating}
+												getOngekiGekForceRating={OngekiGekForceRating}
+											/>
+										)}
+									/>
 								)}
+
+								{/* Current fumens grid - present in both versions */}
+								<GridComponent
+									data={filterNewData(
+										currentFumens.map((song) => ({
+											...song,
+											source: currentFumensTitle,
+											hasLamp: true,
+											hasTechScore: true,
+											hasRate: true,
+										}))
+									)}
+									onSearch={handleNewSearch}
+									title={currentFumensTitle}
+									renderItem={(item, index) => (
+										<ScoreGrid
+											key={index}
+											item={item}
+											gameType="ongeki"
+											getDifficulty={getDifficultyFromOngekiChart}
+											getComboStatus={getOngekiComboStatus}
+											isRefreshOrAbove={isRefreshOrAbove}
+											getOngekiRating={OngekiRating}
+											getOngekiGekForceRating={OngekiGekForceRating}
+										/>
+									)}
+								/>
+
+								{/* Recent fumens grid - only in older versions */}
+								{!isRefreshOrAbove && (
+									<GridComponent
+										data={filterNewData(
+											recentFumens.map((song) => ({
+												...song,
+												source: recentFumensTitle,
+												hasLamp: true,
+												hasTechScore: true,
+												hasRate: true,
+											}))
+										)}
+										onSearch={handleNewSearch}
+										title={recentFumensTitle}
+										renderItem={(item, index) => (
+											<ScoreGrid
+												key={index}
+												item={item}
+												gameType="ongeki"
+												getDifficulty={getDifficultyFromOngekiChart}
+												getComboStatus={getOngekiComboStatus}
+												isRefreshOrAbove={isRefreshOrAbove}
+												getOngekiRating={OngekiRating}
+												getOngekiGekForceRating={OngekiGekForceRating}
+											/>
+										)}
+									/>
+								)}
+
+								{/* Recommended fumens grid - present in both versions */}
+								<GridComponent
+									data={filterNextData(
+										recommendedFumens.map((song) => ({
+											...song,
+											source: recommendedFumensTitle,
+											// Recommended fumens don't need the same display features as other categories
+										}))
+									)}
+									onSearch={handleNextSearch}
+									title={recommendedFumensTitle}
+									renderItem={(item, index) => (
+										<ScoreGrid
+											key={index}
+											item={item}
+											gameType="ongeki"
+											getDifficulty={getDifficultyFromOngekiChart}
+											isRefreshOrAbove={isRefreshOrAbove}
+										/>
+									)}
+								/>
 							</>
 						)}
 					</div>
