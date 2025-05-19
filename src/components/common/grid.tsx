@@ -141,15 +141,18 @@ export const ScoreGrid = (props: {
 				<img width={60} height={60} src={getImagePath()} className="flex-shrink-0 rounded-md" alt={item.title} />
 				<div className="flex flex-col overflow-hidden">
 					<span className="text-primary truncate font-semibold">{item.title}</span>
-					<span className="text-sm">
-						{getDifficulty(item.chartId ?? 0)}
-						<span className="mx-1">•</span>
-						{getLevelDisplay()}
-					</span>
 				</div>
 			</div>
 
-			<div className="mt-3 grid grid-cols-2 gap-2 text-sm">
+			{/* Display Difficulty and Level more prominently */}
+			<div className="mb-3 flex justify-between border-b border-gray-700 pb-2">
+				<span className="text-primary font-medium">{getDifficulty(item.chartId ?? 0)}</span>
+				<span className="text-primary-foreground bg-primary rounded-sm px-2 py-0.5 text-sm font-medium">
+					{getLevelDisplay()}
+				</span>
+			</div>
+
+			<div className="mt-2 grid grid-cols-2 gap-2 text-sm">
 				{/* Ongeki specific data */}
 				{gameType === "ongeki" && (
 					<>

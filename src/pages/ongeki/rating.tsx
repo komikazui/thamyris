@@ -278,6 +278,25 @@ const OngekiRatingFrames = () => {
 												/>
 											)}
 										/>
+										<GridComponent
+											data={filterNextData(
+												newNextSongs.map((song) => ({
+													...song,
+													source: "Recommended fumens",
+												}))
+											)}
+											onSearch={handleNextSearch}
+											title="Recommended fumens"
+											renderItem={(item, index) => (
+												<ScoreGrid
+													key={index}
+													item={item}
+													gameType="ongeki"
+													getDifficulty={getDifficultyFromOngekiChart}
+													isRefreshOrAbove={isRefreshOrAbove}
+												/>
+											)}
+										/>
 									</>
 								) : (
 									<>
@@ -353,6 +372,25 @@ const OngekiRatingFrames = () => {
 													isRefreshOrAbove={isRefreshOrAbove}
 													getOngekiRating={OngekiRating}
 													getOngekiGekForceRating={OngekiGekForceRating}
+												/>
+											)}
+										/>
+										<GridComponent
+											data={filterNextData(
+												nextSongs.map((song) => ({
+													...song,
+													source: "Recommended fumens",
+												}))
+											)}
+											onSearch={handleNextSearch}
+											title="Recommended fumens"
+											renderItem={(item, index) => (
+												<ScoreGrid
+													key={index}
+													item={item}
+													gameType="ongeki"
+													getDifficulty={getDifficultyFromOngekiChart}
+													isRefreshOrAbove={isRefreshOrAbove}
 												/>
 											)}
 										/>

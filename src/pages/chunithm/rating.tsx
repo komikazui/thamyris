@@ -272,6 +272,29 @@ const ChunithmRatingFrames = () => {
 												/>
 											)}
 										/>
+										<GridComponent
+											data={filterPotentialData(
+												nextSongs.map((song) => ({
+													...song,
+													hasScore: false,
+													hasRating: false,
+													hasLamp: false,
+												}))
+											)}
+											onSearch={handlePotentialSearch}
+											title="Potential fumens"
+											renderItem={(item, index) => (
+												<ScoreGrid
+													key={index}
+													item={item}
+													gameType="chunithm"
+													getDifficulty={getDifficultyFromChunithmChart}
+													getChunithmRating={ChunitmRating}
+													getChunithmComboStatus={getChunithmComboStatus}
+													isVerseOrAbove={isVerseOrAbove}
+												/>
+											)}
+										/>
 									</>
 								)}
 							</>
