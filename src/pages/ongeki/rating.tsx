@@ -39,10 +39,9 @@ const OngekiRatingFrames = () => {
 		pScore: "",
 		new: "",
 		next: "",
-		combined: "",
 	});
 
-	const [viewMode, setViewMode] = useState<"separate" | "combined">("separate");
+	const [displayMode, setDisplayMode] = useState<"table" | "grid">("table");
 
 	const version = useOngekiVersion();
 
@@ -73,27 +72,9 @@ const OngekiRatingFrames = () => {
 	const handleNewSearch = handleSearch("new");
 	const handleNextSearch = handleSearch("next");
 
-	const filterPScoreData = (data: OngekiRatingData[]) => {
+	const filterData = (data: OngekiRatingData[], query: string) => {
 		return data.filter((song) => {
-			return song.title?.toLowerCase().includes(searchQueries.pScore.toLowerCase());
-		});
-	};
-
-	const filterBaseData = (data: OngekiRatingData[]) => {
-		return data.filter((song) => {
-			return song.title?.toLowerCase().includes(searchQueries.base.toLowerCase());
-		});
-	};
-
-	const filterNewData = (data: OngekiRatingData[]) => {
-		return data.filter((song) => {
-			return song.title?.toLowerCase().includes(searchQueries.new.toLowerCase());
-		});
-	};
-
-	const filterNextData = (data: OngekiRatingData[]) => {
-		return data.filter((song) => {
-			return song.title?.toLowerCase().includes(searchQueries.next.toLowerCase());
+			return song.title?.toLowerCase().includes(query.toLowerCase());
 		});
 	};
 
@@ -119,6 +100,13 @@ const OngekiRatingFrames = () => {
 	// Additional data only in older versions
 	const recentFumens = newSongs;
 	const recentFumensTitle = "Recent 15 fumen";
+
+	// Apply filtering using the generic function
+	const filteredTopFumens = filterData(topFumens, searchQueries.base);
+	const filteredPScoreData = filterData(pScoreData, searchQueries.pScore);
+	const filteredCurrentFumens = filterData(currentFumens, searchQueries.new);
+	const filteredRecentFumens = filterData(recentFumens, searchQueries.new); // Assuming 'new' search applies to Recent
+	const filteredRecommendedFumens = filterData(recommendedFumens, searchQueries.next);
 
 	return (
 		<div className="relative flex-1 overflow-auto">
@@ -156,15 +144,18 @@ const OngekiRatingFrames = () => {
 						/>
 					</div>
 
-					{/* View Mode Toggle */}
-					<ViewToggle viewMode={viewMode} onToggle={() => setViewMode(viewMode === "separate" ? "combined" : "separate")} />
+					{/* View Mode Toggle - Updated */}
+					<ViewToggle
+						viewMode={displayMode}
+						onToggle={() => setDisplayMode(displayMode === "table" ? "grid" : "table")} // Toggle between 'table' and 'grid'
+					/>
 
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
-						{viewMode === "separate" ? (
+						{displayMode === "table" ? ( // Conditional rendering based on displayMode
 							<>
 								{/* Top fumens table - present in both versions */}
 								<TableComponent
-									data={filterBaseData(topFumens)}
+									data={filteredTopFumens}
 									columns={ratingColumns}
 									onSearch={handleBaseSearch}
 									title={topFumensTitle}
@@ -173,7 +164,7 @@ const OngekiRatingFrames = () => {
 								{/* PScore table - only in newer versions */}
 								{isRefreshOrAbove && (
 									<TableComponent
-										data={filterPScoreData(pScoreData)}
+										data={filteredPScoreData}
 										columns={pScoreTableColumns}
 										onSearch={handlePScoreSearch}
 										title={pScoreTitle}
@@ -182,7 +173,7 @@ const OngekiRatingFrames = () => {
 
 								{/* Current fumens table - present in both versions */}
 								<TableComponent
-									data={filterNewData(currentFumens)}
+									data={filteredCurrentFumens}
 									columns={ratingColumns}
 									onSearch={handleNewSearch}
 									title={currentFumensTitle}
@@ -191,7 +182,7 @@ const OngekiRatingFrames = () => {
 								{/* Recent fumens table - only in older versions */}
 								{!isRefreshOrAbove && (
 									<TableComponent
-										data={filterNewData(recentFumens)}
+										data={filteredRecentFumens}
 										columns={ratingColumns}
 										onSearch={handleNewSearch}
 										title={recentFumensTitle}
@@ -200,7 +191,7 @@ const OngekiRatingFrames = () => {
 
 								{/* Recommended fumens table - present in both versions */}
 								<TableComponent
-									data={filterNextData(recommendedFumens)}
+									data={filteredRecommendedFumens}
 									columns={recommendedTable}
 									onSearch={handleNextSearch}
 									title={recommendedFumensTitle}
@@ -210,17 +201,18 @@ const OngekiRatingFrames = () => {
 							<>
 								{/* Top fumens grid - present in both versions */}
 								<GridComponent
-									data={filterBaseData(
+									data={filterData(
 										topFumens.map((song) => ({
 											...song,
 											source: topFumensTitle,
 											hasLamp: true,
 											hasTechScore: true,
 											hasRate: true,
-										}))
+										})),
+										searchQueries.base
 									)}
 									onSearch={handleBaseSearch}
-									title={topFumensTitle}
+									title={topFumensTitle} // Use the same title as table view for consistency
 									renderItem={(item, index) => (
 										<ScoreGrid
 											key={index}
@@ -238,17 +230,18 @@ const OngekiRatingFrames = () => {
 								{/* PScore grid - only in newer versions */}
 								{isRefreshOrAbove && (
 									<GridComponent
-										data={filterPScoreData(
+										data={filterData(
 											pScoreData.map((song) => ({
 												...song,
 												source: pScoreTitle,
 												hasPscore: true,
 												hasRating: true,
 												hasStars: true,
-											}))
+											})),
+											searchQueries.pScore
 										)}
 										onSearch={handlePScoreSearch}
-										title={pScoreTitle}
+										title={pScoreTitle} // Use the same title as table view for consistency
 										renderItem={(item, index) => (
 											<ScoreGrid
 												key={index}
@@ -266,17 +259,18 @@ const OngekiRatingFrames = () => {
 
 								{/* Current fumens grid - present in both versions */}
 								<GridComponent
-									data={filterNewData(
+									data={filterData(
 										currentFumens.map((song) => ({
 											...song,
 											source: currentFumensTitle,
 											hasLamp: true,
 											hasTechScore: true,
 											hasRate: true,
-										}))
+										})),
+										searchQueries.new
 									)}
 									onSearch={handleNewSearch}
-									title={currentFumensTitle}
+									title={currentFumensTitle} // Use the same title as table view for consistency
 									renderItem={(item, index) => (
 										<ScoreGrid
 											key={index}
@@ -294,17 +288,18 @@ const OngekiRatingFrames = () => {
 								{/* Recent fumens grid - only in older versions */}
 								{!isRefreshOrAbove && (
 									<GridComponent
-										data={filterNewData(
+										data={filterData(
 											recentFumens.map((song) => ({
 												...song,
 												source: recentFumensTitle,
 												hasLamp: true,
 												hasTechScore: true,
 												hasRate: true,
-											}))
+											})),
+											searchQueries.new
 										)}
 										onSearch={handleNewSearch}
-										title={recentFumensTitle}
+										title={recentFumensTitle} // Use the same title as table view for consistency
 										renderItem={(item, index) => (
 											<ScoreGrid
 												key={index}
@@ -322,15 +317,16 @@ const OngekiRatingFrames = () => {
 
 								{/* Recommended fumens grid - present in both versions */}
 								<GridComponent
-									data={filterNextData(
+									data={filterData(
 										recommendedFumens.map((song) => ({
 											...song,
 											source: recommendedFumensTitle,
 											// Recommended fumens don't need the same display features as other categories
-										}))
+										})),
+										searchQueries.next
 									)}
 									onSearch={handleNextSearch}
-									title={recommendedFumensTitle}
+									title={recommendedFumensTitle} // Use the same title as table view for consistency
 									renderItem={(item, index) => (
 										<ScoreGrid
 											key={index}

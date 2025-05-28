@@ -1,7 +1,7 @@
 import React from "react";
 
 interface ViewToggleProps {
-	viewMode: "separate" | "combined";
+	viewMode: "table" | "grid";
 	onToggle: () => void;
 }
 
@@ -16,7 +16,7 @@ const ViewToggle: React.FC<ViewToggleProps> = ({ viewMode, onToggle }) => {
 				>
 					<span
 						className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-							viewMode === "separate" ? "translate-x-1" : "translate-x-6"
+							viewMode === "table" ? "translate-x-1" : "translate-x-6"
 						}`}
 					/>
 				</button>

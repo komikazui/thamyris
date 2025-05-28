@@ -23,10 +23,10 @@ const ChunithmRatingFrames = () => {
 		current: "",
 		recent: "",
 		potential: "",
-		combined: "",
 	});
 
-	const [viewMode, setViewMode] = useState<"separate" | "combined">("separate");
+	// Renamed viewMode state to displayMode
+	const [displayMode, setDisplayMode] = useState<"table" | "grid">("table");
 
 	const version = useChunithmVersion();
 	const { data: baseSongs = [] } = useUserRatingBaseList();
@@ -47,27 +47,9 @@ const ChunithmRatingFrames = () => {
 	const handleRecentSearch = handleSearch("recent");
 	const handlePotentialSearch = handleSearch("potential");
 
-	const filterBaseData = (data: ChunithmRatingData[]) => {
+	const filterData = (data: ChunithmRatingData[], query: string) => {
 		return data.filter((song) => {
-			return song.title?.toLowerCase().includes(searchQueries.base.toLowerCase());
-		});
-	};
-
-	const filterCurrentData = (data: ChunithmRatingData[]) => {
-		return data.filter((song) => {
-			return song.title?.toLowerCase().includes(searchQueries.current.toLowerCase());
-		});
-	};
-
-	const filterRecentData = (data: ChunithmRatingData[]) => {
-		return data.filter((song) => {
-			return song.title?.toLowerCase().includes(searchQueries.recent.toLowerCase());
-		});
-	};
-
-	const filterPotentialData = (data: ChunithmRatingData[]) => {
-		return data.filter((song) => {
-			return song.title?.toLowerCase().includes(searchQueries.potential.toLowerCase());
+			return song.title?.toLowerCase().includes(query.toLowerCase());
 		});
 	};
 
@@ -80,6 +62,12 @@ const ChunithmRatingFrames = () => {
 
 	const recommendedFumens = nextSongs;
 	const recommendedFumensTitle = "Potential fumens";
+
+	const filteredTopFumens = isVerseOrAbove
+		? filterData(topFumens, searchQueries.current)
+		: filterData(topFumens, searchQueries.base);
+	const filteredRecentFumens = filterData(recentFumens, searchQueries.recent);
+	const filteredRecommendedFumens = filterData(recommendedFumens, searchQueries.potential);
 
 	return (
 		<div className="relative flex-1 overflow-auto">
@@ -104,15 +92,17 @@ const ChunithmRatingFrames = () => {
 						/>
 					</div>
 
-					{/* View Mode Toggle */}
-					<ViewToggle viewMode={viewMode} onToggle={() => setViewMode(viewMode === "separate" ? "combined" : "separate")} />
+					<ViewToggle
+						viewMode={displayMode}
+						onToggle={() => setDisplayMode(displayMode === "table" ? "grid" : "table")} // Toggle between 'table' and 'grid'
+					/>
 
 					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
-						{viewMode === "separate" ? (
+						{displayMode === "table" ? (
 							<>
 								{/* Top fumens table - present in both versions */}
 								<TableComponent
-									data={filterCurrentData(topFumens)}
+									data={filteredTopFumens}
 									columns={ratingTable}
 									onSearch={isVerseOrAbove ? handleCurrentSearch : handleBaseSearch}
 									title={topFumensTitle}
@@ -120,7 +110,7 @@ const ChunithmRatingFrames = () => {
 
 								{/* Recent fumens table - present in both versions */}
 								<TableComponent
-									data={filterRecentData(recentFumens)}
+									data={filteredRecentFumens}
 									columns={ratingTable}
 									onSearch={handleRecentSearch}
 									title={recentFumensTitle}
@@ -129,7 +119,7 @@ const ChunithmRatingFrames = () => {
 								{/* Recommended/potential fumens table - only present in Verse or above */}
 								{isVerseOrAbove && (
 									<TableComponent
-										data={filterPotentialData(recommendedFumens)}
+										data={filteredRecommendedFumens}
 										columns={recommendedTable}
 										onSearch={handlePotentialSearch}
 										title={recommendedFumensTitle}
@@ -140,14 +130,15 @@ const ChunithmRatingFrames = () => {
 							<>
 								{/* Top fumens grid - present in both versions */}
 								<GridComponent
-									data={filterCurrentData(
+									data={filterData(
 										topFumens.map((song) => ({
 											...song,
 											hasScore: true,
 											hasRating: true,
 											hasLamp: true,
 											hasType: isVerseOrAbove,
-										}))
+										})),
+										isVerseOrAbove ? searchQueries.current : searchQueries.base
 									)}
 									onSearch={isVerseOrAbove ? handleCurrentSearch : handleBaseSearch}
 									title={topFumensTitle}
@@ -166,13 +157,14 @@ const ChunithmRatingFrames = () => {
 
 								{/* Recent fumens grid - present in both versions */}
 								<GridComponent
-									data={filterRecentData(
+									data={filterData(
 										recentFumens.map((song) => ({
 											...song,
 											hasScore: true,
 											hasRating: true,
 											hasLamp: true,
-										}))
+										})),
+										searchQueries.recent
 									)}
 									onSearch={handleRecentSearch}
 									title={recentFumensTitle}
@@ -192,13 +184,14 @@ const ChunithmRatingFrames = () => {
 								{/* Recommended/potential fumens grid - only in Verse or above */}
 								{isVerseOrAbove && (
 									<GridComponent
-										data={filterPotentialData(
+										data={filterData(
 											recommendedFumens.map((song) => ({
 												...song,
 												hasScore: false,
 												hasRating: false,
 												hasLamp: false,
-											}))
+											})),
+											searchQueries.potential
 										)}
 										onSearch={handlePotentialSearch}
 										title={recommendedFumensTitle}
