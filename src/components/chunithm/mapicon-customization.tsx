@@ -6,7 +6,7 @@ import { toast } from "sonner";
 
 import { SubmitButton } from "@/components/common/button";
 import { useCurrentMapIcon, useMapIcons, useUpdateMapIcon } from "@/hooks/chunithm/use-mapicon";
-import { cdnUrl } from "@/lib/constants";
+import { CDN } from "@/lib/constants";
 
 import Spinner from "../common/spinner";
 
@@ -71,7 +71,7 @@ const MapiconSelector = () => {
 			<div className="flex h-full items-center justify-center md:w-[300px]">
 				{selectedIcon && (
 					<img
-						src={`${cdnUrl}/chunithm/map_icon/${selectedIcon.replace(".dds", ".png")}`}
+						src={`${CDN}/chunithm/map_icon/${selectedIcon.replace(".dds", ".png")}`}
 						className="w-[130px] object-contain"
 						alt="Map Icon"
 					/>

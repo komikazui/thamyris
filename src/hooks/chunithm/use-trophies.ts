@@ -2,7 +2,8 @@ import { useCallback } from "react";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { TrophyRareType, cdnUrl, honorBackgrounds } from "@/lib/constants";
+import { CDN, honorBackgrounds } from "@/lib/constants";
+import { TrophyRareType } from "@/lib/enums";
 import { api } from "@/utils";
 
 export function useUnlockedTrophies() {
@@ -47,7 +48,7 @@ export function useHonorBackground() {
 				trophy.rareType === TrophyRareType.Lamp3
 			) {
 				const path = trophy.imagePath || imagePath;
-				return `${cdnUrl}assets/trophy/${path?.replace(".dds", ".png")}`;
+				return `${CDN}assets/trophy/${path?.replace(".dds", ".png")}`;
 			}
 
 			return honorBackgrounds[trophy.rareType as TrophyRareType];

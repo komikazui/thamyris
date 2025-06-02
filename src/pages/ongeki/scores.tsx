@@ -6,7 +6,7 @@ import Header from "@/components/common/header";
 import Spinner from "@/components/common/spinner";
 import TableComponent from "@/components/common/table";
 import { useOngekiScores, useOngekiVersion } from "@/hooks/ongeki";
-import { cdnUrl } from "@/lib/constants";
+import { CDN } from "@/lib/constants";
 import { getDifficultyFromOngekiChart, getOngekiComboStatus } from "@/utils/helpers";
 
 interface OngekiScore {
@@ -42,7 +42,7 @@ const OngekiScorePage = () => {
 	const columns = {
 		Song: (row: OngekiScore) => (
 			<div className="flex items-center gap-3">
-				<img width={40} height={40} src={`${cdnUrl}/ongeki/jacket/${row.jacketPath}`} className="flex-shrink-0" />
+				<img width={40} height={40} src={`${CDN}/ongeki/jacket/${row.jacketPath}`} className="flex-shrink-0" />
 				<span className="text-primary truncate">{row.title}</span>
 			</div>
 		),

@@ -1,6 +1,6 @@
 import React from "react";
 
-import { cdnUrl } from "@/lib/constants";
+import { CDN } from "@/lib/constants";
 import { ChunitmRating, getChunithmComboStatus, getDifficultyFromChunithmChart } from "@/utils/helpers";
 
 export interface ChunithmRatingData {
@@ -29,7 +29,7 @@ export const ratingTable = {
 			<img
 				width={40}
 				height={40}
-				src={`${cdnUrl}/chunithm/jacket/${row.jacketPath?.replace(".dds", ".png")}`}
+				src={`${CDN}/chunithm/jacket/${row.jacketPath?.replace(".dds", ".png")}`}
 				alt={row.title}
 				className="flex-shrink-0"
 			/>
@@ -62,7 +62,7 @@ export const recommendedTable = {
 			<img
 				width={40}
 				height={40}
-				src={`${cdnUrl}/chunithm/jacket/${row.jacketPath?.replace(".dds", ".png")}`}
+				src={`${CDN}/chunithm/jacket/${row.jacketPath?.replace(".dds", ".png")}`}
 				alt={row.title}
 				className="flex-shrink-0"
 			/>

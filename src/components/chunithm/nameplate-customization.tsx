@@ -6,7 +6,7 @@ import { toast } from "sonner";
 
 import { SubmitButton } from "@/components/common/button";
 import { useCurrentNameplates, useNameplates, useUpdateNameplate } from "@/hooks/chunithm";
-import { cdnUrl } from "@/lib/constants";
+import { CDN } from "@/lib/constants";
 
 import Spinner from "../common/spinner";
 
@@ -71,7 +71,7 @@ const NameplateSelector = () => {
 		<div className="flex w-full flex-col justify-center gap-4 px-4 pt-4 md:flex-row md:gap-8 md:pt-15">
 			<div className="flex items-center justify-center self-center md:h-full md:w-[300px]">
 				<img
-					src={`${cdnUrl}/chunithm/nameplate/${selectedNameplate.replace(".dds", ".png")}`}
+					src={`${CDN}/chunithm/nameplate/${selectedNameplate.replace(".dds", ".png")}`}
 					className="w-[250px] object-contain"
 					alt="Nameplate"
 				/>{" "}

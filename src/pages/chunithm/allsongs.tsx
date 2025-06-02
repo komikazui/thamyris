@@ -4,7 +4,7 @@ import Header from "@/components/common/header";
 import Spinner from "@/components/common/spinner";
 import TableComponent from "@/components/common/table";
 import { useChunithmSongs, useChunithmVersion } from "@/hooks/chunithm";
-import { cdnUrl } from "@/lib/constants";
+import { CDN } from "@/lib/constants";
 import { getDifficultyFromChunithmChart } from "@/utils/helpers";
 
 interface ChunithmSong {
@@ -33,7 +33,7 @@ const ChunithmAllSongs = () => {
 				<img
 					width={40}
 					height={40}
-					src={`${cdnUrl}/chunithm/jacket/${row.jacketPath?.replace(".dds", ".png")}`}
+					src={`${CDN}/chunithm/jacket/${row.jacketPath?.replace(".dds", ".png")}`}
 					alt={row.title}
 					className="flex-shrink-0"
 				/>

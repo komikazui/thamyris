@@ -3,7 +3,7 @@ import React, { useRef, useState } from "react";
 import * as htmlToImage from "html-to-image";
 import { Download, Loader2, Star } from "lucide-react";
 
-import { cdnUrl } from "@/lib/constants";
+import { CDN } from "@/lib/constants";
 
 interface SearchProps {
 	value?: string;
@@ -119,9 +119,9 @@ export const ScoreGrid = (props: {
 
 	const getImagePath = () => {
 		if (gameType === "ongeki") {
-			return `${cdnUrl}/ongeki/jacket/${item.jacketPath}`;
+			return `${CDN}/ongeki/jacket/${item.jacketPath}`;
 		} else if (gameType === "chunithm") {
-			return `${cdnUrl}/chunithm/jacket/${item.jacketPath?.replace(".dds", ".png")}`;
+			return `${CDN}/chunithm/jacket/${item.jacketPath?.replace(".dds", ".png")}`;
 		}
 		return "";
 	};

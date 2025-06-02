@@ -2,7 +2,7 @@ import React from "react";
 
 import { Star } from "lucide-react";
 
-import { cdnUrl } from "@/lib/constants";
+import { CDN } from "@/lib/constants";
 import {
 	OngekiGekForceRating,
 	OngekiRating,
@@ -34,7 +34,7 @@ export interface OngekiRatingData {
 export const ratingTableColumns = {
 	Song: (row: OngekiRatingData) => (
 		<div className="flex items-center gap-3">
-			<img width={40} height={40} src={`${cdnUrl}/ongeki/jacket/${row.jacketPath}`} className="flex-shrink-0" />
+			<img width={40} height={40} src={`${CDN}/ongeki/jacket/${row.jacketPath}`} className="flex-shrink-0" />
 			<span className="text-primary truncate">{row.title}</span>
 		</div>
 	),
@@ -89,7 +89,7 @@ export const ratingTableColumns = {
 export const recommendedTable = {
 	Song: (row: OngekiRatingData) => (
 		<div className="flex items-center gap-3">
-			<img width={40} height={40} src={`${cdnUrl}/ongeki/jacket/${row.jacketPath}`} className="flex-shrink-0" />
+			<img width={40} height={40} src={`${CDN}/ongeki/jacket/${row.jacketPath}`} className="flex-shrink-0" />
 			<span className="text-primary truncate">{row.title}</span>
 		</div>
 	),
@@ -100,7 +100,7 @@ export const recommendedTable = {
 export const pScoreTableColumns = {
 	Song: (row: OngekiRatingData) => (
 		<div className="flex items-center gap-3">
-			<img width={40} height={40} src={`${cdnUrl}/ongeki/jacket/${row.jacketPath}`} className="flex-shrink-0" />
+			<img width={40} height={40} src={`${CDN}/ongeki/jacket/${row.jacketPath}`} className="flex-shrink-0" />
 			<span className="text-primary truncate">{row.title}</span>
 		</div>
 	),

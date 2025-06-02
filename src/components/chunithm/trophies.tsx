@@ -4,7 +4,8 @@ import { toast } from "sonner";
 
 import { useChunithmVersion, useCurrentTrophy, useUnlockedTrophies, useUpdateTrophy } from "@/hooks/chunithm";
 import { useHonorBackground } from "@/hooks/chunithm/use-trophies";
-import { TrophyRareType, honorBackgrounds } from "@/lib/constants";
+import { honorBackgrounds } from "@/lib/constants";
+import { TrophyRareType } from "@/lib/enums";
 
 import { SubmitButton } from "../common/button";
 import TrophyDropdown from "./trophy-dropdown";
