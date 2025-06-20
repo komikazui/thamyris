@@ -72,7 +72,6 @@ const app = (
 								<Route path="/news" element={<ServerNews />} />
 								<Route path="/account" element={<Account />} />
 								<Route path="/arcade" element={<Arcade />} />
-								<Route path="/downloads" element={<Downloads />} />
 
 								<Route path="/chunithm/settings" element={<ChunithmSettingsPage />} />
 								<Route path="/chunithm/userbox" element={<ChunithmUserbox />} />

@@ -3,7 +3,6 @@ import React from "react";
 import {
 	BoomBox,
 	ChevronDown,
-	DownloadCloud,
 	HeartIcon,
 	Home,
 	List,
@@ -135,12 +134,6 @@ const sidebarItems = [
 		href: "/news",
 	},
 	{
-		name: "Downloads",
-		icon: DownloadCloud,
-		color: " #71cd5b",
-		href: "/downloads",
-	},
-	{
 		name: "SEGA",
 		icon: ChevronDown,
 		color: "#17569b",
@@ -168,8 +161,12 @@ const sidebarItems = [
 ];
 
 export function SidebarComponent() {
-	const [openCategories, setOpenCategories] = React.useState<Record<string, boolean>>({});
-	const [openSubCategories, setOpenSubCategories] = React.useState<Record<string, boolean>>({});
+	const [openCategories, setOpenCategories] = React.useState<
+		Record<string, boolean>
+	>({});
+	const [openSubCategories, setOpenSubCategories] = React.useState<
+		Record<string, boolean>
+	>({});
 	const { user } = useAuth();
 
 	const { data: systemAdmin } = useAdmin();
@@ -211,10 +208,6 @@ export function SidebarComponent() {
 					<SidebarGroupContent>
 						<SidebarMenu>
 							{sidebarItems.map((item, index) => {
-								if (item.name === "Downloads" && !downloadAccess && !adminAccess) {
-									return null;
-								}
-
 								return (
 									<SidebarMenuItem key={index}>
 										{item.subnav ? (
@@ -234,26 +227,40 @@ export function SidebarComponent() {
 																	<>
 																		<SidebarMenuButton
 																			className="text-primary hover:bg-hover cursor-pointer ring-0 data-[state=open]:bg-gray-700 data-[state=open]:text-gray-100"
-																			onClick={(e) => toggleSubCategory(subItem.name, e)}
+																			onClick={(e) =>
+																				toggleSubCategory(subItem.name, e)
+																			}
 																		>
-																			<subItem.icon style={{ color: subItem.color }} />
+																			<subItem.icon
+																				style={{ color: subItem.color }}
+																			/>
 																			<span>{subItem.name}</span>
 																		</SidebarMenuButton>
 																		{openSubCategories[subItem.name] && (
 																			<SidebarMenuSub className="border-none pl-4">
-																				{subItem.subnav.map((nestedItem, nestedIndex) => (
-																					<SidebarMenuItem key={`${index}-${subIndex}-${nestedIndex}`}>
-																						<SidebarMenuButton
-																							className="text-primary hover:bg-hover cursor-pointer ring-0 data-[state=open]:bg-gray-700 data-[state=open]:text-gray-100"
-																							asChild
+																				{subItem.subnav.map(
+																					(nestedItem, nestedIndex) => (
+																						<SidebarMenuItem
+																							key={`${index}-${subIndex}-${nestedIndex}`}
 																						>
-																							<Link to={nestedItem.href}>
-																								<nestedItem.icon style={{ color: nestedItem.color }} />
-																								<span>{nestedItem.name}</span>
-																							</Link>
-																						</SidebarMenuButton>
-																					</SidebarMenuItem>
-																				))}
+																							<SidebarMenuButton
+																								className="text-primary hover:bg-hover cursor-pointer ring-0 data-[state=open]:bg-gray-700 data-[state=open]:text-gray-100"
+																								asChild
+																							>
+																								<Link to={nestedItem.href}>
+																									<nestedItem.icon
+																										style={{
+																											color: nestedItem.color,
+																										}}
+																									/>
+																									<span>
+																										{nestedItem.name}
+																									</span>
+																								</Link>
+																							</SidebarMenuButton>
+																						</SidebarMenuItem>
+																					),
+																				)}
 																			</SidebarMenuSub>
 																		)}
 																	</>
@@ -262,8 +269,12 @@ export function SidebarComponent() {
 																		className="text-primary hover:bg-hover cursor-pointer ring-0 data-[state=open]:bg-gray-700 data-[state=open]:text-gray-100"
 																		asChild
 																	>
-																		<subItem.icon style={{ color: subItem.color }} />
-																		<span>{subItem.name}</span>
+																		<Link to={subItem.href}>
+																			<subItem.icon
+																				style={{ color: subItem.color }}
+																			/>
+																			<span>{subItem.name}</span>
+																		</Link>
 																	</SidebarMenuButton>
 																)}
 															</SidebarMenuItem>
