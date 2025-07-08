@@ -1,201 +1,184 @@
 import mysql, { MysqlError } from "mysql";
-
-import { env } from "@/env";
+import "dotenv/config";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // When every query is typed, this can be removed :)
 
 const getDbConnectionConfig = (): mysql.PoolConfig => {
-	const {
-		NODE_ENV,
-		DEV_MYSQL_HOST,
-		DEV_MYSQL_USERNAME,
-		DEV_MYSQL_PASSWORD,
-		DEV_MYSQL_DATABASE,
-		PROD_MYSQL_HOST,
-		PROD_MYSQL_USERNAME,
-		PROD_MYSQL_PASSWORD,
-		PROD_MYSQL_DATABASE,
-	} = env;
+    const isProd = process.env.NODE_ENV === "production";
+    const dbConfig: mysql.PoolConfig = {
+        host: isProd ? process.env.PROD_MYSQL_HOST : process.env.DEV_MYSQL_HOST,
+        user: isProd ? process.env.PROD_MYSQL_USERNAME : process.env.DEV_MYSQL_USERNAME,
+        password: isProd ? process.env.PROD_MYSQL_PASSWORD : process.env.DEV_MYSQL_PASSWORD,
+        database: isProd ? process.env.PROD_MYSQL_DATABASE : process.env.DEV_MYSQL_DATABASE,
+        port: 3306,
+    };
 
-	const whatTheHeckIsAEnvFileAnyways = NODE_ENV === "production";
-	const connectionConfig: mysql.ConnectionConfig = {
-		host: whatTheHeckIsAEnvFileAnyways ? PROD_MYSQL_HOST : DEV_MYSQL_HOST,
-		user: whatTheHeckIsAEnvFileAnyways ? PROD_MYSQL_USERNAME : DEV_MYSQL_USERNAME,
-		password: whatTheHeckIsAEnvFileAnyways ? PROD_MYSQL_PASSWORD : DEV_MYSQL_PASSWORD,
-		database: whatTheHeckIsAEnvFileAnyways ? PROD_MYSQL_DATABASE : DEV_MYSQL_DATABASE,
-		port: 3306,
-	};
-	const dbConfig: mysql.PoolConfig = {
-		...connectionConfig,
-		// defaults are fine... for now
-	};
-
-	// validate
-	for (const [key, value] of Object.entries(dbConfig)) {
-		if (!value) {
-			throw new Error(`Missing required database configuration: ${key}`);
-		}
-	}
-	return dbConfig;
+    // validate
+    for (const [key, value] of Object.entries(dbConfig)) {
+        if (!value) {
+            throw new Error(`Missing required database configuration: ${key}`);
+        }
+    }
+    return dbConfig;
 };
 
 // Bunch of bs to promisify the mysql connection and type the results.
 export class Connection {
-	private connection: mysql.PoolConnection;
-	private originalQuery: mysql.Connection["query"];
+    private connection: mysql.PoolConnection;
+    private originalQuery: mysql.Connection["query"];
 
-	constructor(connection: mysql.PoolConnection) {
-		this.connection = connection;
-		this.originalQuery = connection.query.bind(connection);
+    constructor(connection: mysql.PoolConnection) {
+        this.connection = connection;
+        this.originalQuery = connection.query.bind(connection);
 
-		this.connection.on("error", (err: MysqlError) => {
-			console.error("Database error:", err);
-			if (err.code === "PROTOCOL_CONNECTION_LOST") {
-				this.connection.connect();
-			} else {
-				throw err;
-			}
-		});
-	}
+        this.connection.on("error", (err: MysqlError) => {
+            console.error("Database error:", err);
+            if (err.code === "PROTOCOL_CONNECTION_LOST") {
+                this.connection.connect();
+            } else {
+                throw err;
+            }
+        });
+    }
 
-	release(): void {
-		this.connection.release();
-	}
+    release(): void {
+        this.connection.release();
+    }
 
-	async query<T = any>(sql: string, values?: any[]): Promise<T> {
-		return new Promise<T>((resolve, reject) => {
-			this.originalQuery(sql, values, (error: MysqlError | null, results: T) => {
-				if (error) {
-					reject(error);
-				} else {
-					resolve(results);
-				}
-			});
-		});
-	}
+    async query<T = any>(sql: string, values?: any[]): Promise<T> {
+        return new Promise<T>((resolve, reject) => {
+            this.originalQuery(sql, values, (error: MysqlError | null, results: T) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results);
+                }
+            });
+        });
+    }
 
-	async select<T = any>(sql: string, values?: any[]): Promise<T[]> {
-		return this.query<T[]>(sql, values);
-	}
+    async select<T = any>(sql: string, values?: any[]): Promise<T[]> {
+        return this.query<T[]>(sql, values);
+    }
 
-	async update(sql: string, values?: any[]): Promise<{ affectedRows: number }> {
-		return this.query<{ affectedRows: number }>(sql, values);
-	}
+    async update(sql: string, values?: any[]): Promise<{ affectedRows: number }> {
+        return this.query<{ affectedRows: number }>(sql, values);
+    }
 
-	async beginTransaction(): Promise<void> {
-		return new Promise((resolve, reject) => {
-			this.connection.beginTransaction((error) => {
-				if (error) {
-					reject(error);
-				} else {
-					resolve();
-				}
-			});
-		});
-	}
+    async beginTransaction(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.connection.beginTransaction((error) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    }
 
-	async commit(): Promise<void> {
-		return new Promise((resolve, reject) => {
-			this.connection.commit((error) => {
-				if (error) {
-					reject(error);
-				} else {
-					resolve();
-				}
-			});
-		});
-	}
+    async commit(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.connection.commit((error) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    }
 
-	async rollback(): Promise<void> {
-		return new Promise((resolve, reject) => {
-			this.connection.rollback((error) => {
-				if (error) {
-					reject(error);
-				} else {
-					resolve();
-				}
-			});
-		});
-	}
+    async rollback(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.connection.rollback((error) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    }
 }
 
 export class Database {
-	private static pool: mysql.Pool = mysql.createPool(getDbConnectionConfig()).setMaxListeners(20);
+    private static pool: mysql.Pool = mysql.createPool(getDbConnectionConfig()).setMaxListeners(20);
 
-	// I don't trust the connections to be released properly
-	// so not exposing this method
-	private static async getConnection(): Promise<Connection> {
-		return new Promise((resolve, reject) => {
-			this.pool.getConnection((error, mysqlConnection) => {
-				if (error) {
-					reject(error);
-					return;
-				}
+    // I don't trust the connections to be released properly
+    // so not exposing this method
+    private static async getConnection(): Promise<Connection> {
+        return new Promise((resolve, reject) => {
+            this.pool.getConnection((error, mysqlConnection) => {
+                if (error) {
+                    reject(error);
+                    return;
+                }
 
-				const connection = new Connection(mysqlConnection);
-				resolve(connection);
-			});
-		});
-	}
+                const connection = new Connection(mysqlConnection);
+                resolve(connection);
+            });
+        });
+    }
 
-	private static async withConnection<T>(callback: (connection: Connection) => Promise<T>): Promise<T> {
-		const connection = await this.getConnection();
+    private static async withConnection<T>(callback: (connection: Connection) => Promise<T>): Promise<T> {
+        const connection = await this.getConnection();
 
-		try {
-			return await callback(connection);
-		} finally {
-			connection.release();
-		}
-	}
+        try {
+            return await callback(connection);
+        } finally {
+            connection.release();
+        }
+    }
 
-	// Creates a transaction and runs the callback within it
-	static async inTransaction<T>(callback: (connection: Connection) => Promise<T>): Promise<T> {
-		const connection = await this.getConnection();
+    // Creates a transaction and runs the callback within it
+    static async inTransaction<T>(callback: (connection: Connection) => Promise<T>): Promise<T> {
+        const connection = await this.getConnection();
 
-		try {
-			await connection.beginTransaction();
-			const result = await callback(connection);
-			await connection.commit();
-			return result as T;
-		} catch (error) {
-			await connection.rollback();
-			throw error;
-		} finally {
-			connection.release();
-		}
-	}
+        try {
+            await connection.beginTransaction();
+            const result = await callback(connection);
+            await connection.commit();
+            return result as T;
+        } catch (error) {
+            await connection.rollback();
+            throw error;
+        } finally {
+            connection.release();
+        }
+    }
 
-	// Single-use methods
-	static async query<T = any>(sql: string, values?: any[]): Promise<T> {
-		return this.withConnection((conn) => conn.query<T>(sql, values));
-	}
+    // Single-use methods
+    static async query<T = any>(sql: string, values?: any[]): Promise<T> {
+        return this.withConnection((conn) => conn.query<T>(sql, values));
+    }
 
-	static async select<T = any>(sql: string, values?: any[]): Promise<T[]> {
-		return this.withConnection((conn) => conn.select<T>(sql, values));
-	}
+    static async select<T = any>(sql: string, values?: any[]): Promise<T[]> {
+        return this.withConnection((conn) => conn.select<T>(sql, values));
+    }
 
-	static async update(sql: string, values?: any[]): Promise<{ affectedRows: number }> {
-		return this.withConnection((conn) => conn.update(sql, values));
-	}
+    static async update(sql: string, values?: any[]): Promise<{ affectedRows: number }> {
+        return this.withConnection((conn) => conn.update(sql, values));
+    }
 }
 
 // Backwards compatibility layer
 export const db = {
-	//  Single-use methods
-	query: Database.query.bind(Database),
-	select: Database.select.bind(Database),
-	update: Database.update.bind(Database),
+    //  Single-use methods
+    query: Database.query.bind(Database),
+    select: Database.select.bind(Database),
+    update: Database.update.bind(Database),
 
-	// Transaction methods (use this for multiple queries that should be run atomically)
-	// Example:
-	// await db.inTransaction(async (conn) => {
-	//   await conn.query("INSERT INTO ...");
-	//   await conn.query("UPDATE ...");
-	// });
-	//
-	// If either query throws an error, both are rolled back and no changes are made.
-	inTransaction: Database.inTransaction.bind(Database),
+    // Transaction methods (use this for multiple queries that should be run atomically)
+    // Example:
+    // await db.inTransaction(async (conn) => {
+    //   await conn.query("INSERT INTO ...");
+    //   await conn.query("UPDATE ...");
+    // });
+    //
+    // If either query throws an error, both are rolled back and no changes are made.
+    inTransaction: Database.inTransaction.bind(Database),
 };
 
 export default db;
