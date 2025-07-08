@@ -45,7 +45,7 @@ const TableComponent: React.FC<TableProps<any>> = ({ columns, data, onSearch, ti
             
             <div className="overflow-x-auto -mx-2 sm:mx-0">
                 <div className="min-w-full inline-block align-middle">
-                    <div className="overflow-hidden border border-gray-200 rounded-lg">
+                    <div className="overflow-hidden border border-gray-200 rounded-sm">
                         <Table className="min-w-full">
                             <TableHeader>
                                 <TableRow>
