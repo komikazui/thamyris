@@ -1,12 +1,9 @@
 import React from "react";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Download } from "lucide-react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
-
 import { Toaster } from "@/components/ui/sonner";
-
 import { LoginContent } from "./components/common/login";
 import { SidebarComponent } from "./components/common/sidebar";
 import SignUpContent from "./components/common/signup";
@@ -24,7 +21,6 @@ import ChunithmRivals from "./pages/chunithm/rivals";
 import ChunithmScorePage from "./pages/chunithm/scores";
 import ChunithmSettingsPage from "./pages/chunithm/settings";
 import ChunithmUserbox from "./pages/chunithm/userbox";
-import Downloads from "./pages/common/downloads";
 import { NotFound } from "./pages/common/not-found";
 import OverviewPage from "./pages/common/overview-page";
 import ServerNews from "./pages/common/server-news";

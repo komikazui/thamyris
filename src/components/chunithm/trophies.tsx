@@ -1,6 +1,5 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
-
 import {
     useChunithmVersion,
     useCurrentTrophy,
@@ -10,14 +9,14 @@ import {
 import { useHonorBackground } from "@/hooks/chunithm/use-trophies";
 import { honorBackgrounds } from "@/lib/constants";
 import { TrophyRareType } from "@/lib/enums";
-
 import { SubmitButton } from "../common/button";
 import TrophyDropdown from "./trophy-dropdown";
 
-type TrophyType = "main" | "sub1" | "sub2";
-type TrophyState = Record<TrophyType, number>;
-
-const TROPHY_TYPES: TrophyType[] = ["main", "sub1", "sub2"];
+enum TrophySlot {
+    Main = 0,
+    Sub1 = 1,
+    Sub2 = 2,
+}
 
 const isImage = (type: number) =>
     ![TrophyRareType.Kop, TrophyRareType.Kop2, TrophyRareType.Lamp, TrophyRareType.Lamp2, TrophyRareType.Lamp3].includes(type);
@@ -52,118 +51,96 @@ export const TrophySelector = () => {
     const getHonorBackground = useHonorBackground();
 
     const isVerseOrAbove = (version || 0) >= 17;
-
-    const [selectedTrophies, setSelectedTrophies] = useState<TrophyState>({
+    const [selected, setSelected] = useState<{ main: number; sub1: number; sub2: number }>({
         main: 0,
         sub1: 0,
-        sub2: 0,
+        sub2: 0
     });
 
     useEffect(() => {
-        if (!currentTrophy || !unlockedTrophies) return;
-        setSelectedTrophies({
+        if (!currentTrophy) return;
+        setSelected({
             main: currentTrophy.trophyId || 0,
             sub1: currentTrophy.trophyIdSub1 || 0,
             sub2: currentTrophy.trophyIdSub2 || 0,
         });
-    }, [currentTrophy, unlockedTrophies]);
+    }, [currentTrophy]);
 
-    const trophyDisplayInfo = TROPHY_TYPES.map((type) => {
-        if (!isVerseOrAbove && type !== "main") return null;
-        const trophy = unlockedTrophies?.find((t) => t.trophyId === selectedTrophies[type]);
-        return {
-            background:
-                trophy
-                    ? getHonorBackground(trophy)
-                    : honorBackgrounds[isVerseOrAbove ? TrophyRareType.Staff : TrophyRareType.Normal],
-            name: trophy?.name || "",
-            rareType: trophy?.rareType || 0,
-        };
-    }).filter(Boolean);
-
-    const handleTrophySelect = useCallback(
-        (type: TrophyType, trophyId: number) => {
-            if (!isVerseOrAbove && type !== "main") {
-                toast.error("Sub trophies are only available in VERSE");
-                return;
-            }
-            setSelectedTrophies((prev) => ({ ...prev, [type]: trophyId }));
-        },
-        [isVerseOrAbove]
-    );
-
-    const hasChanges = useCallback(() => {
-        if (!isVerseOrAbove) {
-            return selectedTrophies.main !== currentTrophy?.trophyId;
+    const handleSelect = (slot: TrophySlot, trophyId: number) => {
+        if (!isVerseOrAbove && slot !== TrophySlot.Main) {
+            toast.error("Sub trophies are only available in VERSE");
+            return;
         }
-        return (
-            selectedTrophies.main !== currentTrophy?.trophyId ||
-            selectedTrophies.sub1 !== currentTrophy?.trophyIdSub1 ||
-            selectedTrophies.sub2 !== currentTrophy?.trophyIdSub2
-        );
-    }, [isVerseOrAbove, selectedTrophies, currentTrophy]);
+        setSelected(prev => {
+            if (slot === TrophySlot.Main) return { ...prev, main: trophyId };
+            if (slot === TrophySlot.Sub1) return { ...prev, sub1: trophyId };
+            if (slot === TrophySlot.Sub2) return { ...prev, sub2: trophyId };
+            return prev;
+        });
+    };
 
-    const handleSubmit = useCallback(() => {
-        const updates: {
-            mainTrophyId?: number;
-            subTrophy1Id?: number;
-            subTrophy2Id?: number;
-        } = {
-            mainTrophyId: selectedTrophies.main,
-        };
+    const hasChanges = () => {
+        if (!currentTrophy) return false;
+        if (!isVerseOrAbove) return selected.main !== currentTrophy.trophyId;
+        return (
+            selected.main !== currentTrophy.trophyId ||
+            selected.sub1 !== currentTrophy.trophyIdSub1 ||
+            selected.sub2 !== currentTrophy.trophyIdSub2
+        );
+    };
+
+    const handleSubmit = () => {
+        const updates: any = { mainTrophyId: selected.main };
         if (isVerseOrAbove) {
-            if (selectedTrophies.sub1 !== currentTrophy?.trophyIdSub1) {
-                updates.subTrophy1Id = selectedTrophies.sub1 || undefined;
-            }
-            if (selectedTrophies.sub2 !== currentTrophy?.trophyIdSub2) {
-                updates.subTrophy2Id = selectedTrophies.sub2 || undefined;
-            }
+            updates.subTrophy1Id = selected.sub1;
+            updates.subTrophy2Id = selected.sub2;
         }
         updateTrophy(updates, {
-            onSuccess: () => toast.success("Trophy updated successfully!"),
-            onError: (error) =>
-                toast.error(error instanceof Error ? error.message : "Failed to update trophy"),
+            onSuccess: () => toast.success("Trophy updated!"),
+            onError: e => toast.error(e instanceof Error ? e.message : "Failed to update trophy"),
         });
-    }, [selectedTrophies, isVerseOrAbove, currentTrophy, updateTrophy]);
+    };
+
+    const slots = isVerseOrAbove
+        ? [TrophySlot.Main, TrophySlot.Sub1, TrophySlot.Sub2]
+        : [TrophySlot.Main];
 
     return (
         <div className="flex w-full flex-col justify-center gap-4 px-4 pt-4 pb-4 md:flex-row md:gap-8 md:pt-15">
             <div className="relative flex-col items-center justify-center md:w-[300px]">
-                {trophyDisplayInfo.map((info, idx) =>
-                    info ? (
+                {slots.map(slot => {
+                    const trophyId =
+                        slot === TrophySlot.Main
+                            ? selected.main
+                            : slot === TrophySlot.Sub1
+                            ? selected.sub1
+                            : selected.sub2;
+                    const trophy = unlockedTrophies?.find(t => t.trophyId === trophyId);
+                    return (
                         <TrophyBackgroundDisplay
-                            key={idx}
-                            background={info.background}
-                            name={info.name}
-                            rareType={info.rareType}
+                            key={slot}
+                            background={
+                                trophy
+                                    ? getHonorBackground(trophy)
+                                    : honorBackgrounds[isVerseOrAbove ? TrophyRareType.Staff : TrophyRareType.Normal]
+                            }
+                            name={trophy?.name || ""}
+                            rareType={trophy?.rareType || 0}
                         />
-                    ) : null
-                )}
+                    );
+                })}
             </div>
             <div className="bg-card w-full rounded-md p-4 md:w-[400px] md:p-6">
                 <h2 className="text-primary mb-4 text-xl font-semibold">Trophy Settings</h2>
-                <TrophyDropdown
-                    type="main"
-                    selectedTrophies={selectedTrophies}
-                    unlockedTrophies={unlockedTrophies}
-                    handleTrophySelect={handleTrophySelect}
+               {slots.map(slot => (
+             <TrophyDropdown
+                key={slot}
+                slot={slot === TrophySlot.Main ? "main" : slot === TrophySlot.Sub1 ? "sub1" : "sub2"}
+                selectedTrophies={selected}
+                unlockedTrophies={unlockedTrophies}
+                onSelect={(id: number) => handleSelect(slot, id)}
                 />
-                {isVerseOrAbove && (
-                    <>
-                        <TrophyDropdown
-                            type="sub1"
-                            selectedTrophies={selectedTrophies}
-                            unlockedTrophies={unlockedTrophies}
-                            handleTrophySelect={handleTrophySelect}
-                        />
-                        <TrophyDropdown
-                            type="sub2"
-                            selectedTrophies={selectedTrophies}
-                            unlockedTrophies={unlockedTrophies}
-                            handleTrophySelect={handleTrophySelect}
-                        />
-                    </>
-                )}
+            ))}
                 <SubmitButton
                     onClick={handleSubmit}
                     defaultLabel="Update trophy"
