@@ -48,7 +48,7 @@ export function useHonorBackground() {
 				trophy.rareType === TrophyRareType.Lamp3
 			) {
 				const path = trophy.imagePath || imagePath;
-				return `${CDN}assets/trophy/${path?.replace(".dds", ".png")}`;
+				return `${CDN}/chunithm/trophy/${path?.replace(".dds", ".png")}`;
 			}
 
 			return honorBackgrounds[trophy.rareType as TrophyRareType];
