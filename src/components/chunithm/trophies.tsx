@@ -68,7 +68,7 @@ export const TrophySelector = () => {
         });
     }, [currentTrophy, unlockedTrophies]);
 
-    const trophyDisplayInfo = TROPHY_TYPES.map((type, idx) => {
+    const trophyDisplayInfo = TROPHY_TYPES.map((type) => {
         if (!isVerseOrAbove && type !== "main") return null;
         const trophy = unlockedTrophies?.find((t) => t.trophyId === selectedTrophies[type]);
         return {
