@@ -7,92 +7,92 @@ import { validateJson } from "@/api/middleware/validator";
 import { rethrowWithMessage } from "@/api/utils/error";
 
 const OngekiRivalsRoutes = new Hono()
-	.post(
-		"add",
-		validateJson(
-			z.object({
-				rivalUserId: z.number().int().positive(),
-			})
-		),
-		async (c) => {
-			try {
-				const userId = c.payload.userId;
-				const { rivalUserId } = await c.req.json();
+  .post(
+    "add",
+    validateJson(
+      z.object({
+        rivalUserId: z.number().int().positive(),
+      })
+    ),
+    async (c) => {
+      try {
+        const userId = c.payload.userId;
+        const { rivalUserId } = await c.req.json();
 
-				const results = await db.query(
-					`
+        const results = await db.query(
+          `
 						INSERT INTO ongeki_profile_rival (user, rivalUserId)
 						VALUES (?, ?)
 					`,
-					[userId, rivalUserId]
-				);
-				if (results.affectedRows === 0) {
-					throw new HTTPException(500, { message: "Insert failed" });
-				}
-				return c.json(results);
-			} catch (error) {
-				throw rethrowWithMessage("Failed to add rival", error);
-			}
-		}
-	)
+          [userId, rivalUserId]
+        );
+        if (results.affectedRows === 0) {
+          throw new HTTPException(500, { message: "Insert failed" });
+        }
+        return c.json(results);
+      } catch (error) {
+        throw rethrowWithMessage("Failed to add rival", error);
+      }
+    }
+  )
 
-	.post(
-		"remove",
-		validateJson(
-			z.object({
-				rivalUserId: z.number().int().positive(),
-			})
-		),
-		async (c) => {
-			try {
-				const userId = c.payload.userId;
-				const { rivalUserId } = await c.req.json();
+  .post(
+    "remove",
+    validateJson(
+      z.object({
+        rivalUserId: z.number().int().positive(),
+      })
+    ),
+    async (c) => {
+      try {
+        const userId = c.payload.userId;
+        const { rivalUserId } = await c.req.json();
 
-				const results = await db.query(
-					`
+        const results = await db.query(
+          `
 						DELETE FROM ongeki_profile_rival 
          				WHERE user = ? AND rivalUserId = ?
 					`,
-					[userId, rivalUserId]
-				);
-				if (results.affectedRows === 0) {
-					throw new HTTPException(500, { message: "Delete failed" });
-				}
-				return c.json(results);
-			} catch (error) {
-				throw rethrowWithMessage("Failed to remove rival", error);
-			}
-		}
-	)
+          [userId, rivalUserId]
+        );
+        if (results.affectedRows === 0) {
+          throw new HTTPException(500, { message: "Delete failed" });
+        }
+        return c.json(results);
+      } catch (error) {
+        throw rethrowWithMessage("Failed to remove rival", error);
+      }
+    }
+  )
 
-	.get("all", async (c) => {
-		try {
-			const userId = c.payload.userId;
+  .get("all", async (c) => {
+    try {
+      const userId = c.payload.userId;
 
-			const results = await db.select<{ rivalUserId: number }>(
-				`
+      const results = await db.select<{ rivalUserId: number }>(
+        `
 					SELECT rivalUserId 
          			FROM ongeki_profile_rival
          			WHERE user = ?
 				`,
-				[userId]
-			);
+        [userId]
+      );
 
-			return c.json(results.map((row) => row.rivalUserId));
-		} catch (error) {
-			throw rethrowWithMessage("Failed to get rivals", error);
-		}
-	})
+      return c.json(results.map((row) => row.rivalUserId));
+    } catch (error) {
+      throw rethrowWithMessage("Failed to get rivals", error);
+    }
+  })
 
-	.get("mutual", async (c) => {
-		try {
-			const userId = c.payload.userId;
+  .get("mutual", async (c) => {
+    try {
+      const userId = c.payload.userId;
 
-			const results = await db.select<{
-				rivalId: number;
-				isMutual: number;
-			}>(
-				`
+      const results = await db.select<{
+        rivalId: number;
+        isMutual: number;
+      }>(
+        `
 					SELECT 
 						r1.rivalUserId AS rivalId,
 						CASE 
@@ -112,22 +112,22 @@ const OngekiRivalsRoutes = new Hono()
 							WHERE ac.user = r1.rivalUserId
 						)
 				`,
-				[userId]
-			);
+        [userId]
+      );
 
-			return c.json(results);
-		} catch (error) {
-			throw rethrowWithMessage("Failed to get mutual rivals", error);
-		}
-	})
+      return c.json(results);
+    } catch (error) {
+      throw rethrowWithMessage("Failed to get mutual rivals", error);
+    }
+  })
 
-	.get("userlookup", async (c) => {
-		try {
-			const { userId, versions } = c.payload;
-			const version = versions.ongeki_version;
+  .get("userlookup", async (c) => {
+    try {
+      const { userId, versions } = c.payload;
+      const version = versions.ongeki_version;
 
-			const results = await db.select<{ id: number; username: string }>(
-				`
+      const results = await db.select<{ id: number; username: string }>(
+        `
 					SELECT 
           				user AS id,
           				userName AS username
@@ -135,30 +135,30 @@ const OngekiRivalsRoutes = new Hono()
          			WHERE version = ?
          			AND user != ?
 				`,
-				[version, userId]
-			);
+        [version, userId]
+      );
 
-			return c.json(results);
-		} catch (error) {
-			throw rethrowWithMessage("Failed to get Aime users", error);
-		}
-	})
+      return c.json(results);
+    } catch (error) {
+      throw rethrowWithMessage("Failed to get Aime users", error);
+    }
+  })
 
-	.get("count", async (c) => {
-		try {
-			const userId = c.payload.userId;
+  .get("count", async (c) => {
+    try {
+      const userId = c.payload.userId;
 
-			const result = await db.select<{ rivalCount: number }>(
-				`SELECT COUNT(*) AS rivalCount 
+      const result = await db.select<{ rivalCount: number }>(
+        `SELECT COUNT(*) AS rivalCount 
          FROM ongeki_profile_rival
          WHERE user = ?`,
-				[userId]
-			);
+        [userId]
+      );
 
-			return c.json(result[0].rivalCount);
-		} catch (error) {
-			throw rethrowWithMessage("Failed to get rival count", error);
-		}
-	});
+      return c.json(result[0].rivalCount);
+    } catch (error) {
+      throw rethrowWithMessage("Failed to get rival count", error);
+    }
+  });
 
 export { OngekiRivalsRoutes };

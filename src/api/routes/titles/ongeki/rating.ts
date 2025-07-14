@@ -5,29 +5,29 @@ import { DB } from "@/api/types";
 import { rethrowWithMessage } from "@/api/utils/error";
 
 type ExtendedOngekiProfileRating = DB.OngekiProfileRating & {
-	score: number;
-	level: number;
-	title: string;
-	artist: string;
-	genre: string;
-	chartId: number;
-	jacketPath: string;
-	isFullBell?: number;
-	isFullCombo?: number;
-	noteCount: number;
-	platinumScoreStar?: number;
-	platinumScoreMax?: number;
-	isAllBreake?: number;
+  score: number;
+  level: number;
+  title: string;
+  artist: string;
+  genre: string;
+  chartId: number;
+  jacketPath: string;
+  isFullBell?: number;
+  isFullCombo?: number;
+  noteCount: number;
+  platinumScoreStar?: number;
+  platinumScoreMax?: number;
+  isAllBreake?: number;
 };
 
 const UserRatingFramesRoutes = new Hono()
-	.get("user_rating_base_hot_list", async (c) => {
-		try {
-			const { userId, versions } = c.payload;
-			const version = versions.ongeki_version;
+  .get("user_rating_base_hot_list", async (c) => {
+    try {
+      const { userId, versions } = c.payload;
+      const version = versions.ongeki_version;
 
-			const results = await db.select<ExtendedOngekiProfileRating>(
-				`SELECT 
+      const results = await db.select<ExtendedOngekiProfileRating>(
+        `SELECT 
           r.musicId,
           b.techScoreMax,
           b.platinumScoreMax,
@@ -57,21 +57,21 @@ const UserRatingFramesRoutes = new Hono()
         WHERE r.user = ?
           AND r.type = 'userRatingBaseHotList'
           AND r.version = ?`,
-				[userId, version]
-			);
+        [userId, version]
+      );
 
-			return c.json(results);
-		} catch (error) {
-			throw rethrowWithMessage("Failed to get rating base", error);
-		}
-	})
-	.get("user_rating_base_list", async (c) => {
-		try {
-			const { userId, versions } = c.payload;
-			const version = versions.ongeki_version;
+      return c.json(results);
+    } catch (error) {
+      throw rethrowWithMessage("Failed to get rating base", error);
+    }
+  })
+  .get("user_rating_base_list", async (c) => {
+    try {
+      const { userId, versions } = c.payload;
+      const version = versions.ongeki_version;
 
-			const results = await db.select<ExtendedOngekiProfileRating>(
-				`SELECT 
+      const results = await db.select<ExtendedOngekiProfileRating>(
+        `SELECT 
          r.musicId,
           b.techScoreMax,
           b.platinumScoreMax,
@@ -102,20 +102,20 @@ const UserRatingFramesRoutes = new Hono()
           AND r.type = 'userRatingBaseBestList'
           AND r.version = ?
         ORDER BY r.index`,
-				[userId, version]
-			);
-			return c.json(results);
-		} catch (error) {
-			throw rethrowWithMessage("Failed to get rating base", error);
-		}
-	})
-	.get("/user_rating_base_new_list", async (c) => {
-		try {
-			const { userId, versions } = c.payload;
-			const version = versions.ongeki_version;
+        [userId, version]
+      );
+      return c.json(results);
+    } catch (error) {
+      throw rethrowWithMessage("Failed to get rating base", error);
+    }
+  })
+  .get("/user_rating_base_new_list", async (c) => {
+    try {
+      const { userId, versions } = c.payload;
+      const version = versions.ongeki_version;
 
-			const results = await db.select<ExtendedOngekiProfileRating>(
-				`SELECT 
+      const results = await db.select<ExtendedOngekiProfileRating>(
+        `SELECT 
           r.musicId,
           b.techScoreMax,
           b.platinumScoreMax,
@@ -146,21 +146,21 @@ const UserRatingFramesRoutes = new Hono()
           AND r.type = 'userRatingBaseBestNewList'
           AND r.version = ?
         ORDER BY r.index`,
-				[userId, version]
-			);
+        [userId, version]
+      );
 
-			return c.json(results);
-		} catch (error) {
-			throw rethrowWithMessage("Failed to get rating base", error);
-		}
-	})
-	.get("user_rating_base_next_list", async (c) => {
-		try {
-			const { userId, versions } = c.payload;
-			const version = versions.ongeki_version;
+      return c.json(results);
+    } catch (error) {
+      throw rethrowWithMessage("Failed to get rating base", error);
+    }
+  })
+  .get("user_rating_base_next_list", async (c) => {
+    try {
+      const { userId, versions } = c.payload;
+      const version = versions.ongeki_version;
 
-			const results = await db.select<ExtendedOngekiProfileRating>(
-				`SELECT 
+      const results = await db.select<ExtendedOngekiProfileRating>(
+        `SELECT 
           r.musicId,
           b.techScoreMax,
           b.platinumScoreMax,
@@ -191,51 +191,51 @@ const UserRatingFramesRoutes = new Hono()
           AND r.type = 'userRatingBaseNextList'
           AND r.version = ?
         ORDER BY r.index`,
-				[userId, version]
-			);
+        [userId, version]
+      );
 
-			return c.json(results);
-		} catch (error) {
-			throw rethrowWithMessage("Failed to get rating base", error);
-		}
-	})
+      return c.json(results);
+    } catch (error) {
+      throw rethrowWithMessage("Failed to get rating base", error);
+    }
+  })
 
-	.get("playerRating", async (c) => {
-		try {
-			const { userId, versions } = c.payload;
-			const version = versions.ongeki_version;
+  .get("playerRating", async (c) => {
+    try {
+      const { userId, versions } = c.payload;
+      const version = versions.ongeki_version;
 
-			const results = await db.select<DB.OngekiProfileData>(
-				`SELECT playerRating
+      const results = await db.select<DB.OngekiProfileData>(
+        `SELECT playerRating
         FROM ongeki_profile_data 
         WHERE user = ? 
         AND version = ?`,
-				[userId, version]
-			);
+        [userId, version]
+      );
 
-			return c.json(results);
-		} catch (error) {
-			throw rethrowWithMessage("Failed to get player rating", error);
-		}
-	})
-	.get("highestRating", async (c) => {
-		try {
-			const { userId, versions } = c.payload;
-			const version = versions.ongeki_version;
+      return c.json(results);
+    } catch (error) {
+      throw rethrowWithMessage("Failed to get player rating", error);
+    }
+  })
+  .get("highestRating", async (c) => {
+    try {
+      const { userId, versions } = c.payload;
+      const version = versions.ongeki_version;
 
-			const results = await db.select<DB.OngekiProfileData>(
-				`SELECT highestRating
+      const results = await db.select<DB.OngekiProfileData>(
+        `SELECT highestRating
 
         FROM ongeki_profile_data 
         WHERE user = ? 
         AND version = ?`,
-				[userId, version]
-			);
+        [userId, version]
+      );
 
-			return c.json(results);
-		} catch (error) {
-			throw rethrowWithMessage("Failed to get player rating", error);
-		}
-	});
+      return c.json(results);
+    } catch (error) {
+      throw rethrowWithMessage("Failed to get player rating", error);
+    }
+  });
 
 export { UserRatingFramesRoutes as OngekiRatingRoutes };

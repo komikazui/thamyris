@@ -5,12 +5,12 @@ import { DB } from "@/api/types";
 import { rethrowWithMessage } from "@/api/utils/error";
 
 const ChunithmStaticMusic = new Hono().get("chuni_static_music", async (c) => {
-	try {
-		const { versions } = c.payload;
-		const version = versions.chunithm_version;
+  try {
+    const { versions } = c.payload;
+    const version = versions.chunithm_version;
 
-		const results = await db.select<DB.ChuniStaticMusic>(
-			`SELECT 
+    const results = await db.select<DB.ChuniStaticMusic>(
+      `SELECT 
 			m.songId,
 			m.title,
 			m.artist,
@@ -27,12 +27,12 @@ const ChunithmStaticMusic = new Hono().get("chuni_static_music", async (c) => {
 			m.version = ? AND o.isEnable = 1
 		ORDER BY 
 			m.id DESC`,
-			[version]
-		);
-		return c.json(results);
-	} catch (error) {
-		throw rethrowWithMessage("Failed to get static music", error);
-	}
+      [version]
+    );
+    return c.json(results);
+  } catch (error) {
+    throw rethrowWithMessage("Failed to get static music", error);
+  }
 });
 
 export { ChunithmStaticMusic };

@@ -5,184 +5,221 @@ import { Hono } from "hono";
 import { db } from "@/api/db";
 import { rethrowWithMessage } from "@/api/utils/error";
 
-const TACHI_CLASSES = [undefined, "DAN_I", "DAN_II", "DAN_III", "DAN_IV", "DAN_V", "DAN_INFINITE"] as const;
-const TACHI_DIFFICULTIES = ["BASIC", "ADVANCED", "EXPERT", "MASTER", "ULTIMA"] as const;
+const TACHI_CLASSES = [
+  undefined,
+  "DAN_I",
+  "DAN_II",
+  "DAN_III",
+  "DAN_IV",
+  "DAN_V",
+  "DAN_INFINITE",
+] as const;
+const TACHI_DIFFICULTIES = [
+  "BASIC",
+  "ADVANCED",
+  "EXPERT",
+  "MASTER",
+  "ULTIMA",
+] as const;
 
-type BatchManualClearLamp = "CATASTROPHY" | "ABSOLUTE" | "BRAVE" | "HARD" | "CLEAR" | "FAILED";
-type BatchManualNoteLamp = "ALL JUSTICE CRITICAL" | "ALL JUSTICE" | "FULL COMBO" | "NONE";
+type BatchManualClearLamp =
+  | "CATASTROPHY"
+  | "ABSOLUTE"
+  | "BRAVE"
+  | "HARD"
+  | "CLEAR"
+  | "FAILED";
+type BatchManualNoteLamp =
+  | "ALL JUSTICE CRITICAL"
+  | "ALL JUSTICE"
+  | "FULL COMBO"
+  | "NONE";
 interface BatchManualScore {
-	identifier: string;
-	matchType: "inGameID";
-	score: number;
-	noteLamp: BatchManualNoteLamp;
-	clearLamp: BatchManualClearLamp;
-	difficulty: "BASIC" | "ADVANCED" | "EXPERT" | "MASTER" | "ULTIMA";
-	timeAchieved?: number;
-	judgements?: {
-		jcrit: number;
-		justice: number;
-		attack: number;
-		miss: number;
-	};
-	optional?: {
-		maxCombo: number;
-	};
+  identifier: string;
+  matchType: "inGameID";
+  score: number;
+  noteLamp: BatchManualNoteLamp;
+  clearLamp: BatchManualClearLamp;
+  difficulty: "BASIC" | "ADVANCED" | "EXPERT" | "MASTER" | "ULTIMA";
+  timeAchieved?: number;
+  judgements?: {
+    jcrit: number;
+    justice: number;
+    attack: number;
+    miss: number;
+  };
+  optional?: {
+    maxCombo: number;
+  };
 }
 interface BatchManualImport {
-	meta: {
-		game: string;
-		playtype: string;
-		service: string;
-	};
-	scores: BatchManualScore[];
-	classes?: {
-		dan?: string;
-		emblem?: string;
-	};
+  meta: {
+    game: string;
+    playtype: string;
+    service: string;
+  };
+  scores: BatchManualScore[];
+  classes?: {
+    dan?: string;
+    emblem?: string;
+  };
 }
 
 const ChunithmKamaitachiRoutes = new Hono().get("export", async (c) => {
-	try {
-		const { userId, versions } = c.payload;
-		const version = versions.chunithm_version;
+  try {
+    const { userId, versions } = c.payload;
+    const version = versions.chunithm_version;
 
-		const profileResults = await db.query(
-			`SELECT classEmblemBase, classEmblemMedal
+    const profileResults = await db.query(
+      `SELECT classEmblemBase, classEmblemMedal
        FROM chuni_profile_data
        WHERE user = ? AND version = ?`,
-			[userId, version]
-		);
+      [userId, version]
+    );
 
-		const profile = profileResults.length > 0 ? profileResults[0] : null;
+    const profile = profileResults.length > 0 ? profileResults[0] : null;
 
-		const playlogResults = await db.query(
-			`SELECT romVersion, userPlayDate, musicId, level, score, maxCombo,
+    const playlogResults = await db.query(
+      `SELECT romVersion, userPlayDate, musicId, level, score, maxCombo,
 				judgeGuilty, judgeAttack, judgeJustice, judgeCritical, judgeHeaven,
 				isFullCombo, isAllJustice, isClear, s.categoryId AS skillCategoryId
 			FROM chuni_score_playlog p
 			LEFT JOIN daphnis_static_skill s ON s.skillId = p.skillId
 			WHERE user = ?
 			GROUP BY p.id`,
-			[userId]
-		);
+      [userId]
+    );
 
-		const tachiExport: BatchManualImport = {
-			meta: {
-				game: "chunithm",
-				playtype: "Single",
-				service: "Cozynet",
-			},
-			scores: [],
-			classes: {
-				dan: TACHI_CLASSES[profile?.classEmblemBase ?? 0],
-				emblem: TACHI_CLASSES[profile?.classEmblemMedal ?? 0],
-			},
-		};
+    const tachiExport: BatchManualImport = {
+      meta: {
+        game: "chunithm",
+        playtype: "Single",
+        service: "Cozynet",
+      },
+      scores: [],
+      classes: {
+        dan: TACHI_CLASSES[profile?.classEmblemBase ?? 0],
+        emblem: TACHI_CLASSES[profile?.classEmblemMedal ?? 0],
+      },
+    };
 
-		for (const log of playlogResults) {
-			const {
-				romVersion,
-				userPlayDate,
-				musicId,
-				level,
-				score,
-				judgeHeaven,
-				judgeCritical,
-				judgeJustice,
-				judgeAttack,
-				judgeGuilty,
-				maxCombo,
-				isAllJustice,
-				isFullCombo,
-				isClear,
-				skillCategoryId,
-			} = log;
+    for (const log of playlogResults) {
+      const {
+        romVersion,
+        userPlayDate,
+        musicId,
+        level,
+        score,
+        judgeHeaven,
+        judgeCritical,
+        judgeJustice,
+        judgeAttack,
+        judgeGuilty,
+        maxCombo,
+        isAllJustice,
+        isFullCombo,
+        isClear,
+        skillCategoryId,
+      } = log;
 
-			if (
-				romVersion === null ||
-				musicId === null ||
-				level === null ||
-				score === null ||
-				judgeJustice === null ||
-				isAllJustice === null ||
-				isFullCombo === null ||
-				isClear === null
-			) {
-				continue;
-			}
+      if (
+        romVersion === null ||
+        musicId === null ||
+        level === null ||
+        score === null ||
+        judgeJustice === null ||
+        isAllJustice === null ||
+        isFullCombo === null ||
+        isClear === null
+      ) {
+        continue;
+      }
 
-			// Filter out WORLD'S END scores
-			if (romVersion.startsWith("1.") && level === 4) {
-				continue;
-			}
+      // Filter out WORLD'S END scores
+      if (romVersion.startsWith("1.") && level === 4) {
+        continue;
+      }
 
-			if (romVersion.startsWith("2.") && level === 5) {
-				continue;
-			}
+      if (romVersion.startsWith("2.") && level === 5) {
+        continue;
+      }
 
-			let noteLamp: BatchManualNoteLamp = "NONE";
-			let clearLamp: BatchManualClearLamp = "FAILED";
+      let noteLamp: BatchManualNoteLamp = "NONE";
+      let clearLamp: BatchManualClearLamp = "FAILED";
 
-			if (isAllJustice && score === 1_010_000) {
-				noteLamp = "ALL JUSTICE CRITICAL";
-			} else if (isAllJustice) {
-				noteLamp = "ALL JUSTICE";
-			} else if (isFullCombo) {
-				noteLamp = "FULL COMBO";
-			}
+      if (isAllJustice && score === 1_010_000) {
+        noteLamp = "ALL JUSTICE CRITICAL";
+      } else if (isAllJustice) {
+        noteLamp = "ALL JUSTICE";
+      } else if (isFullCombo) {
+        noteLamp = "FULL COMBO";
+      }
 
-			if (isClear) {
-				if (skillCategoryId === 10) {
-					clearLamp = "CATASTROPHY";
-				} else if (skillCategoryId === 9) {
-					clearLamp = "ABSOLUTE";
-				} else if (skillCategoryId === 16) {
-					clearLamp = "BRAVE";
-				} else if (skillCategoryId === 6 || skillCategoryId === 7 || skillCategoryId === 15) {
-					clearLamp = "HARD";
-				} else {
-					clearLamp = "CLEAR";
-				}
-			}
+      if (isClear) {
+        if (skillCategoryId === 10) {
+          clearLamp = "CATASTROPHY";
+        } else if (skillCategoryId === 9) {
+          clearLamp = "ABSOLUTE";
+        } else if (skillCategoryId === 16) {
+          clearLamp = "BRAVE";
+        } else if (
+          skillCategoryId === 6 ||
+          skillCategoryId === 7 ||
+          skillCategoryId === 15
+        ) {
+          clearLamp = "HARD";
+        } else {
+          clearLamp = "CLEAR";
+        }
+      }
 
-			const tachiScore: BatchManualScore = {
-				score,
-				noteLamp,
-				clearLamp,
-				identifier: musicId.toString(),
-				matchType: "inGameID",
-				difficulty: TACHI_DIFFICULTIES[level],
-			};
+      const tachiScore: BatchManualScore = {
+        score,
+        noteLamp,
+        clearLamp,
+        identifier: musicId.toString(),
+        matchType: "inGameID",
+        difficulty: TACHI_DIFFICULTIES[level],
+      };
 
-			if (userPlayDate !== null) {
-				tachiScore.timeAchieved = fromZonedTime(
-					parse(userPlayDate, "yyyy-MM-dd HH:mm:ss", toZonedTime(new Date(), "Asia/Tokyo")),
-					"Asia/Tokyo"
-				).valueOf();
-			}
+      if (userPlayDate !== null) {
+        tachiScore.timeAchieved = fromZonedTime(
+          parse(
+            userPlayDate,
+            "yyyy-MM-dd HH:mm:ss",
+            toZonedTime(new Date(), "Asia/Tokyo")
+          ),
+          "Asia/Tokyo"
+        ).valueOf();
+      }
 
-			if (judgeCritical !== null && judgeJustice !== null && judgeAttack !== null && judgeGuilty !== null) {
-				tachiScore.judgements = {
-					jcrit: (judgeHeaven ?? 0) + judgeCritical,
-					justice: judgeJustice,
-					attack: judgeAttack,
-					miss: judgeGuilty,
-				};
-			}
+      if (
+        judgeCritical !== null &&
+        judgeJustice !== null &&
+        judgeAttack !== null &&
+        judgeGuilty !== null
+      ) {
+        tachiScore.judgements = {
+          jcrit: (judgeHeaven ?? 0) + judgeCritical,
+          justice: judgeJustice,
+          attack: judgeAttack,
+          miss: judgeGuilty,
+        };
+      }
 
-			if (maxCombo !== null) {
-				tachiScore.optional = {
-					maxCombo,
-				};
-			}
+      if (maxCombo !== null) {
+        tachiScore.optional = {
+          maxCombo,
+        };
+      }
 
-			tachiExport.scores.push(tachiScore);
-		}
+      tachiExport.scores.push(tachiScore);
+    }
 
-		return c.json({ success: true, data: tachiExport });
-	} catch (error) {
-		throw rethrowWithMessage("Failed to export data", error);
-	}
+    return c.json({ success: true, data: tachiExport });
+  } catch (error) {
+    throw rethrowWithMessage("Failed to export data", error);
+  }
 });
 
 export { ChunithmKamaitachiRoutes };

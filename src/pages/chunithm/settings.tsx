@@ -8,22 +8,22 @@ import TicketManagement from "@/components/settings/chunithm/ticket-management";
 import ChunithmVersionManager from "@/components/settings/chunithm/version-management";
 
 interface GameSettingsProps {
-	onUpdate?: () => void;
+  onUpdate?: () => void;
 }
 
 const ChunithmSettingsPage: React.FC<GameSettingsProps> = () => {
-	return (
-		<div className="relative flex-1 overflow-auto">
-			<Header title={"Chunithm Settings"} />
-			<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
-				<ChunithmVersionManager />
-				<TeamManagement />
-				<SongManagement />
-				<TicketManagement />
-				<JsonExport />
-			</div>
-		</div>
-	);
+  return (
+    <div className="relative flex-1 overflow-auto">
+      <Header title={"Chunithm Settings"} />
+      <div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
+        <ChunithmVersionManager />
+        <TeamManagement />
+        <SongManagement />
+        <TicketManagement />
+        <JsonExport />
+      </div>
+    </div>
+  );
 };
 
 export default ChunithmSettingsPage;

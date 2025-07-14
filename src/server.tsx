@@ -14,72 +14,66 @@ import { secureHeaders } from "hono/secure-headers";
 import { jwtPayloadMiddleware } from "./api/middleware/jwtPayload";
 import { Routes, UnprotectedRoutes } from "./api/routes";
 
-const {
-    NODE_ENV,
-    CLIENT_PORT,
-    DOMAIN,
-    JWT_SECRET,
-    SERVER_PORT,
-} = process.env;
+const { NODE_ENV, CLIENT_PORT, DOMAIN, JWT_SECRET, SERVER_PORT } = process.env;
 
 const protocol = NODE_ENV === "production" ? "https" : "http";
 const port = NODE_ENV === "production" ? "" : `:${CLIENT_PORT}`;
 const origin = `${protocol}://${DOMAIN}${port}`;
 
 const server = new Hono()
-    .use(
-        "*",
-        cors({
-            origin: [origin],
-            credentials: true,
-            allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-            allowHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
-        })
-    )
-    .use(
-        "*",
-        csrf({
-            origin: (requestOrigin) => {
-                const allowedOrigins = [origin];
-                return allowedOrigins.includes(requestOrigin);
-            },
-        })
-    )
-    .use(secureHeaders())
-    .use(logger())
-    .onError((err, c) => {
-        if (err instanceof HTTPException) {
-            return c.json({ error: err.message }, err.status);
-        }
-        return c.json({ error: err.message }, 500);
+  .use(
+    "*",
+    cors({
+      origin: [origin],
+      credentials: true,
+      allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
     })
-    .use(compress())
-    .route("/api", UnprotectedRoutes)
-    .use(jwt({ secret: JWT_SECRET!, cookie: "auth_token" }))
-    .use(jwtPayloadMiddleware())
-    .route("/api", Routes)
-    .use("/public/*", serveStatic({ root: "./public" }))
-    .use("/assets/*", serveStatic({ root: "./assets" }))
-    .get(
-        "/*",
-        jsxRenderer(() => (
-            <html lang="en">
-                <head>
-                    <meta charSet="utf-8" />
-                    <meta name="viewport" content="width=device-width, initial-scale=1" />
-                    <title>Thamyris</title>
-                </head>
-                <body>
-                    <div id="root"></div>
-                    <script type="module" src="/src/client.tsx"></script>
-                </body>
-            </html>
-        ))
-    );
+  )
+  .use(
+    "*",
+    csrf({
+      origin: (requestOrigin) => {
+        const allowedOrigins = [origin];
+        return allowedOrigins.includes(requestOrigin);
+      },
+    })
+  )
+  .use(secureHeaders())
+  .use(logger())
+  .onError((err, c) => {
+    if (err instanceof HTTPException) {
+      return c.json({ error: err.message }, err.status);
+    }
+    return c.json({ error: err.message }, 500);
+  })
+  .use(compress())
+  .route("/api", UnprotectedRoutes)
+  .use(jwt({ secret: JWT_SECRET!, cookie: "auth_token" }))
+  .use(jwtPayloadMiddleware())
+  .route("/api", Routes)
+  .use("/public/*", serveStatic({ root: "./public" }))
+  .use("/assets/*", serveStatic({ root: "./assets" }))
+  .get(
+    "/*",
+    jsxRenderer(() => (
+      <html lang="en">
+        <head>
+          <meta charSet="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <title>Thamyris</title>
+        </head>
+        <body>
+          <div id="root"></div>
+          <script type="module" src="/src/client.tsx"></script>
+        </body>
+      </html>
+    ))
+  );
 
 serve({
-    fetch: server.fetch,
-    port: Number(SERVER_PORT) || 3000,
+  fetch: server.fetch,
+  port: Number(SERVER_PORT) || 3000,
 });
 
 export default server;

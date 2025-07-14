@@ -6,6 +6,6 @@ import { UserRoutes } from "./users";
 
 export const AllCommonRoutes = new Hono()
 
-	.route("arcades", ArcadeRoutes)
-	.route("users", UserRoutes)
-	.route("aime", AimeCardRoute);
+  .route("arcades", ArcadeRoutes)
+  .route("users", UserRoutes)
+  .route("aime", AimeCardRoute);

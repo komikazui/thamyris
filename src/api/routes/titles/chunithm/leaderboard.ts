@@ -5,12 +5,12 @@ import { DB } from "@/api/types";
 import { rethrowWithMessage } from "@/api/utils/error";
 
 const ChunithmLeaderboardRoutes = new Hono().get("", async (c) => {
-	try {
-		const { versions } = c.payload;
-		const version = versions.chunithm_version;
+  try {
+    const { versions } = c.payload;
+    const version = versions.chunithm_version;
 
-		const results = await db.select<DB.ChuniProfileData>(
-			`
+    const results = await db.select<DB.ChuniProfileData>(
+      `
 				SELECT 
 					cpd.user,
 					cpd.playerRating,
@@ -19,13 +19,13 @@ const ChunithmLeaderboardRoutes = new Hono().get("", async (c) => {
 				WHERE cpd.version = ?
 				ORDER BY cpd.playerRating DESC
 			`,
-			[version]
-		);
+      [version]
+    );
 
-		return c.json(results);
-	} catch (error) {
-		throw rethrowWithMessage("Failed to get leaderboard", error);
-	}
+    return c.json(results);
+  } catch (error) {
+    throw rethrowWithMessage("Failed to get leaderboard", error);
+  }
 });
 
 export { ChunithmLeaderboardRoutes };

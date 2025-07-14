@@ -9,36 +9,36 @@ import { ChunithmAvatarCategory } from "@/api/types/enums";
 import { rethrowWithMessage } from "@/api/utils/error";
 
 interface AvatarCurrent {
-	skin: string;
-	back: string;
-	face: string;
-	head: string;
-	item: string;
-	wear: string;
+  skin: string;
+  back: string;
+  face: string;
+  head: string;
+  item: string;
+  wear: string;
 }
 
 interface AvatarPartItem {
-	image: string;
-	label: string;
-	avatarAccessoryId: number;
+  image: string;
+  label: string;
+  avatarAccessoryId: number;
 }
 
 interface AvatarPartsGrouped {
-	wear: AvatarPartItem[];
-	head: AvatarPartItem[];
-	face: AvatarPartItem[];
-	item: AvatarPartItem[];
-	back: AvatarPartItem[];
+  wear: AvatarPartItem[];
+  head: AvatarPartItem[];
+  face: AvatarPartItem[];
+  item: AvatarPartItem[];
+  back: AvatarPartItem[];
 }
 
 const AvatarRoutes = new Hono()
-	.get("current", async (c) => {
-		try {
-			const { userId, versions } = c.payload;
-			const version = versions.chunithm_version;
+  .get("current", async (c) => {
+    try {
+      const { userId, versions } = c.payload;
+      const version = versions.chunithm_version;
 
-			const [result] = await db.select<AvatarCurrent>(
-				`
+      const [result] = await db.select<AvatarCurrent>(
+        `
 					WITH ProfileData AS (
 						SELECT 
 							avatarSkin, 
@@ -103,68 +103,68 @@ const AvatarRoutes = new Hono()
 					LEFT JOIN StaticAvatarData item ON item.id  = pd.avatarItem AND item.version = pd.version
 					LEFT JOIN StaticAvatarData wear ON wear.id  = pd.avatarWear AND wear.version = pd.version
      			`,
-				[userId, version, version]
-			);
+        [userId, version, version]
+      );
 
-			for (const k in result) {
-				const key = k as keyof AvatarCurrent;
-				if (result[key] === null) {
-					result[key] = "";
-				}
-				result[key] = result[key].replace(".dds", "");
-			}
-			return c.json(result);
-		} catch (error) {
-			throw rethrowWithMessage("Failed to get current avatar", error);
-		}
-	})
+      for (const k in result) {
+        const key = k as keyof AvatarCurrent;
+        if (result[key] === null) {
+          result[key] = "";
+        }
+        result[key] = result[key].replace(".dds", "");
+      }
+      return c.json(result);
+    } catch (error) {
+      throw rethrowWithMessage("Failed to get current avatar", error);
+    }
+  })
 
-	.post(
-		"update",
-		validateJson(
-			z.object({
-				head: z.number(),
-				face: z.number(),
-				back: z.number(),
-				wear: z.number(),
-				item: z.number(),
-			})
-		),
-		async (c) => {
-			try {
-				const { userId, versions } = c.payload;
-				const version = versions.chunithm_version;
+  .post(
+    "update",
+    validateJson(
+      z.object({
+        head: z.number(),
+        face: z.number(),
+        back: z.number(),
+        wear: z.number(),
+        item: z.number(),
+      })
+    ),
+    async (c) => {
+      try {
+        const { userId, versions } = c.payload;
+        const version = versions.chunithm_version;
 
-				// const { avatarParts } = await c.req.json(); dont destructure otherwise it expects
-				// const { head, face, back, wear, item } = avatarParts;
+        // const { avatarParts } = await c.req.json(); dont destructure otherwise it expects
+        // const { head, face, back, wear, item } = avatarParts;
 
-				// Get the JSON body from the request
-				// Look for a property named avatarParts in that JSON
-				// Assign that property to a variable also named avatarPart
-				// {
-				//   "avatarParts": {
-				//     "head": 6201601,
-				//     "face": 3303401,
-				//     "back": 2700004,
-				//     "wear": 6101601,
-				//     "item": 6501501
-				//   }
-				// }
+        // Get the JSON body from the request
+        // Look for a property named avatarParts in that JSON
+        // Assign that property to a variable also named avatarPart
+        // {
+        //   "avatarParts": {
+        //     "head": 6201601,
+        //     "face": 3303401,
+        //     "back": 2700004,
+        //     "wear": 6101601,
+        //     "item": 6501501
+        //   }
+        // }
 
-				// but we are sending from the root level of the request
-				// 				{
-				//   				"head": 6201601,
-				//   				"face": 3303401,
-				//   				"back": 2700004,
-				//   				"wear": 6101601,
-				//   				"item": 6501501
-				// 				}
+        // but we are sending from the root level of the request
+        // 				{
+        //   				"head": 6201601,
+        //   				"face": 3303401,
+        //   				"back": 2700004,
+        //   				"wear": 6101601,
+        //   				"item": 6501501
+        // 				}
 
-				const avatarParts = await c.req.json();
-				const { head, face, back, wear, item } = avatarParts;
+        const avatarParts = await c.req.json();
+        const { head, face, back, wear, item } = avatarParts;
 
-				const result = await db.query(
-					`
+        const result = await db.query(
+          `
 						UPDATE chuni_profile_data
 						SET
 							avatarHead = ?,
@@ -174,26 +174,26 @@ const AvatarRoutes = new Hono()
 							avatarItem = ?
 						WHERE user = ? AND version = ?
         			`,
-					[head, face, back, wear, item, userId, version]
-				);
+          [head, face, back, wear, item, userId, version]
+        );
 
-				if (result.affectedRows === 0) {
-					throw new HTTPException(404);
-				}
-				return new Response();
-			} catch (error) {
-				throw rethrowWithMessage("Failed to update avatar", error);
-			}
-		}
-	)
+        if (result.affectedRows === 0) {
+          throw new HTTPException(404);
+        }
+        return new Response();
+      } catch (error) {
+        throw rethrowWithMessage("Failed to update avatar", error);
+      }
+    }
+  )
 
-	.get("parts/all", async (c) => {
-		try {
-			const { userId, versions } = c.payload;
-			const version = versions.chunithm_version;
+  .get("parts/all", async (c) => {
+    try {
+      const { userId, versions } = c.payload;
+      const version = versions.chunithm_version;
 
-			const unlockedParts = await db.select<DB.ChuniStaticAvatar>(
-				`
+      const unlockedParts = await db.select<DB.ChuniStaticAvatar>(
+        `
 					SELECT csa.*
 					FROM chuni_static_avatar csa 
 					JOIN chuni_item_item cii ON csa.avatarAccessoryId = cii.itemId
@@ -202,46 +202,46 @@ const AvatarRoutes = new Hono()
 					AND cii.user = ?
 					AND cii.itemKind = 11
 				`,
-				[version, userId]
-			);
+        [version, userId]
+      );
 
-			const result: AvatarPartsGrouped = {
-				wear: [],
-				head: [],
-				face: [],
-				item: [],
-				back: [],
-			};
+      const result: AvatarPartsGrouped = {
+        wear: [],
+        head: [],
+        face: [],
+        item: [],
+        back: [],
+      };
 
-			for (const part of unlockedParts) {
-				const { avatarAccessoryId, category, name, texturePath } = part;
-				const p: AvatarPartItem = {
-					avatarAccessoryId: Number(avatarAccessoryId),
-					image: texturePath?.replace(".dds", "") || "",
-					label: name || "",
-				};
-				switch (category) {
-					case ChunithmAvatarCategory.BACK:
-						result.back.push(p);
-						break;
-					case ChunithmAvatarCategory.FACE:
-						result.face.push(p);
-						break;
-					case ChunithmAvatarCategory.HEAD:
-						result.head.push(p);
-						break;
-					case ChunithmAvatarCategory.ITEM:
-						result.item.push(p);
-						break;
-					case ChunithmAvatarCategory.WEAR:
-						result.wear.push(p);
-						break;
-				}
-			}
-			return c.json(result);
-		} catch (error) {
-			throw rethrowWithMessage("Failed to get all avatar parts", error);
-		}
-	});
+      for (const part of unlockedParts) {
+        const { avatarAccessoryId, category, name, texturePath } = part;
+        const p: AvatarPartItem = {
+          avatarAccessoryId: Number(avatarAccessoryId),
+          image: texturePath?.replace(".dds", "") || "",
+          label: name || "",
+        };
+        switch (category) {
+          case ChunithmAvatarCategory.BACK:
+            result.back.push(p);
+            break;
+          case ChunithmAvatarCategory.FACE:
+            result.face.push(p);
+            break;
+          case ChunithmAvatarCategory.HEAD:
+            result.head.push(p);
+            break;
+          case ChunithmAvatarCategory.ITEM:
+            result.item.push(p);
+            break;
+          case ChunithmAvatarCategory.WEAR:
+            result.wear.push(p);
+            break;
+        }
+      }
+      return c.json(result);
+    } catch (error) {
+      throw rethrowWithMessage("Failed to get all avatar parts", error);
+    }
+  });
 
 export { AvatarRoutes };

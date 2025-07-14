@@ -7,17 +7,18 @@ import { api } from "@/utils";
  */
 
 export const useUserRatingBaseHotList = () => {
-	return useQuery({
-		queryKey: ["userRatingBaseHotList"],
-		queryFn: async () => {
-			const response = await api.chunithm.rating.user_rating_base_hot_list.$get();
-			if (!response.ok) {
-				throw new Error("Failed to fetch nameplates");
-			}
+  return useQuery({
+    queryKey: ["userRatingBaseHotList"],
+    queryFn: async () => {
+      const response =
+        await api.chunithm.rating.user_rating_base_hot_list.$get();
+      if (!response.ok) {
+        throw new Error("Failed to fetch nameplates");
+      }
 
-			return await response.json();
-		},
-	});
+      return await response.json();
+    },
+  });
 };
 
 /**
@@ -25,17 +26,17 @@ export const useUserRatingBaseHotList = () => {
  */
 
 export const useUserRatingBaseList = () => {
-	return useQuery({
-		queryKey: ["userRatingBaseList"],
-		queryFn: async () => {
-			const response = await api.chunithm.rating.user_rating_base_list.$get();
-			if (!response.ok) {
-				throw new Error("Failed to fetch nameplates");
-			}
+  return useQuery({
+    queryKey: ["userRatingBaseList"],
+    queryFn: async () => {
+      const response = await api.chunithm.rating.user_rating_base_list.$get();
+      if (!response.ok) {
+        throw new Error("Failed to fetch nameplates");
+      }
 
-			return await response.json();
-		},
-	});
+      return await response.json();
+    },
+  });
 };
 
 /**
@@ -44,16 +45,17 @@ export const useUserRatingBaseList = () => {
  */
 
 export const useUserRatingBaseNewList = () => {
-	return useQuery({
-		queryKey: ["userRatingBaseNewList"],
-		queryFn: async () => {
-			const response = await api.chunithm.rating.user_rating_base_new_list.$get();
-			if (!response.ok) {
-				throw new Error("Failed to fetch nameplates");
-			}
-			return await response.json();
-		},
-	});
+  return useQuery({
+    queryKey: ["userRatingBaseNewList"],
+    queryFn: async () => {
+      const response =
+        await api.chunithm.rating.user_rating_base_new_list.$get();
+      if (!response.ok) {
+        throw new Error("Failed to fetch nameplates");
+      }
+      return await response.json();
+    },
+  });
 };
 
 /**
@@ -62,49 +64,50 @@ export const useUserRatingBaseNewList = () => {
  */
 
 export const useUserRatingBaseNextList = () => {
-	return useQuery({
-		queryKey: ["userRatingBaseNextList"],
-		queryFn: async () => {
-			const response = await api.chunithm.rating.user_rating_base_next_list.$get();
-			if (!response.ok) {
-				throw new Error("Failed to fetch nameplates");
-			}
+  return useQuery({
+    queryKey: ["userRatingBaseNextList"],
+    queryFn: async () => {
+      const response =
+        await api.chunithm.rating.user_rating_base_next_list.$get();
+      if (!response.ok) {
+        throw new Error("Failed to fetch nameplates");
+      }
 
-			return await response.json();
-		},
-	});
+      return await response.json();
+    },
+  });
 };
 
 /**
  * Fetches and returns the player's current rating.
  */
 export const usePlayerRating = () => {
-	return useQuery({
-		queryKey: ["playerRating"],
-		queryFn: async () => {
-			const response = await api.chunithm.rating.playerRating.$get();
-			if (!response.ok) {
-				throw new Error("Failed to fetch nameplates");
-			}
+  return useQuery({
+    queryKey: ["playerRating"],
+    queryFn: async () => {
+      const response = await api.chunithm.rating.playerRating.$get();
+      if (!response.ok) {
+        throw new Error("Failed to fetch nameplates");
+      }
 
-			return await response.json();
-		},
-	});
+      return await response.json();
+    },
+  });
 };
 
 /**
  * Fetches and returns the player's highest achieved rating.
  */
 export const useHighestRating = () => {
-	return useQuery({
-		queryKey: ["highestRating"],
-		queryFn: async () => {
-			const response = await api.chunithm.rating.highestRating.$get();
-			if (!response.ok) {
-				throw new Error("Failed to fetch nameplates");
-			}
+  return useQuery({
+    queryKey: ["highestRating"],
+    queryFn: async () => {
+      const response = await api.chunithm.rating.highestRating.$get();
+      if (!response.ok) {
+        throw new Error("Failed to fetch nameplates");
+      }
 
-			return await response.json();
-		},
-	});
+      return await response.json();
+    },
+  });
 };

@@ -11,14 +11,14 @@ import { OngekiRivalsRoutes } from "./rivals";
 import { OngekiSettingsRoutes } from "./settings";
 
 export const AllOngekiRoutes = new Hono()
-	.route("profile", OngekiProfilePlaylog)
-	.route("static", OngekiStaticMusic)
+  .route("profile", OngekiProfilePlaylog)
+  .route("static", OngekiStaticMusic)
 
-	.route("rating", OngekiRatingRoutes)
-	.route("newRating", NewUserRatingFramesRoutes)
-	.route("settings", OngekiSettingsRoutes)
-	.route("leaderboard", OngekiLeaderboardRoutes)
+  .route("rating", OngekiRatingRoutes)
+  .route("newRating", NewUserRatingFramesRoutes)
+  .route("settings", OngekiSettingsRoutes)
+  .route("leaderboard", OngekiLeaderboardRoutes)
 
-	.route("rivals", OngekiRivalsRoutes)
-	.route("mods", OngekiModsRoutes)
-	.route("reiwa", OngekiReiwaRoutes);
+  .route("rivals", OngekiRivalsRoutes)
+  .route("mods", OngekiModsRoutes)
+  .route("reiwa", OngekiReiwaRoutes);

@@ -8,102 +8,102 @@ import { rethrowWithMessage } from "@/api/utils/error";
 
 const RivalsRoutes = new Hono()
 
-	.post(
-		"add",
-		validateJson(
-			z.object({
-				favId: z.number().int().positive(),
-			})
-		),
-		async (c) => {
-			try {
-				const { userId, versions } = c.payload;
-				const version = versions.chunithm_version;
+  .post(
+    "add",
+    validateJson(
+      z.object({
+        favId: z.number().int().positive(),
+      })
+    ),
+    async (c) => {
+      try {
+        const { userId, versions } = c.payload;
+        const version = versions.chunithm_version;
 
-				const { favId } = await c.req.json();
+        const { favId } = await c.req.json();
 
-				const results = await db.query(
-					`
+        const results = await db.query(
+          `
 						INSERT INTO chuni_item_favorite (user, version, favId, favKind)
        					VALUES (?, ?, ?, 2)
 					`,
-					[userId, version, favId]
-				);
+          [userId, version, favId]
+        );
 
-				if (results.affectedRows === 0) {
-					throw new HTTPException(500, { message: "Insert failed" });
-				}
-				return c.json(results);
-			} catch (error) {
-				throw rethrowWithMessage("Failed to add favorite", error);
-			}
-		}
-	)
+        if (results.affectedRows === 0) {
+          throw new HTTPException(500, { message: "Insert failed" });
+        }
+        return c.json(results);
+      } catch (error) {
+        throw rethrowWithMessage("Failed to add favorite", error);
+      }
+    }
+  )
 
-	.post(
-		"remove",
-		validateJson(
-			z.object({
-				favId: z.number().int().positive(),
-			})
-		),
-		async (c) => {
-			try {
-				const { userId, versions } = c.payload;
-				const version = versions.chunithm_version;
+  .post(
+    "remove",
+    validateJson(
+      z.object({
+        favId: z.number().int().positive(),
+      })
+    ),
+    async (c) => {
+      try {
+        const { userId, versions } = c.payload;
+        const version = versions.chunithm_version;
 
-				const { favId } = await c.req.json();
+        const { favId } = await c.req.json();
 
-				const results = await db.query(
-					`
+        const results = await db.query(
+          `
 						DELETE FROM chuni_item_favorite
        					WHERE user = ? 
 						  AND version = ? 
 						  AND favId = ? 
 						  AND favKind = 2
 					`,
-					[userId, version, favId]
-				);
+          [userId, version, favId]
+        );
 
-				if (results.affectedRows === 0) {
-					throw new HTTPException(500, { message: "Delete failed" });
-				}
-				return c.json(results);
-			} catch (error) {
-				throw rethrowWithMessage("Failed to remove favorite", error);
-			}
-		}
-	)
+        if (results.affectedRows === 0) {
+          throw new HTTPException(500, { message: "Delete failed" });
+        }
+        return c.json(results);
+      } catch (error) {
+        throw rethrowWithMessage("Failed to remove favorite", error);
+      }
+    }
+  )
 
-	.get("all", async (c) => {
-		try {
-			const { userId, versions } = c.payload;
-			const version = versions.chunithm_version;
+  .get("all", async (c) => {
+    try {
+      const { userId, versions } = c.payload;
+      const version = versions.chunithm_version;
 
-			const results = await db.select<{ favId: number }>(
-				`
+      const results = await db.select<{ favId: number }>(
+        `
 					SELECT favId 
 			        FROM chuni_item_favorite
        			    WHERE user = ? 
 					  AND version = ? 
 					  AND favKind = 2
 				`,
-				[userId, version]
-			);
+        [userId, version]
+      );
 
-			return c.json(results.map((r) => r.favId));
-		} catch (error) {
-			throw rethrowWithMessage("Failed to get rivals", error);
-		}
-	})
+      return c.json(results.map((r) => r.favId));
+    } catch (error) {
+      throw rethrowWithMessage("Failed to get rivals", error);
+    }
+  })
 
-	.get("mutual", async (c) => {
-		try {
-			const { userId, versions } = c.payload;
-			const version = versions.chunithm_version;
+  .get("mutual", async (c) => {
+    try {
+      const { userId, versions } = c.payload;
+      const version = versions.chunithm_version;
 
-			const results = await db.select<{ rivalId: number; isMutual: number }>(
-				`
+      const results = await db.select<{ rivalId: number; isMutual: number }>(
+        `
 					SELECT 
 						f1.favId AS rivalId,
 						CASE 
@@ -127,22 +127,22 @@ const RivalsRoutes = new Hono()
 					    WHERE ac.user = f1.favId
 					  )
 				`,
-				[userId, version]
-			);
+        [userId, version]
+      );
 
-			return c.json(results);
-		} catch (error) {
-			throw rethrowWithMessage("Failed to get mutual rivals", error);
-		}
-	})
+      return c.json(results);
+    } catch (error) {
+      throw rethrowWithMessage("Failed to get mutual rivals", error);
+    }
+  })
 
-	.get("userlookup", async (c) => {
-		try {
-			const { userId, versions } = c.payload;
-			const version = versions.chunithm_version;
+  .get("userlookup", async (c) => {
+    try {
+      const { userId, versions } = c.payload;
+      const version = versions.chunithm_version;
 
-			const results = await db.select<{ id: number; username: string }>(
-				`
+      const results = await db.select<{ id: number; username: string }>(
+        `
 					SELECT 
 						user AS id, 
 						userName AS username
@@ -150,33 +150,33 @@ const RivalsRoutes = new Hono()
 					WHERE version = ?
 					AND user != ?
 				`,
-				[version, userId]
-			);
+        [version, userId]
+      );
 
-			return c.json(results);
-		} catch (error) {
-			throw rethrowWithMessage("Failed to get user lookup", error);
-		}
-	})
+      return c.json(results);
+    } catch (error) {
+      throw rethrowWithMessage("Failed to get user lookup", error);
+    }
+  })
 
-	.get("count", async (c) => {
-		try {
-			const { userId, versions } = c.payload;
-			const version = versions.chunithm_version;
+  .get("count", async (c) => {
+    try {
+      const { userId, versions } = c.payload;
+      const version = versions.chunithm_version;
 
-			const result = await db.select<{ rivalCount: number }>(
-				`
+      const result = await db.select<{ rivalCount: number }>(
+        `
 					SELECT COUNT(*) AS rivalCount 
 					FROM chuni_item_favorite
 					WHERE user = ? AND version = ? AND favKind = 2
 				`,
-				[userId, version]
-			);
+        [userId, version]
+      );
 
-			return c.json(result[0].rivalCount);
-		} catch (error) {
-			throw rethrowWithMessage("Failed to count rivals", error);
-		}
-	});
+      return c.json(result[0].rivalCount);
+    } catch (error) {
+      throw rethrowWithMessage("Failed to count rivals", error);
+    }
+  });
 
 export { RivalsRoutes };

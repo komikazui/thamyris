@@ -6,16 +6,18 @@ import { useAdmin } from "@/hooks/admin";
 import { hasAdminAccess } from "@/utils/permissions";
 
 const Arcade = () => {
-	const { data: systemAdmin } = useAdmin();
+  const { data: systemAdmin } = useAdmin();
 
-	const adminPerms = hasAdminAccess(systemAdmin);
+  const adminPerms = hasAdminAccess(systemAdmin);
 
-	return (
-		<div className="relative flex-1 overflow-auto">
-			<Header title={"Arcade Management"} />
-			<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">{adminPerms && <ArcadeConfiguration />}</div>
-		</div>
-	);
+  return (
+    <div className="relative flex-1 overflow-auto">
+      <Header title={"Arcade Management"} />
+      <div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
+        {adminPerms && <ArcadeConfiguration />}
+      </div>
+    </div>
+  );
 };
 
 export default Arcade;

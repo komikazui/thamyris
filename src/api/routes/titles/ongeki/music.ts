@@ -5,12 +5,12 @@ import { DB } from "@/api/types";
 import { rethrowWithMessage } from "@/api/utils/error";
 
 const OngekiStaticMusic = new Hono().get("music", async (c) => {
-	try {
-		const { versions } = c.payload;
-		const version = versions.ongeki_version;
+  try {
+    const { versions } = c.payload;
+    const version = versions.ongeki_version;
 
-		const results = await db.select<DB.OngekiStaticMusic>(
-			`SELECT 
+    const results = await db.select<DB.OngekiStaticMusic>(
+      `SELECT 
 			m.songId,
 			m.title,
 			m.artist,
@@ -27,11 +27,11 @@ const OngekiStaticMusic = new Hono().get("music", async (c) => {
 			m.version = ? AND o.isEnable = 1
 		ORDER BY 
 			m.id DESC`,
-			[version]
-		);
-		return c.json(results);
-	} catch (error) {
-		throw rethrowWithMessage("Failed to get static music", error);
-	}
+      [version]
+    );
+    return c.json(results);
+  } catch (error) {
+    throw rethrowWithMessage("Failed to get static music", error);
+  }
 });
 export { OngekiStaticMusic };

@@ -9,12 +9,12 @@ import { z } from "zod";
 enum PermissionType {
   Upload = "has_upload",
   Download = "has_download",
-  Special = "has_special"
+  Special = "has_special",
 }
 
 enum PermissionValue {
   Disabled = 0,
-  Enabled = 1
+  Enabled = 1,
 }
 
 const UserRoutes = new Hono()
@@ -39,7 +39,7 @@ const UserRoutes = new Hono()
       const roles = {
         upload: PermissionValue.Disabled,
         download: PermissionValue.Disabled,
-        special: PermissionValue.Disabled
+        special: PermissionValue.Disabled,
       };
 
       // Assign the actual values from database
@@ -67,28 +67,28 @@ const UserRoutes = new Hono()
       try {
         const { userId: adminId, permissions } = c.payload;
         const { userId, role, value } = await c.req.json();
-  
+
         if (!adminId || permissions !== UserRole.Admin) {
           throw new HTTPException(403);
         }
-  
+
         const result = await db.update(
           `UPDATE daphnis_user_option SET value = ? WHERE user = ? AND \`key\` = ?`,
           [value, userId, role]
         );
-  
+
         if (result.affectedRows === 0) {
           await db.query(
             `INSERT INTO daphnis_user_option (user, \`key\`, value) VALUES (?, ?, ?)`,
             [userId, role, value]
           );
         }
-  
+
         return c.json({ success: true });
       } catch (error) {
         throw rethrowWithMessage("Failed to update user role", error);
       }
     }
-  )
+  );
 
-export { UserRoutes};
+export { UserRoutes };

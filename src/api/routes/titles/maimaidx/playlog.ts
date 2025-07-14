@@ -5,12 +5,12 @@ import { DB } from "@/api/types";
 import { rethrowWithMessage } from "@/api/utils/error";
 
 const MaimaiDXPlaylogRoute = new Hono().get("playlog", async (c) => {
-	try {
-		const { userId, versions } = c.payload;
-		const version = versions.maimaidx_version;
+  try {
+    const { userId, versions } = c.payload;
+    const version = versions.maimaidx_version;
 
-		const results = await db.select<DB.Mai2Playlog>(
-			`
+    const results = await db.select<DB.Mai2Playlog>(
+      `
                 WITH RankedScores AS (
                 SELECT
                     mp.id,
@@ -60,12 +60,12 @@ const MaimaiDXPlaylogRoute = new Hono().get("playlog", async (c) => {
                 ORDER BY
                 userPlayDate DESC;
                 `,
-			[version, userId, version]
-		);
-		return c.json(results);
-	} catch (error) {
-		throw rethrowWithMessage("Failed to get score playlog", error);
-	}
+      [version, userId, version]
+    );
+    return c.json(results);
+  } catch (error) {
+    throw rethrowWithMessage("Failed to get score playlog", error);
+  }
 });
 
 export { MaimaiDXPlaylogRoute };

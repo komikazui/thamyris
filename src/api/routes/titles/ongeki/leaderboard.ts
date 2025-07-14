@@ -5,12 +5,12 @@ import { DB } from "@/api/types";
 import { rethrowWithMessage } from "@/api/utils/error";
 
 const OngekiLeaderboardRoutes = new Hono().get("", async (c) => {
-	try {
-		const { versions } = c.payload;
-		const version = versions.ongeki_version;
+  try {
+    const { versions } = c.payload;
+    const version = versions.ongeki_version;
 
-		const results = await db.select<DB.OngekiProfileData>(
-			`
+    const results = await db.select<DB.OngekiProfileData>(
+      `
 				SELECT 
 					opd.user,
 					opd.playerRating,
@@ -20,13 +20,13 @@ const OngekiLeaderboardRoutes = new Hono().get("", async (c) => {
 				WHERE opd.version = ?
 				ORDER BY opd.playerRating DESC
 			`,
-			[version]
-		);
+      [version]
+    );
 
-		return c.json(results);
-	} catch (error) {
-		throw rethrowWithMessage("Failed to get leaderboard", error);
-	}
+    return c.json(results);
+  } catch (error) {
+    throw rethrowWithMessage("Failed to get leaderboard", error);
+  }
 });
 
 export { OngekiLeaderboardRoutes };

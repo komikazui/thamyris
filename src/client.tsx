@@ -38,67 +38,99 @@ import { ProtectedRoute } from "./utils/protected";
 const queryClient = new QueryClient();
 
 const app = (
-	<QueryClientProvider client={queryClient}>
-		<BrowserRouter>
-			<AuthProvider>
-				<ThemeProvider>
-					<Toaster />
+  <QueryClientProvider client={queryClient}>
+    <BrowserRouter>
+      <AuthProvider>
+        <ThemeProvider>
+          <Toaster />
 
-					<Routes>
-						<Route path="/" element={<WelcomePage />}>
-							<Route index element={<WelcomeContent />} />
-							<Route path="/signup" element={<SignUpContent />} />
-							<Route path="/login" element={<LoginContent />} />
-						</Route>
-						{/* Protected routes with sidebar */}
-						<Route element={<ProtectedRoute />}>
-							<Route
-								element={
-									<div className="bg-background text-foreground flex h-screen overflow-hidden">
-										<SidebarProvider>
-											<SidebarComponent />
-											<div className="flex flex-1 flex-col overflow-hidden">
-												<Outlet />
-											</div>
-										</SidebarProvider>
-									</div>
-								}
-							>
-								<Route path="/overview" element={<OverviewPage />} />
-								<Route path="/news" element={<ServerNews />} />
-								<Route path="/account" element={<Account />} />
-								<Route path="/arcade" element={<Arcade />} />
+          <Routes>
+            <Route path="/" element={<WelcomePage />}>
+              <Route index element={<WelcomeContent />} />
+              <Route path="/signup" element={<SignUpContent />} />
+              <Route path="/login" element={<LoginContent />} />
+            </Route>
+            {/* Protected routes with sidebar */}
+            <Route element={<ProtectedRoute />}>
+              <Route
+                element={
+                  <div className="bg-background text-foreground flex h-screen overflow-hidden">
+                    <SidebarProvider>
+                      <SidebarComponent />
+                      <div className="flex flex-1 flex-col overflow-hidden">
+                        <Outlet />
+                      </div>
+                    </SidebarProvider>
+                  </div>
+                }
+              >
+                <Route path="/overview" element={<OverviewPage />} />
+                <Route path="/news" element={<ServerNews />} />
+                <Route path="/account" element={<Account />} />
+                <Route path="/arcade" element={<Arcade />} />
 
-								<Route path="/chunithm/settings" element={<ChunithmSettingsPage />} />
-								<Route path="/chunithm/userbox" element={<ChunithmUserbox />} />
-								<Route path="/chunithm/scores" element={<ChunithmScorePage />} />
-								<Route path="/chunithm/favorites" element={<ChunithmFavorites />} />
-								<Route path="/chunithm/leaderboard" element={<ChunithmLeaderboard />} />
-								<Route path="/chunithm/allsongs" element={<ChunithmAllSongs />} />
-								<Route path="/chunithm/rivals" element={<ChunithmRivals />} />
-								<Route path="/chunithm/rating" element={<ChunithmRatingBaseList />} />
+                <Route
+                  path="/chunithm/settings"
+                  element={<ChunithmSettingsPage />}
+                />
+                <Route path="/chunithm/userbox" element={<ChunithmUserbox />} />
+                <Route
+                  path="/chunithm/scores"
+                  element={<ChunithmScorePage />}
+                />
+                <Route
+                  path="/chunithm/favorites"
+                  element={<ChunithmFavorites />}
+                />
+                <Route
+                  path="/chunithm/leaderboard"
+                  element={<ChunithmLeaderboard />}
+                />
+                <Route
+                  path="/chunithm/allsongs"
+                  element={<ChunithmAllSongs />}
+                />
+                <Route path="/chunithm/rivals" element={<ChunithmRivals />} />
+                <Route
+                  path="/chunithm/rating"
+                  element={<ChunithmRatingBaseList />}
+                />
 
-								<Route path="/ongeki/settings" element={<OngekiSettingsPage />} />
-								<Route path="/ongeki/allsongs" element={<OngekiAllSongs />} />
-								<Route path="/ongeki/scores" element={<OngekiScorePage />} />
-								<Route path="/ongeki/rating" element={<OngekiRatingFrames />} />
-								<Route path="/ongeki/rating" element={<OngekiRatingFrames />} />
-								<Route path="/ongeki/leaderboard" element={<OngekiLeaderboard />} />
-								<Route path="/ongeki/rivals" element={<OngekiRivals />} />
+                <Route
+                  path="/ongeki/settings"
+                  element={<OngekiSettingsPage />}
+                />
+                <Route path="/ongeki/allsongs" element={<OngekiAllSongs />} />
+                <Route path="/ongeki/scores" element={<OngekiScorePage />} />
+                <Route path="/ongeki/rating" element={<OngekiRatingFrames />} />
+                <Route path="/ongeki/rating" element={<OngekiRatingFrames />} />
+                <Route
+                  path="/ongeki/leaderboard"
+                  element={<OngekiLeaderboard />}
+                />
+                <Route path="/ongeki/rivals" element={<OngekiRivals />} />
 
-								<Route path="/maimaidx/scores" element={<Mai2ScorePage />} />
-								<Route path="/maimaidx/settings" element={<MaimaiDxSettings />} />
-								<Route path="/maimaidx/allsongs" element={<ChunithmAllSongs />} />
-							</Route>
-						</Route>
+                <Route path="/maimaidx/scores" element={<Mai2ScorePage />} />
+                <Route
+                  path="/maimaidx/settings"
+                  element={<MaimaiDxSettings />}
+                />
+                <Route
+                  path="/maimaidx/allsongs"
+                  element={<ChunithmAllSongs />}
+                />
+              </Route>
+            </Route>
 
-						<Route path="*" element={<NotFound />} />
-					</Routes>
-				</ThemeProvider>
-			</AuthProvider>
-		</BrowserRouter>
-	</QueryClientProvider>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </ThemeProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  </QueryClientProvider>
 );
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
-root.render(env.USE_REACT_STRICT ? <React.StrictMode>{app}</React.StrictMode> : app);
+root.render(
+  env.USE_REACT_STRICT ? <React.StrictMode>{app}</React.StrictMode> : app
+);

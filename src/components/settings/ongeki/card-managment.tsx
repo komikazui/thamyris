@@ -6,44 +6,46 @@ import { SubmitButton } from "@/components/common/button";
 import { useOngekiVersion, useUnlockAllCards } from "@/hooks/ongeki";
 
 const CardManagement = () => {
-	const version = useOngekiVersion();
+  const version = useOngekiVersion();
 
-	const { mutate: unlockAllCards } = useUnlockAllCards();
-	const [isUnlocking, setIsUnlocking] = useState<{ [key: string]: boolean }>({
-		cards: false,
-		items: false,
-		specific: false,
-	});
+  const { mutate: unlockAllCards } = useUnlockAllCards();
+  const [isUnlocking, setIsUnlocking] = useState<{ [key: string]: boolean }>({
+    cards: false,
+    items: false,
+    specific: false,
+  });
 
-	const handleUnlockAllCards = async () => {
-		if (!version) return;
+  const handleUnlockAllCards = async () => {
+    if (!version) return;
 
-		setIsUnlocking((prev) => ({ ...prev, cards: true }));
-		try {
-			unlockAllCards(Number(version), {
-				onSuccess: () => {
-					toast.success("Cards unlocked successfully!");
-				},
-				onError: () => {
-					toast.error("Failed to unlock cards");
-				},
-			});
-		} finally {
-			setIsUnlocking((prev) => ({ ...prev, cards: false }));
-		}
-	};
+    setIsUnlocking((prev) => ({ ...prev, cards: true }));
+    try {
+      unlockAllCards(Number(version), {
+        onSuccess: () => {
+          toast.success("Cards unlocked successfully!");
+        },
+        onError: () => {
+          toast.error("Failed to unlock cards");
+        },
+      });
+    } finally {
+      setIsUnlocking((prev) => ({ ...prev, cards: false }));
+    }
+  };
 
-	return (
-		<div className="bg-card rounded-md p-4 md:p-6">
-			<h2 className="text-primary mb-4 text-xl font-semibold">Card Management</h2>
-			<SubmitButton
-				onClick={handleUnlockAllCards}
-				defaultLabel="Unlock all cards"
-				updatingLabel="Unlocking..."
-				disabled={isUnlocking.cards}
-			/>
-		</div>
-	);
+  return (
+    <div className="bg-card rounded-md p-4 md:p-6">
+      <h2 className="text-primary mb-4 text-xl font-semibold">
+        Card Management
+      </h2>
+      <SubmitButton
+        onClick={handleUnlockAllCards}
+        defaultLabel="Unlock all cards"
+        updatingLabel="Unlocking..."
+        disabled={isUnlocking.cards}
+      />
+    </div>
+  );
 };
 
 export default CardManagement;

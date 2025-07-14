@@ -8,78 +8,84 @@ import { CDN } from "@/lib/constants";
 import { getDifficultyFromChunithmChart } from "@/utils/helpers";
 
 interface ChunithmSong {
-	title: string;
-	jacketPath?: string;
-	artist?: string;
-	level?: number;
-	difficulty?: string;
-	chartId?: number;
-	genre?: string;
-	opt?: string | number;
+  title: string;
+  jacketPath?: string;
+  artist?: string;
+  level?: number;
+  difficulty?: string;
+  chartId?: number;
+  genre?: string;
+  opt?: string | number;
 }
 
 const ChunithmAllSongs = () => {
-	const { data: songs = [], isLoading: isLoadingSongs } = useChunithmSongs() as {
-		data: ChunithmSong[];
-		isLoading: boolean;
-	};
+  const { data: songs = [], isLoading: isLoadingSongs } =
+    useChunithmSongs() as {
+      data: ChunithmSong[];
+      isLoading: boolean;
+    };
 
-	const version = useChunithmVersion();
-	const [searchQuery, setSearchQuery] = useState("");
+  const version = useChunithmVersion();
+  const [searchQuery, setSearchQuery] = useState("");
 
-	const columns = {
-		Song: (row: ChunithmSong) => (
-			<div className="flex items-center gap-3">
-				<img
-					width={40}
-					height={40}
-					src={`${CDN}/chunithm/jacket/${row.jacketPath?.replace(".dds", ".png")}`}
-					alt={row.title}
-					className="flex-shrink-0"
-				/>
-				<span className="text-primary truncate">{row.title}</span>
-			</div>
-		),
-		Artist: (row: ChunithmSong) => row.artist || "Unknown",
-		Level: (row: ChunithmSong) => row.level || "N/A",
-		Difficulty: (row: ChunithmSong) => getDifficultyFromChunithmChart(row.chartId ?? 0),
-		Genre: (row: ChunithmSong) => row.genre || "N/A",
-	};
+  const columns = {
+    Song: (row: ChunithmSong) => (
+      <div className="flex items-center gap-3">
+        <img
+          width={40}
+          height={40}
+          src={`${CDN}/chunithm/jacket/${row.jacketPath?.replace(".dds", ".png")}`}
+          alt={row.title}
+          className="flex-shrink-0"
+        />
+        <span className="text-primary truncate">{row.title}</span>
+      </div>
+    ),
+    Artist: (row: ChunithmSong) => row.artist || "Unknown",
+    Level: (row: ChunithmSong) => row.level || "N/A",
+    Difficulty: (row: ChunithmSong) =>
+      getDifficultyFromChunithmChart(row.chartId ?? 0),
+    Genre: (row: ChunithmSong) => row.genre || "N/A",
+  };
 
-	const filteredSongs = songs.filter((song) => song.title?.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredSongs = songs.filter((song) =>
+    song.title?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-	if (isLoadingSongs) {
-		return (
-			<div className="relative flex-1 overflow-auto">
-				<Header title="All Songs" />
-				<div className="flex h-[calc(100vh-64px)] items-center justify-center">
-					<Spinner size={24} />
-				</div>
-			</div>
-		);
-	}
+  if (isLoadingSongs) {
+    return (
+      <div className="relative flex-1 overflow-auto">
+        <Header title="All Songs" />
+        <div className="flex h-[calc(100vh-64px)] items-center justify-center">
+          <Spinner size={24} />
+        </div>
+      </div>
+    );
+  }
 
-	return (
-		<div className="relative flex-1 overflow-auto">
-			<Header title="All Songs" />
-			{version ? (
-				<div className="container mx-auto space-y-6">
-					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0"></div>
-					<div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
-						<TableComponent
-							data={filteredSongs}
-							columns={columns}
-							onSearch={(search) => setSearchQuery(search.value || "")}
-						/>
-					</div>
-				</div>
-			) : (
-				<div className="flex h-[calc(100vh-64px)] items-center justify-center">
-					<p className="text-primary">Please set your Chunithm version in settings first</p>
-				</div>
-			)}
-		</div>
-	);
+  return (
+    <div className="relative flex-1 overflow-auto">
+      <Header title="All Songs" />
+      {version ? (
+        <div className="container mx-auto space-y-6">
+          <div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0"></div>
+          <div className="mb-4 space-y-8 p-4 sm:px-6 sm:py-0">
+            <TableComponent
+              data={filteredSongs}
+              columns={columns}
+              onSearch={(search) => setSearchQuery(search.value || "")}
+            />
+          </div>
+        </div>
+      ) : (
+        <div className="flex h-[calc(100vh-64px)] items-center justify-center">
+          <p className="text-primary">
+            Please set your Chunithm version in settings first
+          </p>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default ChunithmAllSongs;

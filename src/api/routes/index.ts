@@ -11,16 +11,16 @@ import { AllOngekiRoutes } from "./titles/ongeki";
 import { UnprotectedRoutes } from "./unprotected";
 
 const Routes = new Hono()
-	.route("/admin", AdminRoutes)
-	.route("/aime", AimeCardRoute)
-	.route("/users", UserRoutes)
-	.route("/common", AllCommonRoutes)
+  .route("/admin", AdminRoutes)
+  .route("/aime", AimeCardRoute)
+  .route("/users", UserRoutes)
+  .route("/common", AllCommonRoutes)
 
-	// Titles
-	.route("/chunithm", AllChunithmRoutes)
-	.route("/ongeki", AllOngekiRoutes)
-	.route("/maimaidx", AllMaimaiDXRoutes)
-	.route("/arcades", ArcadeRoutes);
+  // Titles
+  .route("/chunithm", AllChunithmRoutes)
+  .route("/ongeki", AllOngekiRoutes)
+  .route("/maimaidx", AllMaimaiDXRoutes)
+  .route("/arcades", ArcadeRoutes);
 
 export { Routes, UnprotectedRoutes };
 

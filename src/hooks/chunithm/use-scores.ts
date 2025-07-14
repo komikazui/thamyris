@@ -4,16 +4,16 @@ import { api } from "@/utils";
 
 // Fetch Chunithm scores
 export function useChunithmScores() {
-	return useQuery({
-		queryKey: ["chunithm", "scores"],
-		queryFn: async () => {
-			const response = await api.chunithm.profile.playlog.$get();
+  return useQuery({
+    queryKey: ["chunithm", "scores"],
+    queryFn: async () => {
+      const response = await api.chunithm.profile.playlog.$get();
 
-			if (!response.ok) {
-				throw new Error();
-			}
+      if (!response.ok) {
+        throw new Error();
+      }
 
-			return await response.json();
-		},
-	});
+      return await response.json();
+    },
+  });
 }

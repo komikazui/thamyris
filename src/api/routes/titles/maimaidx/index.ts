@@ -6,6 +6,6 @@ import { MaimaiDXSettings } from "./settings";
 
 export const AllMaimaiDXRoutes = new Hono()
 
-	.route("static", MaimaiDXStaticMusic)
-	.route("profile", MaimaiDXPlaylogRoute)
-	.route("cozynet", MaimaiDXSettings);
+  .route("static", MaimaiDXStaticMusic)
+  .route("profile", MaimaiDXPlaylogRoute)
+  .route("cozynet", MaimaiDXSettings);

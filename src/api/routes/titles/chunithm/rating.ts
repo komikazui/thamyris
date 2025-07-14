@@ -6,25 +6,25 @@ import { rethrowWithMessage } from "@/api/utils/error";
 
 // includes joined tables
 type ExtendedChuniProfileRating = DB.ChuniProfileRating & {
-	score: number;
-	level: number;
-	title: string;
-	artist: string;
-	genre: string;
-	chartId: number;
-	jacketPath: string;
-	isFullCombo: number;
-	isAllJustice: number;
+  score: number;
+  level: number;
+  title: string;
+  artist: string;
+  genre: string;
+  chartId: number;
+  jacketPath: string;
+  isFullCombo: number;
+  isAllJustice: number;
 };
 
 const UserRatingFramesRoutes = new Hono()
-	.get("user_rating_base_hot_list", async (c) => {
-		try {
-			const { userId, versions } = c.payload;
-			const version = versions.chunithm_version;
+  .get("user_rating_base_hot_list", async (c) => {
+    try {
+      const { userId, versions } = c.payload;
+      const version = versions.chunithm_version;
 
-			const results = await db.select<ExtendedChuniProfileRating>(
-				`SELECT 
+      const results = await db.select<ExtendedChuniProfileRating>(
+        `SELECT 
 					r.musicId,
 					b.scoreMax as score,
 					r.difficultId,
@@ -52,21 +52,21 @@ const UserRatingFramesRoutes = new Hono()
 					AND r.type = 'userRatingBaseHotList'
 					AND r.version = ?
 				ORDER BY r.index`,
-				[userId, version]
-			);
+        [userId, version]
+      );
 
-			return c.json(results);
-		} catch (error) {
-			throw rethrowWithMessage("Failed to get rating base", error);
-		}
-	})
-	.get("user_rating_base_list", async (c) => {
-		try {
-			const { userId, versions } = c.payload;
-			const version = versions.chunithm_version;
+      return c.json(results);
+    } catch (error) {
+      throw rethrowWithMessage("Failed to get rating base", error);
+    }
+  })
+  .get("user_rating_base_list", async (c) => {
+    try {
+      const { userId, versions } = c.payload;
+      const version = versions.chunithm_version;
 
-			const results = await db.select<ExtendedChuniProfileRating>(
-				`SELECT 
+      const results = await db.select<ExtendedChuniProfileRating>(
+        `SELECT 
 					r.musicId,
 					b.scoreMax as score,
 					r.difficultId,
@@ -94,20 +94,20 @@ const UserRatingFramesRoutes = new Hono()
 					AND r.type = 'userRatingBaseList'
 					AND r.version = ?
 				ORDER BY r.index`,
-				[userId, version]
-			);
-			return c.json(results);
-		} catch (error) {
-			throw rethrowWithMessage("Failed to get rating base", error);
-		}
-	})
-	.get("/user_rating_base_new_list", async (c) => {
-		try {
-			const { userId, versions } = c.payload;
-			const version = versions.chunithm_version;
+        [userId, version]
+      );
+      return c.json(results);
+    } catch (error) {
+      throw rethrowWithMessage("Failed to get rating base", error);
+    }
+  })
+  .get("/user_rating_base_new_list", async (c) => {
+    try {
+      const { userId, versions } = c.payload;
+      const version = versions.chunithm_version;
 
-			const results = await db.select<ExtendedChuniProfileRating>(
-				`SELECT 
+      const results = await db.select<ExtendedChuniProfileRating>(
+        `SELECT 
 					r.musicId,
 					b.scoreMax as score,
 					r.difficultId,
@@ -135,23 +135,26 @@ const UserRatingFramesRoutes = new Hono()
 					AND r.type = 'userRatingBaseNewList'
 					AND r.version = ?
 				ORDER BY r.index`,
-				[userId, version]
-			);
+        [userId, version]
+      );
 
-			return c.json(results);
-		} catch (error) {
-			throw rethrowWithMessage("Failed to get rating base", error);
-		}
-	})
-	.get("user_rating_base_next_list", async (c) => {
-		try {
-			const { userId, versions } = c.payload;
-			const version = versions.chunithm_version;
+      return c.json(results);
+    } catch (error) {
+      throw rethrowWithMessage("Failed to get rating base", error);
+    }
+  })
+  .get("user_rating_base_next_list", async (c) => {
+    try {
+      const { userId, versions } = c.payload;
+      const version = versions.chunithm_version;
 
-			const typeFilter = Number(version) >= 17 ? "userRatingBaseNewNextList" : "userRatingBaseNextList";
+      const typeFilter =
+        Number(version) >= 17
+          ? "userRatingBaseNewNextList"
+          : "userRatingBaseNextList";
 
-			const results = await db.select<ExtendedChuniProfileRating>(
-				`SELECT 
+      const results = await db.select<ExtendedChuniProfileRating>(
+        `SELECT 
 					r.musicId,
 					b.scoreMax as score,
 					r.difficultId,
@@ -179,50 +182,50 @@ const UserRatingFramesRoutes = new Hono()
 					AND r.type = ?
 					AND r.version = ?
 				ORDER BY r.index`,
-				[userId, typeFilter, version]
-			);
+        [userId, typeFilter, version]
+      );
 
-			return c.json(results);
-		} catch (error) {
-			throw rethrowWithMessage("Failed to get rating base", error);
-		}
-	})
+      return c.json(results);
+    } catch (error) {
+      throw rethrowWithMessage("Failed to get rating base", error);
+    }
+  })
 
-	.get("playerRating", async (c) => {
-		try {
-			const { userId, versions } = c.payload;
-			const version = versions.chunithm_version;
+  .get("playerRating", async (c) => {
+    try {
+      const { userId, versions } = c.payload;
+      const version = versions.chunithm_version;
 
-			const results = await db.select<DB.ChuniProfileData>(
-				`SELECT playerRating
+      const results = await db.select<DB.ChuniProfileData>(
+        `SELECT playerRating
 				FROM chuni_profile_data 
 				WHERE user = ? 
 				AND version = ?`,
-				[userId, version]
-			);
+        [userId, version]
+      );
 
-			return c.json(results);
-		} catch (error) {
-			throw rethrowWithMessage("Failed to get player rating", error);
-		}
-	})
-	.get("highestRating", async (c) => {
-		try {
-			const { userId, versions } = c.payload;
-			const version = versions.chunithm_version;
+      return c.json(results);
+    } catch (error) {
+      throw rethrowWithMessage("Failed to get player rating", error);
+    }
+  })
+  .get("highestRating", async (c) => {
+    try {
+      const { userId, versions } = c.payload;
+      const version = versions.chunithm_version;
 
-			const results = await db.select<DB.ChuniProfileData>(
-				`SELECT highestRating
+      const results = await db.select<DB.ChuniProfileData>(
+        `SELECT highestRating
 				FROM chuni_profile_data 
 				WHERE user = ? 
 				AND version = ?`,
-				[userId, version]
-			);
+        [userId, version]
+      );
 
-			return c.json(results);
-		} catch (error) {
-			throw rethrowWithMessage("Failed to get player rating", error);
-		}
-	});
+      return c.json(results);
+    } catch (error) {
+      throw rethrowWithMessage("Failed to get player rating", error);
+    }
+  });
 
 export { UserRatingFramesRoutes };
