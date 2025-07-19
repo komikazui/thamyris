@@ -29,7 +29,7 @@ async function getCurrentAvatarItems(userId: number, version: number): Promise<A
 		`
         SELECT 
           csa.avatarAccessoryId AS id,
-          csa.texturePath       AS imageId,
+          csa.texturePath       AS imagePath,
           csa.name              AS label,
           CASE csa.category
               WHEN 1 THEN 'wear'
@@ -66,67 +66,66 @@ async function getCurrentAvatarItems(userId: number, version: number): Promise<A
 	return result;
 }
 
-const routes = new Hono();
-routes.get("", async (c) => {
-	try {
-		const { userId, versions } = c.payload;
-		const version = versions.chunithm_version;
-
-		const result = await getCurrentAvatarItems(userId, version);
-		if (result.length === 0) {
-			throw new HTTPException(404, {
-				message: "Current avatar not found",
-			});
-		}
-		return c.json(result);
-	} catch (error) {
-		throw rethrowWithMessage("Failed to get current avatar", error);
-	}
-});
-
-routes.post(
-	"",
-	validateJson(
-		z.object({
-			[AvatarSlot.BACK]: validAvatarItemId,
-			[AvatarSlot.FACE]: validAvatarItemId,
-			[AvatarSlot.HEAD]: validAvatarItemId,
-			[AvatarSlot.ITEM]: validAvatarItemId,
-			[AvatarSlot.SKIN]: validAvatarItemId,
-			[AvatarSlot.WEAR]: validAvatarItemId,
-		})
-	),
-	async (c) => {
+const routes = new Hono()
+	.get("", async (c) => {
 		try {
 			const { userId, versions } = c.payload;
 			const version = versions.chunithm_version;
-			const { back, face, head, item, skin, wear } = await c.req.json();
 
-			// Validate able to update
-			const itemIds = [back, face, head, item, skin, wear].filter((id) => id !== undefined);
-			if (itemIds.length === 0) {
-				throw new HTTPException(400, {
-					message: "At least one avatar item must be provided",
+			const result = await getCurrentAvatarItems(userId, version);
+			if (result.length === 0) {
+				throw new HTTPException(404, {
+					message: "Current avatar not found",
 				});
 			}
+			return c.json(result);
+		} catch (error) {
+			throw rethrowWithMessage("Failed to get current avatar", error);
+		}
+	})
+	.post(
+		"",
+		validateJson(
+			z.object({
+				[AvatarSlot.BACK]: validAvatarItemId,
+				[AvatarSlot.FACE]: validAvatarItemId,
+				[AvatarSlot.HEAD]: validAvatarItemId,
+				[AvatarSlot.ITEM]: validAvatarItemId,
+				[AvatarSlot.SKIN]: validAvatarItemId,
+				[AvatarSlot.WEAR]: validAvatarItemId,
+			})
+		),
+		async (c) => {
+			try {
+				const { userId, versions } = c.payload;
+				const version = versions.chunithm_version;
+				const { back, face, head, item, skin, wear } = await c.req.json();
 
-			const items = await db.select<AvatarItem>(
-				`
+				// Validate able to update
+				const itemIds = [back, face, head, item, skin, wear].filter((id) => id !== undefined);
+				if (itemIds.length === 0) {
+					throw new HTTPException(400, {
+						message: "At least one avatar item must be provided",
+					});
+				}
+
+				const items = await db.select<AvatarItem>(
+					`
           SELECT id
           FROM chuni_static_avatar
           WHERE avatarAccessoryId IN (?)
             AND version = ?
         `,
-				[itemIds, version]
-			);
-			if (items.length !== itemIds.length) {
-				throw new HTTPException(400, {
-					message: "Invalid avatar item IDs",
-				});
-			}
+					[itemIds, version]
+				);
+				if (items.length !== itemIds.length) {
+					throw new HTTPException(400, {
+						message: "Invalid avatar item IDs",
+					});
+				}
 
-			const result = await db.query(
-				`
+				const result = await db.query(
+					`
           UPDATE chuni_profile_data
           SET
               avatarBack = ?,
@@ -138,48 +137,47 @@ routes.post(
           WHERE user = ?
             AND version = ?
         `,
-				[back, face, head, item, skin, wear, userId, version]
-			);
+					[back, face, head, item, skin, wear, userId, version]
+				);
 
-			if (result.affectedRows === 0) {
-				throw new HTTPException(404);
+				if (result.affectedRows === 0) {
+					throw new HTTPException(404);
+				}
+
+				// Return the updated current avatar items
+				const updatedAvatar = await getCurrentAvatarItems(userId, version);
+				return c.json(updatedAvatar);
+			} catch (error) {
+				throw rethrowWithMessage("Failed to update avatar", error);
 			}
-
-			// Return the updated current avatar items
-			const updatedAvatar = await getCurrentAvatarItems(userId, version);
-			return c.json(updatedAvatar);
-		} catch (error) {
-			throw rethrowWithMessage("Failed to update avatar", error);
 		}
-	}
-);
+	)
+	.post(
+		"search",
+		validateJson(
+			z.object({
+				filter: z.object({
+					slot: z.array(z.nativeEnum(AvatarSlot)),
+					locked: z.boolean().nullable(),
+				}),
+				pagination: z.object({
+					page: z.number().int().min(1).default(1),
+					limit: z.number().int().min(1).max(100).default(20),
+				}),
+			})
+		),
+		async (c) => {
+			try {
+				const { userId, versions } = c.payload;
+				const version = versions.chunithm_version;
 
-routes.post(
-	"search",
-	validateJson(
-		z.object({
-			filter: z.object({
-				slot: z.array(z.nativeEnum(AvatarSlot)),
-				locked: z.boolean().nullable(),
-			}),
-			pagination: z.object({
-				page: z.number().int().min(1).default(1),
-				limit: z.number().int().min(1).max(100).default(20),
-			}),
-		})
-	),
-	async (c) => {
-		try {
-			const { userId, versions } = c.payload;
-			const version = versions.chunithm_version;
+				const { filter, pagination } = await c.req.json();
+				const { slot, locked } = filter;
+				const { page, limit } = pagination;
 
-			const { filter, pagination } = await c.req.json();
-			const { slot, locked } = filter;
-			const { page, limit } = pagination;
+				const offset = (page - 1) * limit;
 
-			const offset = (page - 1) * limit;
-
-			const query = `
+				const query = `
         SELECT
             csa.avatarAccessoryId AS id,
             csa.texturePath       AS imageId,
@@ -222,93 +220,91 @@ routes.post(
         LIMIT ? OFFSET ?
       `;
 
-			// Map category numbers to slot names for the IN clause
-			const categoryMap: Record<string, number> = {
-				wear: 1,
-				head: 2,
-				face: 3,
-				skin: 4,
-				item: 5,
-				back: 7,
-			};
-			const categoryNumbers = slot.map((s: AvatarSlot) => categoryMap[s]);
+				// Map category numbers to slot names for the IN clause
+				const categoryMap: Record<string, number> = {
+					wear: 1,
+					head: 2,
+					face: 3,
+					skin: 4,
+					item: 5,
+					back: 7,
+				};
+				const categoryNumbers = slot.map((s: AvatarSlot) => categoryMap[s]);
 
-			const items = await db.select<AvatarItem & { sort_current: number }>(query, [
-				userId,
-				userId,
-				version,
-				version,
-				categoryNumbers,
-				limit,
-				offset,
-			]);
+				const items = await db.select<AvatarItem & { sort_current: number }>(query, [
+					userId,
+					userId,
+					version,
+					version,
+					categoryNumbers,
+					limit,
+					offset,
+				]);
 
-			// remove the sort_current property from the response
-			if (items.length === 0) {
-				return c.json([]);
+				// remove the sort_current property from the response
+				if (items.length === 0) {
+					return c.json([]);
+				}
+				// Return items with the sort_current property removed
+				return c.json(items.map(({ sort_current, ...item }) => item));
+			} catch (error) {
+				throw rethrowWithMessage("Failed to search avatar items", error);
 			}
-			// Return items with the sort_current property removed
-			return c.json(items.map(({ sort_current, ...item }) => item));
-		} catch (error) {
-			throw rethrowWithMessage("Failed to search avatar items", error);
 		}
-	}
-);
+	)
+	.patch("unlock/:id", validateParams(z.object({ id: validAvatarItemId })), async (c) => {
+		try {
+			const { userId, versions } = c.payload;
+			const version = versions.chunithm_version;
 
-routes.patch("unlock/:id", validateParams(z.object({ id: validAvatarItemId })), async (c) => {
-	try {
-		const { userId, versions } = c.payload;
-		const version = versions.chunithm_version;
+			const { id } = c.req.param();
 
-		const { id } = c.req.param();
-
-		// Validate item id
-		const item = await db.select<AvatarItem>(
-			`
+			// Validate item id
+			const item = await db.select<AvatarItem>(
+				`
         SELECT avatarAccessoryId
         FROM chuni_static_avatar
         WHERE avatarAccessoryId = ?
           AND version = ?
       `,
-			[id, version]
-		);
-		if (item.length === 0) {
-			throw new HTTPException(404, {
-				message: "Avatar item not found",
-			});
-		}
-		await db.query(
-			`
+				[id, version]
+			);
+			if (item.length === 0) {
+				throw new HTTPException(404, {
+					message: "Avatar item not found",
+				});
+			}
+			await db.query(
+				`
         INSERT INTO chuni_item_item (user, itemId, version)
         VALUES (?, ?, ?)
         ON DUPLICATE KEY UPDATE user = user
       `,
-			[userId, id, version]
-		);
-		return c.status(200);
-	} catch (error) {
-		throw rethrowWithMessage("Failed to unlock avatar item", error);
-	}
-});
+				[userId, id, version]
+			);
+			return c.status(200);
+		} catch (error) {
+			throw rethrowWithMessage("Failed to unlock avatar item", error);
+		}
+	})
+	.get(":id", validateParams(z.object({ id: validAvatarItemId })), async (c) => {
+		try {
+			const { userId, versions } = c.payload;
+			const version = versions.chunithm_version;
 
-routes.get(":id", validateParams(z.object({ id: validAvatarItemId })), async (c) => {
-	try {
-		const { userId, versions } = c.payload;
-		const version = versions.chunithm_version;
-
-		const { id } = c.req.param();
-		/**
-		 * Artemis category values
-		 * WEAR = 1
-		 * HEAD = 2
-		 * FACE = 3
-		 * SKIN = 4
-		 * ITEM = 5
-		 * FRONT = 6
-		 * BACK = 7
-		 */
-		const item = await db.select<AvatarItem>(
-			`
+			const { id } = c.req.param();
+			/**
+			 * Artemis category values
+			 * WEAR = 1
+			 * HEAD = 2
+			 * FACE = 3
+			 * SKIN = 4
+			 * ITEM = 5
+			 * FRONT = 6
+			 * BACK = 7
+			 */
+			const item = await db.select<AvatarItem>(
+				`
         SELECT
             csa.avatarAccessoryId AS id,
             csa.texturePath       AS imageId,
@@ -332,17 +328,17 @@ routes.get(":id", validateParams(z.object({ id: validAvatarItemId })), async (c)
         WHERE csa.avatarAccessoryId = ?
           AND csa.version = ?
       `,
-			[userId, id, version]
-		);
-		if (item.length === 0) {
-			throw new HTTPException(404, {
-				message: "Avatar item not found",
-			});
+				[userId, id, version]
+			);
+			if (item.length === 0) {
+				throw new HTTPException(404, {
+					message: "Avatar item not found",
+				});
+			}
+			return c.json(item[0]);
+		} catch (error) {
+			throw rethrowWithMessage("Failed to get avatar item", error);
 		}
-		return c.json(item[0]);
-	} catch (error) {
-		throw rethrowWithMessage("Failed to get avatar item", error);
-	}
-});
+	});
 
 export default routes;

@@ -16,21 +16,23 @@ import { ChunithmStaticMusic } from "./staticmusic";
 import { SystemVoiceRoutes } from "./systemvoice";
 import { ChunithmTeamsRoutes } from "./teams";
 import { TrophyRoutes } from "./trophies";
+import { UserBoxRoutes } from "./userbox";
 
 export const AllChunithmRoutes = new Hono()
-  .route("static", ChunithmStaticMusic)
-  .route("profile", ChunithmScorePlaylog)
-  .route("avatar", AvatarRoutes)
-  .route("favorites", FavoritesRoutes)
-  .route("kamaitachi", ChunithmKamaitachiRoutes)
-  .route("leaderboard", ChunithmLeaderboardRoutes)
-  .route("mapicon", MapIconRoutes)
-  .route("nameplate", NameplateRoutes)
-  .route("rating", UserRatingFramesRoutes)
-  .route("reiwa", ChunithmReiwaRoutes)
-  .route("rivals", RivalsRoutes)
-  .route("cozynet", ChunithmSettingsRoutes)
-  .route("systemvoice", SystemVoiceRoutes)
-  .route("trophy", TrophyRoutes)
-  .route("mods", ChunithmModsRoutes)
-  .route("teams", ChunithmTeamsRoutes);
+	.route("static", ChunithmStaticMusic)
+	.route("profile", ChunithmScorePlaylog)
+	.route("avatar", AvatarRoutes)
+	.route("favorites", FavoritesRoutes)
+	.route("kamaitachi", ChunithmKamaitachiRoutes)
+	.route("leaderboard", ChunithmLeaderboardRoutes)
+	.route("mapicon", MapIconRoutes)
+	.route("nameplate", NameplateRoutes)
+	.route("rating", UserRatingFramesRoutes)
+	.route("reiwa", ChunithmReiwaRoutes)
+	.route("rivals", RivalsRoutes)
+	.route("cozynet", ChunithmSettingsRoutes)
+	.route("systemvoice", SystemVoiceRoutes)
+	.route("trophy", TrophyRoutes)
+	.route("mods", ChunithmModsRoutes)
+	.route("teams", ChunithmTeamsRoutes)
+	.route("userbox", UserBoxRoutes);
