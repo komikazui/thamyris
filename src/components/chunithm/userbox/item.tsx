@@ -252,13 +252,17 @@ const AvatarItemGrid: React.FC<AvatarItemGridProps> = ({ onEquip, equippedItems 
 							key={item.id}
 							className={cn(
 								"group bg-card relative flex flex-col overflow-hidden rounded-lg border-2 transition-all duration-200",
-								"h-[200px] cursor-pointer hover:shadow-md", // Fixed height
+								"h-[200px] cursor-pointer select-none hover:shadow-md", // Fixed height + prevent text selection
 								equippedItemIds.has(item.id)
 									? "border-primary ring-primary/20 ring-2"
 									: "border-border hover:border-primary/50",
 								item.locked && "opacity-60"
 							)}
-							onClick={() => handleEquipItem(item)}
+							onClick={(e) => {
+								e.preventDefault();
+								e.stopPropagation();
+								handleEquipItem(item);
+							}}
 						>
 							{/* Item Image */}
 							<div className="bg-muted/30 relative min-h-0 flex-1">
