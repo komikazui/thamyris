@@ -81,13 +81,13 @@ const AvatarItemGrid: React.FC<AvatarItemGridProps> = ({ onEquip, equippedItems 
 
 					if (resetPage) {
 						setItems(data.items);
-						setPage(1);
+						setPage(data.pagination.page);
 					} else {
 						setItems((prev) => [...prev, ...data.items]);
 					}
 
 					setPagination(data.pagination);
-					if (!resetPage) setPage((prev) => prev + 1);
+					if (!resetPage) setPage(data.pagination.page);
 				}
 			} catch (error) {
 				console.error("Error fetching avatar items:", error);
@@ -144,13 +144,11 @@ const AvatarItemGrid: React.FC<AvatarItemGridProps> = ({ onEquip, equippedItems 
 
 	useEffect(() => {
 		setPage(1);
-		setPagination(null);
 		fetchItems(true);
 	}, [selectedSlots, lockedFilter]);
 
 	const goToPage = (targetPage: number) => {
 		if (loading || !pagination) return;
-		setPage(targetPage);
 
 		const fetchPage = async () => {
 			setLoading(true);
@@ -172,7 +170,7 @@ const AvatarItemGrid: React.FC<AvatarItemGridProps> = ({ onEquip, equippedItems 
 					const data = await response.json();
 					setItems(data.items);
 					setPagination(data.pagination);
-					setPage(targetPage);
+					setPage(data.pagination.page);
 				}
 			} catch (error) {
 				console.error("Error fetching page:", error);
@@ -205,12 +203,17 @@ const AvatarItemGrid: React.FC<AvatarItemGridProps> = ({ onEquip, equippedItems 
 				</div> */}
 				{/* Slot Filters */}
 				<div className="space-y-2">
-					<div className="flex items-center justify-between">
+					<div className="flex items-center justify-between gap-2">
 						{Object.values(AvatarSlot).map((slot) => (
 							<Button
-								className="w-28"
+								className={cn(
+									"w-28 transition-all duration-200",
+									selectedSlots.includes(slot)
+										? "bg-muted/80 text-primary border-muted-foreground/30 hover:bg-muted shadow-sm"
+										: "bg-background/50 text-muted-foreground border-muted/50 hover:bg-muted/30 hover:text-foreground"
+								)}
 								key={slot}
-								variant={selectedSlots.includes(slot) ? "default" : "outline"}
+								variant="outline"
 								size="sm"
 								onClick={() => handleSlotToggle(slot)}
 							>
@@ -231,28 +234,13 @@ const AvatarItemGrid: React.FC<AvatarItemGridProps> = ({ onEquip, equippedItems 
 
 			{/* Items Grid */}
 			<div className="relative transition-all duration-300 ease-in-out">
-				{/* Loading Overlay for Page Changes and Filter Changes */}
-				{loading && (
-					<div className="bg-background/80 absolute inset-0 z-10 flex items-center justify-center rounded-lg backdrop-blur-sm">
-						<div className="text-muted-foreground flex items-center gap-2 text-sm">
-							<div className="border-primary h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"></div>
-							{pagination && pagination.totalPages > 1 ? `Loading page ${page}...` : "Loading items..."}
-						</div>
-					</div>
-				)}
-
-				<div
-					className={cn(
-						"grid grid-cols-6 gap-4 transition-all duration-300 ease-in-out",
-						loading ? "opacity-50" : "opacity-100"
-					)}
-				>
+				<div className="grid min-h-[600px] grid-cols-6 gap-4 transition-all duration-300 ease-in-out">
 					{filteredItems.map((item) => (
 						<div
 							key={item.id}
 							className={cn(
 								"group bg-card relative flex flex-col overflow-hidden rounded-lg border-2 transition-all duration-200",
-								"aspect-[2/3] cursor-pointer select-none hover:shadow-md", // 2:3 aspect ratio
+								"aspect-[2/3] cursor-pointer select-none hover:shadow-md",
 								equippedItemIds.has(item.id)
 									? "border-primary ring-primary/20 ring-2"
 									: "border-border hover:border-primary/50",
@@ -270,10 +258,7 @@ const AvatarItemGrid: React.FC<AvatarItemGridProps> = ({ onEquip, equippedItems 
 									<img
 										src={`${CDN}/chunithm/avatar/${item.imagePath.replace(".dds", ".png")}`}
 										alt={item.label}
-										className={cn(
-											"h-full w-full object-contain", // Changed to object-contain for consistent sizing
-											item.locked && "opacity-70 grayscale"
-										)}
+										className={cn("h-full w-full object-contain", item.locked && "opacity-70 grayscale")}
 										loading="lazy"
 									/>
 								)}
@@ -284,15 +269,6 @@ const AvatarItemGrid: React.FC<AvatarItemGridProps> = ({ onEquip, equippedItems 
 										<CheckCircle className="h-3 w-3" />
 									</div>
 								)}
-
-								{/* Locked Indicator
-								{item.locked && (
-									<div className="absolute inset-0 flex items-center justify-center bg-black/40">
-										<div className="rounded-full bg-red-500 p-2 text-white">
-											<Unlock className="h-4 w-4" />
-										</div>
-									</div>
-								)} */}
 
 								{/* Hover Overlay */}
 								<div className="absolute inset-0 bg-black/0 transition-colors duration-200 group-hover:bg-black/10" />
@@ -314,22 +290,22 @@ const AvatarItemGrid: React.FC<AvatarItemGridProps> = ({ onEquip, equippedItems 
 			</div>
 
 			{/* Pagination Controls */}
-			{pagination && pagination.totalPages > 1 && (
-				<div className="space-y-4">
-					{/* Page Navigation */}
-					<div className="flex items-center justify-center gap-2">
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={() => goToPage(pagination.page - 1)}
-							disabled={!pagination.hasPrev || loading}
-						>
-							<ChevronLeft className="h-4 w-4" />
-						</Button>
+			<div className="space-y-4">
+				{/* Page Navigation */}
+				<div className="flex items-center justify-center gap-2">
+					<Button
+						variant="outline"
+						size="sm"
+						onClick={() => pagination && goToPage(pagination.page - 1)}
+						disabled={!pagination?.hasPrev}
+					>
+						<ChevronLeft className="h-4 w-4" />
+					</Button>
 
-						{/* Page Numbers */}
-						<div className="flex gap-1">
-							{Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+					{/* Page Numbers */}
+					<div className="flex gap-1">
+						{pagination ? (
+							Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
 								let pageNum;
 								if (pagination.totalPages <= 5) {
 									pageNum = i + 1;
@@ -347,30 +323,30 @@ const AvatarItemGrid: React.FC<AvatarItemGridProps> = ({ onEquip, equippedItems 
 										variant={pageNum === pagination.page ? "default" : "outline"}
 										size="sm"
 										onClick={() => goToPage(pageNum)}
-										disabled={loading || pageNum === pagination.page}
-										className={cn("w-10", loading && "pointer-events-none")}
+										disabled={pageNum === pagination.page}
+										className="w-10"
 									>
-										{loading && pageNum === page ? (
-											<div className="h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent" />
-										) : (
-											pageNum
-										)}
+										{pageNum}
 									</Button>
 								);
-							})}
-						</div>
-
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={() => goToPage(pagination.page + 1)}
-							disabled={!pagination.hasNext || loading}
-						>
-							<ChevronRight className="h-4 w-4" />
-						</Button>
+							})
+						) : (
+							<Button variant="default" size="sm" disabled className="w-10">
+								1
+							</Button>
+						)}
 					</div>
+
+					<Button
+						variant="outline"
+						size="sm"
+						onClick={() => pagination && goToPage(pagination.page + 1)}
+						disabled={!pagination?.hasNext}
+					>
+						<ChevronRight className="h-4 w-4" />
+					</Button>
 				</div>
-			)}
+			</div>
 
 			{/* Empty State */}
 			{filteredItems.length === 0 && !loading && (
