@@ -115,8 +115,9 @@ export const useAvatar = () => {
 
 	const renderAvatar = useMemo(() => {
 		const avatarKey = `avatar-${avatarItems.length}-${Object.values(avatarImages).join("-")}`;
+
 		return (
-			<div key={avatarKey} className="relative mb-6 h-[300px] w-full md:mb-0 md:h-[400px] md:w-[300px]">
+			<div key={avatarKey} className="relative flex items-center justify-center">
 				<div className="avatar_base relative h-[400px] w-[300px]">
 					<div className="avatar_back">{maybeImg(avatarImages.back)}</div>
 					<div className="avatar_wear">{maybeImg(avatarImages.wear)}</div>

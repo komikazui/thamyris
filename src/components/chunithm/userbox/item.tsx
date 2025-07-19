@@ -71,7 +71,7 @@ const AvatarItemGrid: React.FC<AvatarItemGridProps> = ({ onEquip, equippedItems 
 						},
 						pagination: {
 							page: currentPage,
-							limit: 20,
+							limit: 18,
 						},
 					},
 				});
@@ -163,7 +163,7 @@ const AvatarItemGrid: React.FC<AvatarItemGridProps> = ({ onEquip, equippedItems 
 						},
 						pagination: {
 							page: targetPage,
-							limit: 20,
+							limit: 18,
 						},
 					},
 				});
@@ -191,7 +191,7 @@ const AvatarItemGrid: React.FC<AvatarItemGridProps> = ({ onEquip, equippedItems 
 	};
 
 	return (
-		<div className="space-y-4">
+		<div className="mx-auto max-w-4xl space-y-4">
 			{/* Search and Filters */}
 			<div className="space-y-3">
 				{/* <div className="relative">
@@ -208,7 +208,7 @@ const AvatarItemGrid: React.FC<AvatarItemGridProps> = ({ onEquip, equippedItems 
 					<div className="flex items-center justify-between">
 						{Object.values(AvatarSlot).map((slot) => (
 							<Button
-								className="w-20"
+								className="w-28"
 								key={slot}
 								variant={selectedSlots.includes(slot) ? "default" : "outline"}
 								size="sm"
@@ -243,7 +243,7 @@ const AvatarItemGrid: React.FC<AvatarItemGridProps> = ({ onEquip, equippedItems 
 
 				<div
 					className={cn(
-						"grid grid-cols-2 gap-3 transition-all duration-300 ease-in-out sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5",
+						"grid grid-cols-6 gap-4 transition-all duration-300 ease-in-out",
 						loading ? "opacity-50" : "opacity-100"
 					)}
 				>
@@ -252,7 +252,7 @@ const AvatarItemGrid: React.FC<AvatarItemGridProps> = ({ onEquip, equippedItems 
 							key={item.id}
 							className={cn(
 								"group bg-card relative flex flex-col overflow-hidden rounded-lg border-2 transition-all duration-200",
-								"h-[200px] cursor-pointer select-none hover:shadow-md", // Fixed height + prevent text selection
+								"aspect-[2/3] cursor-pointer select-none hover:shadow-md", // 2:3 aspect ratio
 								equippedItemIds.has(item.id)
 									? "border-primary ring-primary/20 ring-2"
 									: "border-border hover:border-primary/50",
@@ -299,13 +299,13 @@ const AvatarItemGrid: React.FC<AvatarItemGridProps> = ({ onEquip, equippedItems 
 							</div>
 
 							{/* Item Info */}
-							<div className="flex h-[60px] flex-shrink-0 flex-col justify-center space-y-1 p-2">
-								<p className="truncate text-xs leading-tight font-medium" title={item.label}>
+							<div className="absolute right-0 bottom-0 left-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+								<p className="truncate text-xs font-medium text-white" title={item.label}>
 									{item.label}
 								</p>
-								<div className="flex items-center justify-between">
-									<span className="text-muted-foreground text-xs capitalize">{slotLabels[item.slot as AvatarSlot]}</span>
-									{item.locked ? <span className="text-xs font-medium text-red-500">Locked</span> : null}
+								<div className="flex items-center justify-between text-xs">
+									<span className="text-gray-300 capitalize">{slotLabels[item.slot as AvatarSlot]}</span>
+									{item.locked ? <span className="font-medium text-red-400">Locked</span> : null}
 								</div>
 							</div>
 						</div>

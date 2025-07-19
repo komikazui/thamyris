@@ -22,12 +22,12 @@ const Avatar = () => {
 	}));
 
 	return (
-		<div className="z-0 flex w-full flex-col justify-center gap-4 px-4 pt-4 md:flex-row md:gap-8 md:pt-15">
+		<div className="z-0 flex w-full flex-col gap-6">
 			{/* Avatar Display */}
-			{render}
+			<div className="flex items-center justify-center">{render}</div>
 
 			{/* Item Grid */}
-			<div className="bg-card w-full rounded-md p-4 md:w-[600px] md:p-6">
+			<div className="bg-card w-full rounded-md p-4 md:p-6">
 				<AvatarItemGrid onEquip={equip} equippedItems={equippedItems} />
 			</div>
 		</div>
