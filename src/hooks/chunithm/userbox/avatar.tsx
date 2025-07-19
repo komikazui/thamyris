@@ -89,20 +89,23 @@ export const useAvatar = () => {
 		}
 	}, [isLoading]);
 
-	const equip = useCallback(async (itemId: number, slot: string) => {
-		try {
-			const updatedItems = await api.chunithm.userbox.avatar
-				.$post({
-					json: {
-						[slot]: itemId,
-					},
-				})
-				.then((res) => res.json());
-			setAvatarItems(updatedItems);
-		} catch (error) {
-			console.error("Error equipping item:", error);
-		}
-	}, []);
+	const equip = useCallback(
+		async (itemId: number, slot: string) => {
+			try {
+				const updatedItems = await api.chunithm.userbox.avatar
+					.$post({
+						json: {
+							[slot]: itemId,
+						},
+					})
+					.then((res) => res.json());
+				setAvatarItems(updatedItems);
+			} catch (error) {
+				console.error("Error equipping item:", error);
+			}
+		},
+		[avatarItems]
+	);
 
 	useEffect(() => {
 		if (avatarItems.length === 0 && !isLoading) {

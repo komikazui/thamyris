@@ -111,7 +111,7 @@ const routes = new Hono()
 
 				const items = await db.select<AvatarItem>(
 					`
-          SELECT id
+          SELECT avatarAccessoryId as id
           FROM chuni_static_avatar
           WHERE avatarAccessoryId IN (?)
             AND version = ?
@@ -128,12 +128,12 @@ const routes = new Hono()
 					`
           UPDATE chuni_profile_data
           SET
-              avatarBack = ?,
-              avatarFace = ?,
-              avatarHead = ?,
-              avatarItem = ?,
-              avatarSkin = ?,
-              avatarWear = ?
+              avatarBack = COALESCE(?, avatarBack),
+              avatarFace = COALESCE(?, avatarFace),
+              avatarHead = COALESCE(?, avatarHead),
+              avatarItem = COALESCE(?, avatarItem),
+              avatarSkin = COALESCE(?, avatarSkin),
+              avatarWear = COALESCE(?, avatarWear)
           WHERE user = ?
             AND version = ?
         `,
@@ -180,7 +180,7 @@ const routes = new Hono()
 				const query = `
         SELECT
             csa.avatarAccessoryId AS id,
-            csa.texturePath       AS imageId,
+            csa.texturePath       AS imagePath,
             csa.name              AS label,
             CASE csa.category
                 WHEN 1 THEN 'wear'
@@ -188,7 +188,7 @@ const routes = new Hono()
                 WHEN 3 THEN 'face'
                 WHEN 4 THEN 'skin'
                 WHEN 5 THEN 'item'
-                WHEN 6 THEN 'back'
+                WHEN 7 THEN 'back'
             END               AS slot,
             CASE
                 WHEN cii.user IS NULL THEN 1
@@ -203,7 +203,8 @@ const routes = new Hono()
                      (csa.category = 7 AND cpd.avatarBack = csa.avatarAccessoryId)
                 THEN 0
                 ELSE 1
-            END AS sort_current
+            END AS sort_current,
+            COUNT(*) OVER() AS total_count
         FROM chuni_static_avatar csa
         LEFT JOIN chuni_item_item cii 
            ON cii.itemId = csa.avatarAccessoryId 
@@ -231,7 +232,7 @@ const routes = new Hono()
 				};
 				const categoryNumbers = slot.map((s: AvatarSlot) => categoryMap[s]);
 
-				const items = await db.select<AvatarItem & { sort_current: number }>(query, [
+				const items = await db.select<AvatarItem & { sort_current: number; total_count: number }>(query, [
 					userId,
 					userId,
 					version,
@@ -241,52 +242,76 @@ const routes = new Hono()
 					offset,
 				]);
 
-				// remove the sort_current property from the response
-				if (items.length === 0) {
-					return c.json([]);
-				}
-				// Return items with the sort_current property removed
-				return c.json(items.map(({ sort_current, ...item }) => item));
+				const totalCount = items.length > 0 ? items[0].total_count : 0;
+				const totalPages = Math.ceil(totalCount / limit);
+
+				// Return items with the sort_current and total_count properties removed
+				const cleanItems = items.map(({ sort_current, total_count, ...item }) => item);
+
+				return c.json({
+					items: cleanItems,
+					pagination: {
+						page,
+						limit,
+						total: totalCount,
+						totalPages,
+						hasNext: page < totalPages,
+						hasPrev: page > 1,
+					},
+				});
 			} catch (error) {
 				throw rethrowWithMessage("Failed to search avatar items", error);
 			}
 		}
 	)
-	.patch("unlock/:id", validateParams(z.object({ id: validAvatarItemId })), async (c) => {
-		try {
-			const { userId, versions } = c.payload;
-			const version = versions.chunithm_version;
+	.patch(
+		"unlock/:id",
+		validateParams(
+			z.object({
+				id: z
+					.string()
+					.transform((val) => parseInt(val))
+					.refine((val) => !isNaN(val), {
+						message: "Invalid avatar item ID",
+					}),
+			})
+		),
+		async (c) => {
+			try {
+				const { userId, versions } = c.payload;
+				const version = versions.chunithm_version;
 
-			const { id } = c.req.param();
+				const { id } = c.req.param();
 
-			// Validate item id
-			const item = await db.select<AvatarItem>(
-				`
-        SELECT avatarAccessoryId
-        FROM chuni_static_avatar
-        WHERE avatarAccessoryId = ?
-          AND version = ?
-      `,
-				[id, version]
-			);
-			if (item.length === 0) {
-				throw new HTTPException(404, {
-					message: "Avatar item not found",
-				});
+				// Validate item id
+				const items = await db.select<AvatarItem[]>(
+					`
+            SELECT avatarAccessoryId
+            FROM chuni_static_avatar
+            WHERE avatarAccessoryId = ?
+              AND version = ?
+          `,
+					[id, version]
+				);
+				if (items.length === 0) {
+					throw new HTTPException(404, {
+						message: "Avatar item not found",
+					});
+				}
+				await db.query(
+					`
+            INSERT INTO chuni_item_item (user, itemId, itemKind, stock, isValid)
+            VALUES (?, ?, 1, 1, 1)
+            ON DUPLICATE KEY UPDATE user = user
+          `,
+					[userId, id, version]
+				);
+				return c.json({ message: "Avatar item unlocked successfully" });
+			} catch (error) {
+				throw rethrowWithMessage("Failed to unlock avatar item", error);
 			}
-			await db.query(
-				`
-        INSERT INTO chuni_item_item (user, itemId, version)
-        VALUES (?, ?, ?)
-        ON DUPLICATE KEY UPDATE user = user
-      `,
-				[userId, id, version]
-			);
-			return c.status(200);
-		} catch (error) {
-			throw rethrowWithMessage("Failed to unlock avatar item", error);
 		}
-	})
+	)
 	.get(":id", validateParams(z.object({ id: validAvatarItemId })), async (c) => {
 		try {
 			const { userId, versions } = c.payload;
@@ -307,7 +332,7 @@ const routes = new Hono()
 				`
         SELECT
             csa.avatarAccessoryId AS id,
-            csa.texturePath       AS imageId,
+            csa.texturePath       AS imagePath,
             csa.name              AS label,
             CASE csa.category
                 WHEN 1 THEN 'wear'
@@ -315,7 +340,7 @@ const routes = new Hono()
                 WHEN 3 THEN 'face'
                 WHEN 4 THEN 'skin'
                 WHEN 5 THEN 'item'
-                WHEN 6 THEN 'back'
+                WHEN 7 THEN 'back'
             END               AS slot,
             CASE
                 WHEN cii.user IS NULL THEN 1
