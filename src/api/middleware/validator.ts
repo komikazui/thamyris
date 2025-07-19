@@ -9,7 +9,7 @@ export const validate = <
   Target extends keyof ValidationTargets,
 >(
   target: Target,
-  schema: T
+  schema: T,
 ) =>
   zv(target, schema, (result, _) => {
     if (!result.success) {
@@ -19,3 +19,6 @@ export const validate = <
 
 export const validateJson = <T extends ZodSchema>(schema: T) =>
   validate("json", schema);
+
+export const validateParams = <T extends ZodSchema>(schema: T) =>
+  validate("param", schema);
