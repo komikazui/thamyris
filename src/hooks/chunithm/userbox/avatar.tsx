@@ -118,7 +118,7 @@ export const useAvatar = () => {
 
 		return (
 			<div key={avatarKey} className="relative flex items-center justify-center">
-				<div className="avatar_base relative h-[400px] w-[300px]">
+				<div className="avatar_base relative">
 					<div className="avatar_back">{maybeImg(avatarImages.back)}</div>
 					<div className="avatar_wear">{maybeImg(avatarImages.wear)}</div>
 					<div className="avatar_skin">{maybeImg(avatarImages.skin)}</div>
