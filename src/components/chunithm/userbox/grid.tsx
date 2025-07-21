@@ -163,8 +163,9 @@ function GridFilters({ filters, selectedFilter, onFilterChange }: GridFiltersPro
 			{filters.map((filter) => (
 				<Button
 					key={filter.value}
-					variant={selectedFilter === filter.value ? "default" : "outline"}
+					variant={selectedFilter === filter.value ? "default" : "ghost"}
 					size="sm"
+					className="bg-button text-primary hover:bg-buttonhover cursor-pointer"
 					onClick={() => onFilterChange(filter.value)}
 				>
 					{filter.label}
@@ -208,19 +209,23 @@ function GridPagination({
 			{/* Page Size Selector */}
 			{onPageSizeChange && (
 				<div className="flex items-center gap-2">
-					<span className="text-muted-foreground text-sm">Show:</span>
+					<span className="text-primary text-sm">Show:</span>
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
-							<Button variant="outline" size="sm" disabled={loading}>
+							<Button
+								size="sm"
+								disabled={loading}
+								className="bg-button text-primary hover:bg-buttonhover cursor-pointer hover:cursor-pointer"
+							>
 								{limit} per page
 							</Button>
 						</DropdownMenuTrigger>
-						<DropdownMenuContent>
+						<DropdownMenuContent className="bg-dropdown">
 							{pageSizeOptions.map((size) => (
 								<DropdownMenuItem
 									key={size}
 									onClick={() => onPageSizeChange(size)}
-									className={limit === size ? "bg-accent" : ""}
+									className="bg-dropdown focus:bg-dropdownhover cursor-pointer"
 								>
 									{size} per page
 								</DropdownMenuItem>
@@ -232,8 +237,13 @@ function GridPagination({
 
 			{/* Page Navigation */}
 			{totalPages > 1 && (
-				<div className="flex items-center gap-2">
-					<Button variant="outline" size="sm" onClick={() => onPageChange(page - 1)} disabled={!hasPrev || loading}>
+				<div className="text-primary flex items-center gap-2">
+					<Button
+						className="bg-button text-primary hover:bg-buttonhover cursor-pointer"
+						size="sm"
+						onClick={() => onPageChange(page - 1)}
+						disabled={!hasPrev || loading}
+					>
 						<ChevronLeft className="h-4 w-4" />
 					</Button>
 
@@ -241,25 +251,29 @@ function GridPagination({
 						{getVisiblePages.map((pageNum) => (
 							<Button
 								key={pageNum}
-								variant={pageNum === page ? "default" : "outline"}
 								size="sm"
 								onClick={() => onPageChange(pageNum)}
 								disabled={pageNum === page || loading}
-								className="min-w-[2.5rem]"
+								className="bg-button text-primary hover:bg-buttonhover min-w-[2.5rem] cursor-pointer"
 							>
 								{pageNum}
 							</Button>
 						))}
 					</div>
 
-					<Button variant="outline" size="sm" onClick={() => onPageChange(page + 1)} disabled={!hasNext || loading}>
+					<Button
+						className="bg-button text-primary hover:bg-buttonhover cursor-pointer"
+						size="sm"
+						onClick={() => onPageChange(page + 1)}
+						disabled={!hasNext || loading}
+					>
 						<ChevronRight className="h-4 w-4" />
 					</Button>
 				</div>
 			)}
 
 			{/* Total Count */}
-			{total > 0 && <div className="text-muted-foreground text-sm">{total} total items</div>}
+			{total > 0 && <div className="text-primary text-sm">{total} total items</div>}
 		</div>
 	);
 }
@@ -458,7 +472,7 @@ export function Grid<T extends BaseItem>({
 	const columns = useContainerAwareColumns(gridContainerRef, itemWidth, gap, maxColumns, minColumns);
 
 	const gridContent = (
-		<div className={cn("bg-card flex h-fit flex-col rounded-lg p-4 md:p-6", containerClassName)}>
+		<div className={cn("bg-card flex h-fit flex-col rounded-md p-4 md:p-6", containerClassName)}>
 			{/* Filters */}
 			{filters && onFilterChange && (
 				<GridFilters filters={filters} selectedFilter={selectedFilter} onFilterChange={onFilterChange} />

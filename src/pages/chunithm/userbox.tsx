@@ -51,9 +51,9 @@ const ChunithmUserbox = () => {
 			{version ? (
 				<div className="flex flex-col">
 					{/* Tab Navigation */}
-					<div className="border-border bg-background/80 sticky top-0 z-10 backdrop-blur-sm">
+					<div className="border-border sticky top-0 z-10 backdrop-blur-sm">
 						<div className="flex items-center justify-center px-4 py-3">
-							<div className="bg-muted flex space-x-1 rounded-lg p-1">
+							<div className="bg-foreground/70 flex space-x-1 rounded-md p-1">
 								{tabs.map((tab) => (
 									<Button
 										key={tab.id}
@@ -63,8 +63,8 @@ const ChunithmUserbox = () => {
 										className={cn(
 											"transition-all duration-200",
 											activeTab === tab.id
-												? "bg-background text-foreground shadow-sm"
-												: "text-muted-foreground hover:text-foreground hover:bg-background/60"
+												? "text-primary hover:bg-buttonhover bg-button cursor-pointer"
+												: "text-primary hover:text-primary hover:bg-buttonhover cursor-pointer"
 										)}
 									>
 										{tab.label}
