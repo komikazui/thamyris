@@ -272,7 +272,8 @@ export function GridItem<T extends BaseItem>({
 				"group bg-card relative flex-shrink-0 cursor-pointer overflow-hidden rounded-lg border-2",
 				"hover:border-primary/50 hover:shadow-md",
 				isSelected && "border-yellow-500 shadow-yellow-500/30",
-				!isSelected && isEquipped && "border-muted",
+				!isSelected && isEquipped && "border-yellow-400 shadow-lg shadow-yellow-400/20",
+				!isSelected && !isEquipped && "border-muted",
 				item.locked && "opacity-60",
 				className
 			)}
