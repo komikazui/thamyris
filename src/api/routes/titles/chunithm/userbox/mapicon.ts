@@ -147,7 +147,7 @@ const routes = new Hono()
 					LEFT JOIN chuni_item_item cii 
 						ON cii.itemId = dsm.mapIconId 
 					AND cii.user = ?
-					AND cii.itemKind = 2
+					AND cii.itemKind = 8
 					LEFT JOIN chuni_profile_data cpd 
 						ON cpd.user = ? 
 					AND cpd.version = ?
