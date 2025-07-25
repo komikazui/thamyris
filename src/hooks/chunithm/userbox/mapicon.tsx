@@ -22,17 +22,13 @@ export function useCurrentMapicon() {
 	});
 }
 
-export function useSearchMapicons(filters: { locked: boolean | null }, page: number) {
+export function useSearchMapicons(filters: { locked: boolean | null }) {
 	return useQuery({
-		queryKey: ["userbox", "mapicon", "search", filters, page],
+		queryKey: ["userbox", "mapicon", "search", filters],
 		queryFn: async () => {
 			const response = await api.chunithm.userbox.mapicon.search.$post({
 				json: {
 					filter: filters,
-					pagination: {
-						page,
-						limit: 30, // 6 cols x 5 rows = 30 items per page
-					},
 				},
 			});
 

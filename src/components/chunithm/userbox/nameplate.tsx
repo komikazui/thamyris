@@ -1,8 +1,6 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { toast } from "sonner";
-
-import { CDN } from "@/lib/constants";
 
 import {
 	NameplateItem,
@@ -10,85 +8,79 @@ import {
 	useEquipNameplate,
 	useSearchNameplates,
 	useUnlockNameplate,
-} from "../../../hooks/chunithm/userbox/nameplate";
+} from "@/hooks/chunithm/userbox/nameplate";
+
 import { Grid } from "./grid";
 
 const NameplateCustomization: React.FC = () => {
-	const [currentPage, setCurrentPage] = useState(1);
-	const [pageSize, setPageSize] = useState(36);
+	const [selectedNameplateId, setSelectedNameplateId] = useState<number | null>(null);
+	const [originalNameplateId, setOriginalNameplateId] = useState<number | null>(null);
 
 	const { data: currentNameplate } = useCurrentNameplate();
-	const { data: searchData, isLoading } = useSearchNameplates({ locked: null }, currentPage, pageSize);
+	const { data: searchData, isLoading } = useSearchNameplates({ locked: null });
 	const { mutate: equipNameplate } = useEquipNameplate();
 	const { mutate: unlockNameplate } = useUnlockNameplate();
 
-	const handleEquipItem = useCallback(
+	// Track the original nameplate when component mounts
+	useEffect(() => {
+		if (currentNameplate && originalNameplateId === null) {
+			setOriginalNameplateId(currentNameplate.id);
+			setSelectedNameplateId(currentNameplate.id);
+		}
+	}, [currentNameplate, originalNameplateId]);
+
+	const handleSelect = useCallback((item: NameplateItem) => {
+		setSelectedNameplateId(item.id);
+	}, []);
+
+	const handleEquip = useCallback(
 		(item: NameplateItem) => {
-			if (item.locked) {
-				// Unlock the item, then auto-equip it
-				unlockNameplate(item.id, {
-					onSuccess: () => {
-						// Auto-equip after successful unlock
-						equipNameplate(item.id, {
-							onError: (error) => {
-								toast.error("Failed to equip nameplate");
-								console.error("Error equipping nameplate:", error);
-							},
-						});
-					},
-					onError: (error) => {
-						toast.error("Failed to unlock nameplate");
-						console.error("Error unlocking nameplate:", error);
-					},
-				});
-			} else {
-				// Equip the item
-				equipNameplate(item.id, {
-					onError: (error) => {
-						toast.error("Failed to equip nameplate");
-						console.error("Error equipping nameplate:", error);
-					},
-				});
-			}
+			equipNameplate(item.id, {
+				onSuccess: () => {
+					setOriginalNameplateId(item.id);
+				},
+				onError: (error) => {
+					toast.error("Failed to equip nameplate");
+					console.error("Error equipping nameplate:", error);
+				},
+			});
 		},
-		[equipNameplate, unlockNameplate]
+		[equipNameplate]
 	);
 
-	const handlePageChange = useCallback((page: number) => {
-		setCurrentPage(page);
-	}, []);
-
-	const handlePageSizeChange = useCallback((newPageSize: number) => {
-		// Update both page size and reset page to 1 in the same update
-		setPageSize(newPageSize);
-		setCurrentPage(1);
-	}, []);
-
-	const equippedItemIds = currentNameplate ? new Set([currentNameplate.id]) : new Set<number>();
-
-	const preview = currentNameplate && (
-		<img
-			src={`${CDN}/chunithm/nameplate/${currentNameplate.imagePath.replace(".dds", ".png")}`}
-			className="object-contain"
-		/>
+	const handleUnlock = useCallback(
+		(item: NameplateItem) => {
+			unlockNameplate(item.id, {
+				onError: (error) => {
+					toast.error("Failed to unlock nameplate");
+					console.error("Error unlocking nameplate:", error);
+				},
+			});
+		},
+		[unlockNameplate]
 	);
+
+	const hasChanges = useMemo(() => {
+		return selectedNameplateId !== originalNameplateId;
+	}, [selectedNameplateId, originalNameplateId]);
+
+	const equippedItemIds = originalNameplateId ? new Set([originalNameplateId]) : new Set<number>();
 
 	return (
 		<Grid
 			items={searchData?.items || []}
 			equippedItemIds={equippedItemIds}
+			selectedItemId={selectedNameplateId}
 			loading={isLoading}
-			preview={preview}
-			itemWidth={250}
-			itemHeight={80}
-			minColumns={6}
-			pagination={searchData?.pagination}
-			onPageChange={handlePageChange}
-			onPageSizeChange={handlePageSizeChange}
-			pageSizeOptions={[18, 36, 72]}
+			itemHeight={90}
+			itemWidth={240}
 			imageBasePath="chunithm/nameplate"
-			onItemClick={handleEquipItem}
-			containerClassName="nameplate-grid-container"
+			onItemClick={handleSelect}
+			onEquip={handleEquip}
+			onUnlock={handleUnlock}
+			hasChanges={hasChanges}
+			layout="stacked"
+			maxColumns={6}
 		/>
 	);
 };

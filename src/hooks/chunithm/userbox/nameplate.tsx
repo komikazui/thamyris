@@ -22,17 +22,13 @@ export function useCurrentNameplate() {
 	});
 }
 
-export function useSearchNameplates(filters: { locked: boolean | null }, page: number = 1, limit: number = 18) {
+export function useSearchNameplates(filters: { locked: boolean | null }) {
 	return useQuery({
-		queryKey: ["userbox", "nameplate", "search", filters, page, limit],
+		queryKey: ["userbox", "nameplate", "search", filters],
 		queryFn: async () => {
 			const response = await api.chunithm.userbox.nameplate.search.$post({
 				json: {
 					filter: filters,
-					pagination: {
-						page,
-						limit,
-					},
 				},
 			});
 

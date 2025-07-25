@@ -103,10 +103,6 @@ const routes = new Hono()
 				filter: z.object({
 					locked: z.boolean().nullable(),
 				}),
-				pagination: z.object({
-					page: z.number().int().min(1).default(1),
-					limit: z.number().int().min(1).max(100).default(18),
-				}),
 			})
 		),
 		async (c) => {
@@ -114,11 +110,8 @@ const routes = new Hono()
 				const { userId, versions } = c.payload;
 				const version = versions.chunithm_version;
 
-				const { filter, pagination } = await c.req.json();
+				const { filter } = await c.req.json();
 				const { locked } = filter;
-				const { page, limit } = pagination;
-
-				const offset = (page - 1) * limit;
 
 				let whereClause = "WHERE dsn.version = ?";
 				const params = [version];
@@ -158,27 +151,17 @@ const routes = new Hono()
             locked ASC,
             dsn.sortName ASC,
             dsn.nameplateId ASC
-        LIMIT ? OFFSET ?
       `;
 
 				params.unshift(userId, userId, version);
-				params.push(limit, offset);
 
 				const items = await db.select<NameplateItem & { total_count: number }>(query, params);
 
 				const totalCount = items.length > 0 ? items[0].total_count : 0;
-				const totalPages = Math.ceil(totalCount / limit);
 
 				return c.json({
 					items: items.map(({ total_count, ...item }) => item),
-					pagination: {
-						page,
-						limit,
-						total: totalCount,
-						totalPages,
-						hasNext: page < totalPages,
-						hasPrev: page > 1,
-					},
+					total: totalCount,
 				});
 			} catch (error) {
 				throw rethrowWithMessage("Failed to search nameplates", error);

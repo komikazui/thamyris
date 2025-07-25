@@ -17,10 +17,6 @@ const SearchRequestSchema = z.object({
 	filter: z.object({
 		locked: z.boolean().nullable(),
 	}),
-	pagination: z.object({
-		page: z.number().min(1),
-		limit: z.number().min(1).max(100),
-	}),
 });
 
 const EquipRequestSchema = z.object({
@@ -30,25 +26,21 @@ const EquipRequestSchema = z.object({
 async function getCurrentSystemVoice(userId: number, version: number): Promise<SystemVoiceItem | null> {
 	const result = await db.select<SystemVoiceItem>(
 		`
-		SELECT DISTINCT
-			csv.id,
-			csv.str as label,
+		SELECT 
+			dssv.systemVoiceId as id,
+			dssv.name as label,
+			dssv.imagePath,
 			CASE 
-				WHEN csv.netOpenName IS NOT NULL AND csv.netOpenName != '' 
-				THEN csv.netOpenName 
-				ELSE CONCAT('CHU_UI_SystemVoice_', LPAD(csv.id, 6, '0'))
-			END as imagePath,
-			CASE 
-				WHEN usp.systemVoiceId IS NOT NULL THEN 0
+				WHEN cii.itemId IS NOT NULL THEN 0
 				ELSE 1 
 			END as locked
-		FROM chuni_static_systemvoice csv
-		INNER JOIN chuni_profile_data cpd ON cpd.user = ? AND cpd.systemVoiceId = csv.id
-		LEFT JOIN chuni_user_systemvoice_possession usp ON usp.user = cpd.user AND usp.systemVoiceId = csv.id
-		WHERE cpd.version = ? 
+		FROM chuni_profile_data cpd
+		JOIN daphnis_static_system_voice dssv ON cpd.voiceId = dssv.systemVoiceId
+		LEFT JOIN chuni_item_item cii ON cii.itemId = dssv.systemVoiceId AND cii.user = cpd.user AND cii.itemKind = 9
+		WHERE cpd.user = ? AND cpd.version = ? AND dssv.version = ?
 		LIMIT 1
 		`,
-		[userId, version]
+		[userId, version, version]
 	);
 
 	return result.length > 0 ? result[0] : null;
@@ -85,29 +77,27 @@ const routes = new Hono()
 			const version = versions.chunithm_version;
 			const { systemVoiceId } = await c.req.json();
 
-			// Check if user owns this systemvoice (ID 1 is always available)
-			if (systemVoiceId !== 1) {
-				const ownershipResult = await db.select(
-					`
-					SELECT 1
-					FROM chuni_user_systemvoice_possession
-					WHERE user = ? AND systemVoiceId = ?
-					`,
-					[userId, systemVoiceId]
-				);
+			// Check if user owns this systemvoice (itemKind 9 for system voices)
+			const ownershipResult = await db.select(
+				`
+				SELECT 1
+				FROM chuni_item_item
+				WHERE user = ? AND itemId = ? AND itemKind = 9
+				`,
+				[userId, systemVoiceId]
+			);
 
-				if (ownershipResult.length === 0) {
-					throw new HTTPException(403, {
-						message: "You don't own this systemvoice",
-					});
-				}
+			if (ownershipResult.length === 0) {
+				throw new HTTPException(403, {
+					message: "You don't own this systemvoice",
+				});
 			}
 
 			// Update profile with new systemvoice
 			const result = await db.update(
 				`
 				UPDATE chuni_profile_data 
-				SET systemVoiceId = ?
+				SET voiceId = ?
 				WHERE user = ? AND version = ?
 				`,
 				[systemVoiceId, userId, version]
@@ -132,28 +122,26 @@ const routes = new Hono()
 		try {
 			const { userId, versions } = c.payload;
 			const version = versions.chunithm_version;
-			const { filter, pagination } = await c.req.json();
+			const { filter } = await c.req.json();
 
-			const offset = (pagination.page - 1) * pagination.limit;
-
-			let whereClause = "WHERE 1=1";
-			const params: any[] = [userId];
+			let additionalWhere = "";
+			const params: any[] = [userId, userId, version, version];
 
 			if (filter.locked === true) {
-				whereClause += " AND usp.systemVoiceId IS NULL AND csv.id != 1";
+				additionalWhere = " AND cii.itemId IS NULL";
 			} else if (filter.locked === false) {
-				whereClause += " AND (usp.systemVoiceId IS NOT NULL OR csv.id = 1)";
+				additionalWhere = " AND cii.itemId IS NOT NULL";
 			}
 
 			// Get total count
 			const countResult = await db.select<{ total: number }>(
 				`
-				SELECT COUNT(DISTINCT csv.id) as total
-				FROM chuni_static_systemvoice csv
-				LEFT JOIN chuni_user_systemvoice_possession usp ON usp.user = ? AND usp.systemVoiceId = csv.id
-				${whereClause}
+				SELECT COUNT(DISTINCT dssv.systemVoiceId) as total
+				FROM daphnis_static_system_voice dssv
+				LEFT JOIN chuni_item_item cii ON cii.itemId = dssv.systemVoiceId AND cii.user = ? AND cii.itemKind = 9
+				WHERE dssv.version = ?${additionalWhere}
 				`,
-				params
+				[userId, version]
 			);
 
 			const total = countResult.length > 0 ? countResult[0].total : 0;
@@ -162,34 +150,29 @@ const routes = new Hono()
 			const results = await db.select<SystemVoiceItem & { sort_current: number; total_count: number }>(
 				`
 				SELECT DISTINCT
-					csv.id,
-					csv.str as label,
+					dssv.systemVoiceId as id,
+					dssv.name as label,
+					dssv.imagePath,
 					CASE 
-						WHEN csv.netOpenName IS NOT NULL AND csv.netOpenName != '' 
-						THEN csv.netOpenName 
-						ELSE CONCAT('CHU_UI_SystemVoice_', LPAD(csv.id, 6, '0'))
-					END as imagePath,
-					CASE 
-						WHEN usp.systemVoiceId IS NOT NULL OR csv.id = 1 THEN 0
+						WHEN cii.itemId IS NOT NULL THEN 0
 						ELSE 1
 					END as locked,
 					CASE 
-						WHEN cpd.systemVoiceId = csv.id THEN 0
+						WHEN cpd.voiceId = dssv.systemVoiceId THEN 0
 						ELSE 1
 					END as sort_current,
 					COUNT(*) OVER() as total_count
-				FROM chuni_static_systemvoice csv
-				LEFT JOIN chuni_user_systemvoice_possession usp ON usp.user = ? AND usp.systemVoiceId = csv.id
+				FROM daphnis_static_system_voice dssv
+				LEFT JOIN chuni_item_item cii ON cii.itemId = dssv.systemVoiceId AND cii.user = ? AND cii.itemKind = 9
 				LEFT JOIN chuni_profile_data cpd ON cpd.user = ? AND cpd.version = ?
-				${whereClause}
+				WHERE dssv.version = ?${additionalWhere}
 				ORDER BY 
 					sort_current ASC,
 					locked ASC,
-					csv.sortName ASC,
-					csv.id ASC
-				LIMIT ? OFFSET ?
+					dssv.name ASC,
+					dssv.systemVoiceId ASC
 				`,
-				[...params, userId, version, pagination.limit, offset]
+				params
 			);
 
 			const items = results.map(({ sort_current, total_count, ...item }) => ({
@@ -197,18 +180,9 @@ const routes = new Hono()
 				locked: Boolean(item.locked),
 			}));
 
-			const totalPages = Math.ceil(total / pagination.limit);
-
 			return c.json({
 				items,
-				pagination: {
-					page: pagination.page,
-					limit: pagination.limit,
-					total,
-					totalPages,
-					hasNext: pagination.page < totalPages,
-					hasPrev: pagination.page > 1,
-				},
+				total,
 			});
 		} catch (error) {
 			throw rethrowWithMessage("Failed to search systemvoices", error);
@@ -236,7 +210,7 @@ const routes = new Hono()
 				// Check if systemvoice exists
 				const systemvoiceResult = await db.select(
 					`
-				SELECT id FROM chuni_static_systemvoice WHERE id = ?
+				SELECT systemVoiceId FROM daphnis_static_system_voice WHERE systemVoiceId = ?
 				`,
 					[id]
 				);
@@ -250,7 +224,7 @@ const routes = new Hono()
 				// Check if already owned
 				const ownershipResult = await db.select(
 					`
-				SELECT 1 FROM chuni_user_systemvoice_possession WHERE user = ? AND systemVoiceId = ?
+				SELECT 1 FROM chuni_item_item WHERE user = ? AND itemId = ? AND itemKind = 9
 				`,
 					[userId, id]
 				);
@@ -261,11 +235,11 @@ const routes = new Hono()
 					});
 				}
 
-				// Add to user's possession
+				// Add to user's inventory (itemKind 9 for system voices)
 				await db.query(
 					`
-				INSERT INTO chuni_user_systemvoice_possession (user, systemVoiceId)
-				VALUES (?, ?)
+				INSERT INTO chuni_item_item (user, itemId, itemKind, stock, isValid)
+				VALUES (?, ?, 9, 1, 1)
 				`,
 					[userId, id]
 				);

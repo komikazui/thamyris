@@ -22,17 +22,13 @@ export function useCurrentTrophy() {
 	});
 }
 
-export function useSearchTrophies(filters: { locked: boolean | null }, page: number) {
+export function useSearchTrophies(filters: { locked: boolean | null }) {
 	return useQuery({
-		queryKey: ["userbox", "trophy", "search", filters, page],
+		queryKey: ["userbox", "trophy", "search", filters],
 		queryFn: async () => {
 			const response = await api.chunithm.userbox.trophy.search.$post({
 				json: {
 					filter: filters,
-					pagination: {
-						page,
-						limit: 30,
-					},
 				},
 			});
 

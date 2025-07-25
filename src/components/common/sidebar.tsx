@@ -146,11 +146,26 @@ const sidebarItems: MenuItem[] = [
 export function SidebarComponent() {
   const [openCategories, setOpenCategories] = React.useState<
     Record<string, boolean>
-  >({});
+  >(() => {
+    const saved = localStorage.getItem('sidebar-open-categories');
+    return saved ? JSON.parse(saved) : { SEGA: true };
+  });
   const [openSubCategories, setOpenSubCategories] = React.useState<
     Record<string, boolean>
-  >({});
+  >(() => {
+    const saved = localStorage.getItem('sidebar-open-subcategories');
+    return saved ? JSON.parse(saved) : { Chunithm: true, Ongeki: true, "Maimai DX": true };
+  });
   const { user } = useAuth();
+
+  // Save to localStorage whenever state changes
+  React.useEffect(() => {
+    localStorage.setItem('sidebar-open-categories', JSON.stringify(openCategories));
+  }, [openCategories]);
+
+  React.useEffect(() => {
+    localStorage.setItem('sidebar-open-subcategories', JSON.stringify(openSubCategories));
+  }, [openSubCategories]);
 
   const toggleCategory = (categoryName: string) => {
     setOpenCategories((prev) => ({

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 
-import MapIcon from "@/components/chunithm/mapicon-customization";
-import SystemVoice from "@/components/chunithm/systemvoice-customization";
-import Trophies from "@/components/chunithm/trophies";
 import Avatar from "@/components/chunithm/userbox/avatar";
+import MapIcon from "@/components/chunithm/userbox/map-icon";
 import Nameplate from "@/components/chunithm/userbox/nameplate";
+import SystemVoice from "@/components/chunithm/userbox/system-voice";
+import Trophies from "@/components/chunithm/userbox/trophies";
 import Header from "@/components/common/header";
 import { Button } from "@/components/ui/button";
 import { useChunithmVersion } from "@/hooks/chunithm";
@@ -23,7 +23,7 @@ const ChunithmUserbox = () => {
 	];
 
 	const renderTabContent = () => {
-		const active = "block w-full";
+		const active = "block h-full w-full";
 		return (
 			<>
 				<div className={activeTab === "avatar" ? active : "hidden"}>
@@ -46,12 +46,12 @@ const ChunithmUserbox = () => {
 	};
 
 	return (
-		<div className="relative flex-1 overflow-auto">
+		<div className="relative flex h-full flex-1 flex-col overflow-hidden">
 			<Header title={"Userbox"} />
 			{version ? (
-				<div className="flex flex-col">
+				<div className="flex flex-1 flex-col overflow-hidden">
 					{/* Tab Navigation */}
-					<div className="border-border sticky top-0 z-10 backdrop-blur-sm">
+					<div className="border-border flex-shrink-0 backdrop-blur-sm">
 						<div className="flex items-center justify-center px-4 py-3">
 							<div className="bg-foreground/70 flex space-x-1 rounded-md p-1">
 								{tabs.map((tab) => (
@@ -75,8 +75,8 @@ const ChunithmUserbox = () => {
 					</div>
 
 					{/* Tab Content */}
-					<div className="flex-1 p-4">
-						<div className="flex">{renderTabContent()}</div>
+					<div className="flex-1 overflow-hidden p-4">
+						<div className="h-full">{renderTabContent()}</div>
 					</div>
 				</div>
 			) : (

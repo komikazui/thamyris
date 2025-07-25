@@ -25,12 +25,12 @@ async function getCurrentMapicon(userId: number, version: number): Promise<Mapic
               ELSE 0
           END AS locked
         FROM chuni_profile_data cpd
-        JOIN daphnis_static_mapicon dsm 
+        JOIN daphnis_static_map_icon dsm 
             ON dsm.mapIconId = cpd.mapIconId
         LEFT JOIN chuni_item_item cii 
             ON cii.itemId = dsm.mapIconId 
           AND cii.user = ?
-          AND cii.itemKind = 2
+          AND cii.itemKind = 8
         WHERE cpd.user = ? 
           AND cpd.version = ?
       `,
@@ -71,8 +71,12 @@ const routes = new Hono()
 
 				// Verify user owns the mapicon
 				const ownership = await db.select(
-					`SELECT 1 FROM chuni_item_item 
-           WHERE user = ? AND itemId = ? AND itemKind = 2`,
+					`
+					SELECT 1 FROM chuni_item_item 
+           			WHERE user = ? 
+					  AND itemId = ? 
+					  AND itemKind = 8
+					`,
 					[userId, mapIconId]
 				);
 
@@ -84,10 +88,13 @@ const routes = new Hono()
 
 				// Update profile
 				await db.query(
-					`UPDATE chuni_profile_data 
-           SET mapIconId = ?
-           WHERE user = ? AND version = ?`,
-					[mapIconId, userId, version]
+					`
+						UPDATE chuni_profile_data 
+						SET mapIconId = ? 
+						WHERE user = ? 
+						  AND version = ?
+					`,
+					[userId, mapIconId, version]
 				);
 
 				return c.json({ success: true });
@@ -103,10 +110,6 @@ const routes = new Hono()
 				filter: z.object({
 					locked: z.boolean().nullable(),
 				}),
-				pagination: z.object({
-					page: z.number().int().min(1).default(1),
-					limit: z.number().int().min(1).max(100).default(18),
-				}),
 			})
 		),
 		async (c) => {
@@ -114,11 +117,8 @@ const routes = new Hono()
 				const { userId, versions } = c.payload;
 				const version = versions.chunithm_version;
 
-				const { filter, pagination } = await c.req.json();
+				const { filter } = await c.req.json();
 				const { locked } = filter;
-				const { page, limit } = pagination;
-
-				const offset = (page - 1) * limit;
 
 				let whereClause = "WHERE dsm.version = ?";
 				const params = [version];
@@ -130,55 +130,45 @@ const routes = new Hono()
 				}
 
 				const query = `
-        SELECT
-            dsm.mapIconId AS id,
-            dsm.imagePath,
-            dsm.name AS label,
-            CASE
-                WHEN cii.user IS NULL THEN 1
-                ELSE 0
-            END AS locked,
-            CASE
-                WHEN cpd.mapIconId = dsm.mapIconId THEN 1
-                ELSE 0
-            END AS equipped,
-            COUNT(*) OVER() AS total_count
-        FROM daphnis_static_mapicon dsm
-        LEFT JOIN chuni_item_item cii 
-            ON cii.itemId = dsm.mapIconId 
-          AND cii.user = ?
-          AND cii.itemKind = 2
-        LEFT JOIN chuni_profile_data cpd 
-            ON cpd.user = ? 
-          AND cpd.version = ?
-          AND cpd.mapIconId = dsm.mapIconId
-        ${whereClause}
-        ORDER BY 
-            equipped DESC,
-            locked ASC,
-            dsm.sortName ASC,
-            dsm.mapIconId ASC
-        LIMIT ? OFFSET ?
-      `;
+					SELECT
+						dsm.mapIconId AS id,
+						dsm.imagePath,
+						dsm.name AS label,
+						CASE
+							WHEN cii.user IS NULL THEN 1
+							ELSE 0
+						END AS locked,
+						CASE
+							WHEN cpd.mapIconId = dsm.mapIconId THEN 1
+							ELSE 0
+						END AS equipped,
+						COUNT(*) OVER() AS total_count
+					FROM daphnis_static_map_icon dsm
+					LEFT JOIN chuni_item_item cii 
+						ON cii.itemId = dsm.mapIconId 
+					AND cii.user = ?
+					AND cii.itemKind = 2
+					LEFT JOIN chuni_profile_data cpd 
+						ON cpd.user = ? 
+					AND cpd.version = ?
+					AND cpd.mapIconId = dsm.mapIconId
+					${whereClause}
+					ORDER BY 
+						equipped DESC,
+						locked ASC,
+						dsm.sortName ASC,
+						dsm.mapIconId ASC
+				`;
 
 				params.unshift(userId, userId, version);
-				params.push(limit, offset);
 
 				const items = await db.select<MapiconItem & { total_count: number }>(query, params);
 
 				const totalCount = items.length > 0 ? items[0].total_count : 0;
-				const totalPages = Math.ceil(totalCount / limit);
 
 				return c.json({
 					items: items.map(({ total_count, ...item }) => item),
-					pagination: {
-						page,
-						limit,
-						total: totalCount,
-						totalPages,
-						hasNext: page < totalPages,
-						hasPrev: page > 1,
-					},
+					total: totalCount,
 				});
 			} catch (error) {
 				throw rethrowWithMessage("Failed to search mapicons", error);
@@ -190,10 +180,14 @@ const routes = new Hono()
 			const { userId } = c.payload;
 			const { id } = c.req.param();
 
+			console.log("Unlocking mapicon for user:", userId, "mapIconId:", id);
 			// Add mapicon to user's inventory
 			await db.query(
-				`INSERT IGNORE INTO chuni_item_item (user, itemId, itemKind, stock, isValid)
-           VALUES (?, ?, 2, 1, 1)`,
+				`
+					INSERT INTO chuni_item_item (user, itemId, itemKind, stock, isValid)
+           			VALUES (?, ?, 8, 1, 1)
+					ON DUPLICATE KEY UPDATE user = user
+				`,
 				[userId, id]
 			);
 
