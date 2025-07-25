@@ -324,12 +324,12 @@ const Avatar = () => {
 																	Revert
 																</button>
 															) : null}
-															<button
+															{/* <button
 																onClick={() => handleEquipToSlot(slot, null)}
 																className="text-primary hover:text-primary/80 text-xs"
 															>
 																Remove
-															</button>
+															</button> */}
 														</div>
 														{currentItem.locked ? (
 															<button
