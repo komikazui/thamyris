@@ -27,40 +27,40 @@ const validAvatarItemId = z.number().gte(0).optional();
 async function getCurrentAvatarItems(userId: number, version: number): Promise<AvatarItem[]> {
 	const result = await db.select<AvatarItem>(
 		`
-        SELECT 
-          csa.avatarAccessoryId AS id,
-          csa.texturePath       AS imagePath,
-          csa.name              AS label,
-          CASE csa.category
-              WHEN 1 THEN 'wear'
-              WHEN 2 THEN 'head'
-              WHEN 3 THEN 'face'
-              WHEN 4 THEN 'skin'
-              WHEN 5 THEN 'item'
-              WHEN 7 THEN 'back'
-          END               AS slot,
-          CASE
-              WHEN cii.user IS NULL THEN 1
-              ELSE 0
-          END AS locked
-        FROM chuni_static_avatar csa
-        LEFT JOIN chuni_item_item cii 
-            ON cii.itemId = csa.avatarAccessoryId 
-          AND cii.user = ?
-        JOIN chuni_profile_data cpd 
-            ON cpd.user = ? 
-          AND cpd.version = ?
-        WHERE csa.version = ?
-          AND (
-            (csa.category = 1 AND csa.avatarAccessoryId = cpd.avatarWear) OR
-            (csa.category = 2 AND csa.avatarAccessoryId = cpd.avatarHead) OR
-            (csa.category = 3 AND csa.avatarAccessoryId = cpd.avatarFace) OR
-            (csa.category = 4 AND csa.avatarAccessoryId = cpd.avatarSkin) OR
-            (csa.category = 5 AND csa.avatarAccessoryId = cpd.avatarItem) OR
-            (csa.category = 7 AND csa.avatarAccessoryId = cpd.avatarBack)
-          )
-        ORDER BY csa.category
-      `,
+			SELECT 
+			csa.avatarAccessoryId AS id,
+			csa.texturePath       AS imagePath,
+			csa.name              AS label,
+			CASE csa.category
+				WHEN 1 THEN 'wear'
+				WHEN 2 THEN 'head'
+				WHEN 3 THEN 'face'
+				WHEN 4 THEN 'skin'
+				WHEN 5 THEN 'item'
+				WHEN 7 THEN 'back'
+			END               AS slot,
+			CASE
+				WHEN cii.user IS NULL THEN 1
+				ELSE 0
+			END AS locked
+			FROM chuni_static_avatar csa
+			LEFT JOIN chuni_item_item cii 
+				ON cii.itemId = csa.avatarAccessoryId 
+			AND cii.user = ?
+			JOIN chuni_profile_data cpd 
+				ON cpd.user = ? 
+			AND cpd.version = ?
+			WHERE csa.version = ?
+			AND (
+				(csa.category = 1 AND csa.avatarAccessoryId = cpd.avatarWear) OR
+				(csa.category = 2 AND csa.avatarAccessoryId = cpd.avatarHead) OR
+				(csa.category = 3 AND csa.avatarAccessoryId = cpd.avatarFace) OR
+				(csa.category = 4 AND csa.avatarAccessoryId = cpd.avatarSkin) OR
+				(csa.category = 5 AND csa.avatarAccessoryId = cpd.avatarItem) OR
+				(csa.category = 7 AND csa.avatarAccessoryId = cpd.avatarBack)
+			)
+			ORDER BY csa.category
+      	`,
 		[userId, userId, version, version]
 	);
 	return result;
@@ -111,11 +111,11 @@ const routes = new Hono()
 
 				const items = await db.select<AvatarItem>(
 					`
-          SELECT avatarAccessoryId as id
-          FROM chuni_static_avatar
-          WHERE avatarAccessoryId IN (?)
-            AND version = ?
-        `,
+						SELECT avatarAccessoryId as id
+						FROM chuni_static_avatar
+						WHERE avatarAccessoryId IN (?)
+						  AND version = ?
+					`,
 					[itemIds, version]
 				);
 				if (items.length !== itemIds.length) {
@@ -126,17 +126,17 @@ const routes = new Hono()
 
 				const result = await db.query(
 					`
-          UPDATE chuni_profile_data
-          SET
-              avatarBack = COALESCE(?, avatarBack),
-              avatarFace = COALESCE(?, avatarFace),
-              avatarHead = COALESCE(?, avatarHead),
-              avatarItem = COALESCE(?, avatarItem),
-              avatarSkin = COALESCE(?, avatarSkin),
-              avatarWear = COALESCE(?, avatarWear)
-          WHERE user = ?
-            AND version = ?
-        `,
+						UPDATE chuni_profile_data
+						SET
+							avatarBack = COALESCE(?, avatarBack),
+							avatarFace = COALESCE(?, avatarFace),
+							avatarHead = COALESCE(?, avatarHead),
+							avatarItem = COALESCE(?, avatarItem),
+							avatarSkin = COALESCE(?, avatarSkin),
+							avatarWear = COALESCE(?, avatarWear)
+						WHERE user = ?
+						  AND version = ?
+					`,
 					[back, face, head, item, skin, wear, userId, version]
 				);
 
@@ -160,10 +160,6 @@ const routes = new Hono()
 					slot: z.array(z.nativeEnum(AvatarSlot)),
 					locked: z.boolean().nullable(),
 				}),
-				pagination: z.object({
-					page: z.number().int().min(1).default(1),
-					limit: z.number().int().min(1).max(100).default(20),
-				}),
 			})
 		),
 		async (c) => {
@@ -171,55 +167,50 @@ const routes = new Hono()
 				const { userId, versions } = c.payload;
 				const version = versions.chunithm_version;
 
-				const { filter, pagination } = await c.req.json();
+				const { filter } = await c.req.json();
 				const { slot, locked } = filter;
-				const { page, limit } = pagination;
-
-				const offset = (page - 1) * limit;
 
 				const query = `
-        SELECT
-            csa.avatarAccessoryId AS id,
-            csa.texturePath       AS imagePath,
-            csa.name              AS label,
-            CASE csa.category
-                WHEN 1 THEN 'wear'
-                WHEN 2 THEN 'head'
-                WHEN 3 THEN 'face'
-                WHEN 4 THEN 'skin'
-                WHEN 5 THEN 'item'
-                WHEN 7 THEN 'back'
-            END               AS slot,
-            CASE
-                WHEN cii.user IS NULL THEN 1
-                ELSE 0
-            END AS locked,
-            CASE
-                WHEN (csa.category = 1 AND cpd.avatarWear = csa.avatarAccessoryId) OR
-                     (csa.category = 2 AND cpd.avatarHead = csa.avatarAccessoryId) OR
-                     (csa.category = 3 AND cpd.avatarFace = csa.avatarAccessoryId) OR
-                     (csa.category = 4 AND cpd.avatarSkin = csa.avatarAccessoryId) OR
-                     (csa.category = 5 AND cpd.avatarItem = csa.avatarAccessoryId) OR
-                     (csa.category = 7 AND cpd.avatarBack = csa.avatarAccessoryId)
-                THEN 0
-                ELSE 1
-            END AS sort_current,
-            COUNT(*) OVER() AS total_count
-        FROM chuni_static_avatar csa
-        LEFT JOIN chuni_item_item cii 
-           ON cii.itemId = csa.avatarAccessoryId 
-          AND cii.user = ?
-        LEFT JOIN chuni_profile_data cpd 
-           ON cpd.user = ? 
-          AND cpd.version = ?
-        WHERE csa.version = ?
-          AND (
-            csa.category IN (?)
-            ${locked !== null ? `AND (cii.user IS ${locked ? "NULL" : "NOT NULL"})` : ""}
-          )
-        ORDER BY sort_current, locked, csa.avatarAccessoryId
-        LIMIT ? OFFSET ?
-      `;
+					SELECT
+						csa.avatarAccessoryId AS id,
+						csa.texturePath       AS imagePath,
+						csa.name              AS label,
+						CASE csa.category
+							WHEN 1 THEN 'wear'
+							WHEN 2 THEN 'head'
+							WHEN 3 THEN 'face'
+							WHEN 4 THEN 'skin'
+							WHEN 5 THEN 'item'
+							WHEN 7 THEN 'back'
+						END               AS slot,
+						CASE
+							WHEN cii.user IS NULL THEN 1
+							ELSE 0
+						END AS locked,
+						CASE
+							WHEN (csa.category = 1 AND cpd.avatarWear = csa.avatarAccessoryId) OR
+								(csa.category = 2 AND cpd.avatarHead = csa.avatarAccessoryId) OR
+								(csa.category = 3 AND cpd.avatarFace = csa.avatarAccessoryId) OR
+								(csa.category = 4 AND cpd.avatarSkin = csa.avatarAccessoryId) OR
+								(csa.category = 5 AND cpd.avatarItem = csa.avatarAccessoryId) OR
+								(csa.category = 7 AND cpd.avatarBack = csa.avatarAccessoryId)
+							THEN 0
+							ELSE 1
+						END AS sort_current
+					FROM chuni_static_avatar csa
+					LEFT JOIN chuni_item_item cii 
+					ON cii.itemId = csa.avatarAccessoryId 
+					AND cii.user = ?
+					LEFT JOIN chuni_profile_data cpd 
+					ON cpd.user = ? 
+					AND cpd.version = ?
+					WHERE csa.version = ?
+					AND (
+						csa.category IN (?)
+						${locked !== null ? `AND (cii.user IS ${locked ? "NULL" : "NOT NULL"})` : ""}
+					)
+					ORDER BY sort_current, locked, csa.avatarAccessoryId
+				`;
 
 				// Map category numbers to slot names for the IN clause
 				const categoryMap: Record<string, number> = {
@@ -232,32 +223,20 @@ const routes = new Hono()
 				};
 				const categoryNumbers = slot.map((s: AvatarSlot) => categoryMap[s]);
 
-				const items = await db.select<AvatarItem & { sort_current: number; total_count: number }>(query, [
+				const items = await db.select<AvatarItem & { sort_current: number }>(query, [
 					userId,
 					userId,
 					version,
 					version,
 					categoryNumbers,
-					limit,
-					offset,
 				]);
 
-				const totalCount = items.length > 0 ? items[0].total_count : 0;
-				const totalPages = Math.ceil(totalCount / limit);
-
-				// Return items with the sort_current and total_count properties removed
-				const cleanItems = items.map(({ sort_current, total_count, ...item }) => item);
+				// Return items with the sort_current property removed
+				const cleanItems = items.map(({ sort_current, ...item }) => item);
 
 				return c.json({
 					items: cleanItems,
-					pagination: {
-						page,
-						limit,
-						total: totalCount,
-						totalPages,
-						hasNext: page < totalPages,
-						hasPrev: page > 1,
-					},
+					total: cleanItems.length,
 				});
 			} catch (error) {
 				throw rethrowWithMessage("Failed to search avatar items", error);
@@ -286,11 +265,11 @@ const routes = new Hono()
 				// Validate item id
 				const items = await db.select<AvatarItem[]>(
 					`
-            SELECT avatarAccessoryId
-            FROM chuni_static_avatar
-            WHERE avatarAccessoryId = ?
-              AND version = ?
-          `,
+						SELECT avatarAccessoryId
+						FROM chuni_static_avatar
+						WHERE avatarAccessoryId = ?
+						AND version = ?
+					`,
 					[id, version]
 				);
 				if (items.length === 0) {
@@ -300,10 +279,10 @@ const routes = new Hono()
 				}
 				await db.query(
 					`
-            INSERT INTO chuni_item_item (user, itemId, itemKind, stock, isValid)
-            VALUES (?, ?, 1, 1, 1)
-            ON DUPLICATE KEY UPDATE user = user
-          `,
+						INSERT INTO chuni_item_item (user, itemId, itemKind, stock, isValid)
+						VALUES (?, ?, 1, 1, 1)
+						ON DUPLICATE KEY UPDATE user = user
+					`,
 					[userId, id, version]
 				);
 				return c.json({ message: "Avatar item unlocked successfully" });
@@ -330,29 +309,29 @@ const routes = new Hono()
 			 */
 			const item = await db.select<AvatarItem>(
 				`
-        SELECT
-            csa.avatarAccessoryId AS id,
-            csa.texturePath       AS imagePath,
-            csa.name              AS label,
-            CASE csa.category
-                WHEN 1 THEN 'wear'
-                WHEN 2 THEN 'head'
-                WHEN 3 THEN 'face'
-                WHEN 4 THEN 'skin'
-                WHEN 5 THEN 'item'
-                WHEN 7 THEN 'back'
-            END               AS slot,
-            CASE
-                WHEN cii.user IS NULL THEN 1
-                ELSE 0
-            END AS locked
-        FROM chuni_static_avatar csa
-        LEFT JOIN chuni_item_item cii 
-           ON cii.itemId = csa.avatarAccessoryId 
-          AND cii.user = ?
-        WHERE csa.avatarAccessoryId = ?
-          AND csa.version = ?
-      `,
+					SELECT
+						csa.avatarAccessoryId AS id,
+						csa.texturePath       AS imagePath,
+						csa.name              AS label,
+						CASE csa.category
+							WHEN 1 THEN 'wear'
+							WHEN 2 THEN 'head'
+							WHEN 3 THEN 'face'
+							WHEN 4 THEN 'skin'
+							WHEN 5 THEN 'item'
+							WHEN 7 THEN 'back'
+						END               AS slot,
+						CASE
+							WHEN cii.user IS NULL THEN 1
+							ELSE 0
+						END AS locked
+					FROM chuni_static_avatar csa
+					LEFT JOIN chuni_item_item cii 
+					ON cii.itemId = csa.avatarAccessoryId 
+					AND cii.user = ?
+					WHERE csa.avatarAccessoryId = ?
+					AND csa.version = ?
+				`,
 				[userId, id, version]
 			);
 			if (item.length === 0) {

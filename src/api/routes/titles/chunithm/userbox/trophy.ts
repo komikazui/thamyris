@@ -23,27 +23,27 @@ const routes = new Hono()
 			const result = await db.select(
 				`
 				SELECT DISTINCT
-					cst.trophyId as id,
-					cst.name as label,
-					CONCAT('CHU_UI_Trophy_', LPAD(cst.trophyId, 6, '0')) as imagePath,
+					dst.trophyId as id,
+					dst.name as label,
+					dst.imagePath,
 					CASE 
 						WHEN cii.itemId IS NOT NULL THEN 0
 						ELSE 1 
 					END as locked
-				FROM chuni_static_trophy cst
-				INNER JOIN chuni_profile_data cpd ON cpd.user = ? AND cpd.trophyId = cst.trophyId
-				LEFT JOIN chuni_item_item cii ON cii.user = cpd.user AND cii.itemId = cst.trophyId AND cii.itemKind = 7
-				WHERE cpd.version = ?
+				FROM daphnis_static_trophy dst
+				INNER JOIN chuni_profile_data cpd ON cpd.user = ? AND cpd.trophyId = dst.trophyId
+				LEFT JOIN chuni_item_item cii ON cii.user = cpd.user AND cii.itemId = dst.trophyId AND cii.itemKind = 3
+				WHERE cpd.version = ? AND dst.version = ?
 				LIMIT 1
-			`,
-				[userId, version]
+				`,
+				[userId, version, version]
 			);
 
 			if (result.length === 0) {
 				return c.json({
 					id: 0,
 					label: "Default",
-					imagePath: "CHU_UI_Trophy_000000",
+					imagePath: "CHU_UI_Trophy_000000.png",
 					locked: false,
 				});
 			}
@@ -72,7 +72,7 @@ const routes = new Hono()
 					const ownership = await db.select(
 						`
 						SELECT 1 FROM chuni_item_item
-						WHERE user = ? AND itemId = ? AND itemKind = 7
+						WHERE user = ? AND itemId = ? AND itemKind = 3
 					`,
 						[userId, trophyId]
 					);
@@ -108,10 +108,6 @@ const routes = new Hono()
 				filter: z.object({
 					locked: z.boolean().nullable(),
 				}),
-				pagination: z.object({
-					page: z.number().int().min(1).default(1),
-					limit: z.number().int().min(1).max(100).default(18),
-				}),
 			})
 		),
 		async (c) => {
@@ -119,71 +115,56 @@ const routes = new Hono()
 				const { userId, versions } = c.payload;
 				const version = versions.chunithm_version;
 
-				const { filter, pagination } = await c.req.json();
+				const { filter } = await c.req.json();
 				const { locked } = filter;
-				const { page, limit } = pagination;
 
-				const offset = (page - 1) * limit;
-
-				let whereClause = "WHERE 1=1";
-				const params = [];
+				let additionalWhere = "";
+				const params = [userId, userId, version, version];
 
 				if (locked === true) {
-					whereClause += " AND cii.user IS NULL AND cst.trophyId != 0";
+					additionalWhere = " AND cii.user IS NULL AND dst.trophyId != 0";
 				} else if (locked === false) {
-					whereClause += " AND (cii.user IS NOT NULL OR cst.trophyId = 0)";
+					additionalWhere = " AND (cii.user IS NOT NULL OR dst.trophyId = 0)";
 				}
 
 				const query = `
 					SELECT
-						cst.trophyId as id,
-						cst.name AS label,
-						CONCAT('CHU_UI_Trophy_', LPAD(cst.trophyId, 6, '0')) as imagePath,
+						dst.trophyId as id,
+						dst.name AS label,
+						dst.imagePath,
 						CASE
-							WHEN cii.user IS NULL AND cst.trophyId != 0 THEN 1
+							WHEN cii.user IS NULL AND dst.trophyId != 0 THEN 1
 							ELSE 0
 						END AS locked,
 						CASE
-							WHEN cpd.trophyId = cst.trophyId THEN 1
+							WHEN cpd.trophyId = dst.trophyId THEN 1
 							ELSE 0
 						END AS equipped,
 						COUNT(*) OVER() AS total_count
-					FROM chuni_static_trophy cst
+					FROM daphnis_static_trophy dst
 					LEFT JOIN chuni_item_item cii 
-						ON cii.itemId = cst.trophyId 
+						ON cii.itemId = dst.trophyId 
 						AND cii.user = ?
-						AND cii.itemKind = 7
+						AND cii.itemKind = 3
 					LEFT JOIN chuni_profile_data cpd 
 						ON cpd.user = ? 
 						AND cpd.version = ?
-						AND cpd.trophyId = cst.trophyId
-					${whereClause}
+						AND cpd.trophyId = dst.trophyId
+					WHERE dst.version = ?${additionalWhere}
 					ORDER BY 
 						equipped DESC,
 						locked ASC,
-						cst.str ASC,
-						cst.trophyId ASC
-					LIMIT ? OFFSET ?
+						dst.name ASC,
+						dst.trophyId ASC
 				`;
-
-				params.unshift(userId, userId, version);
-				params.push(limit, offset);
 
 				const items = await db.select<TrophyItem & { total_count: number }>(query, params);
 
 				const totalCount = items.length > 0 ? items[0].total_count : 0;
-				const totalPages = Math.ceil(totalCount / limit);
 
 				return c.json({
 					items: items.map(({ total_count, ...item }) => item),
-					pagination: {
-						page,
-						limit,
-						total: totalCount,
-						totalPages,
-						hasNext: page < totalPages,
-						hasPrev: page > 1,
-					},
+					total: totalCount,
 				});
 			} catch (error) {
 				throw rethrowWithMessage("Failed to search trophies", error);
@@ -199,7 +180,7 @@ const routes = new Hono()
 			// Add trophy to user's inventory
 			await db.query(
 				`INSERT IGNORE INTO chuni_item_item (user, itemId, itemKind, stock, isValid)
-				VALUES (?, ?, 7, 1, 1)`,
+				VALUES (?, ?, 3, 1, 1)`,
 				[userId, id]
 			);
 

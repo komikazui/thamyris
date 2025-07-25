@@ -6,6 +6,12 @@ import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 
 import { Toaster } from "@/components/ui/sonner";
 
+import Trophies from "./components/chunithm/trophies";
+import Avatar from "./components/chunithm/userbox/avatar";
+import MapIcon from "./components/chunithm/userbox/map-icon";
+import Nameplate from "./components/chunithm/userbox/nameplate";
+import SystemVoice from "./components/chunithm/userbox/system-voice";
+import UserboxLayout from "./components/chunithm/userbox/userbox-layout";
 import { LoginContent } from "./components/common/login";
 import { SidebarComponent } from "./components/common/sidebar";
 import SignUpContent from "./components/common/signup";
@@ -21,7 +27,6 @@ import ChunithmRatingBaseList from "./pages/chunithm/rating";
 import ChunithmRivals from "./pages/chunithm/rivals";
 import ChunithmScorePage from "./pages/chunithm/scores";
 import ChunithmSettingsPage from "./pages/chunithm/settings";
-import ChunithmUserbox from "./pages/chunithm/userbox";
 import { NotFound } from "./pages/common/not-found";
 import OverviewPage from "./pages/common/overview-page";
 import ServerNews from "./pages/common/server-news";
@@ -70,7 +75,14 @@ const app = (
 								<Route path="/account" element={<Account />} />
 
 								<Route path="/chunithm/settings" element={<ChunithmSettingsPage />} />
-								<Route path="/chunithm/userbox" element={<ChunithmUserbox />} />
+								<Route path="/chunithm/userbox" element={<UserboxLayout />}>
+									<Route index element={<Avatar />} />
+									<Route path="avatar" element={<Avatar />} />
+									<Route path="nameplate" element={<Nameplate />} />
+									<Route path="trophy" element={<Trophies />} />
+									<Route path="systemvoice" element={<SystemVoice />} />
+									<Route path="mapicon" element={<MapIcon />} />
+								</Route>
 								<Route path="/chunithm/scores" element={<ChunithmScorePage />} />
 								<Route path="/chunithm/favorites" element={<ChunithmFavorites />} />
 								<Route path="/chunithm/leaderboard" element={<ChunithmLeaderboard />} />

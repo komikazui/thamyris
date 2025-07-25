@@ -10,7 +10,7 @@
 @custom-variant dark (&:is(.dark *));
 @font-face {
 	font-family: "PlusJakartaSans";
-	src: local("PlusJakartaSans-Regular"), url("./assets/fonts/PlusJakartaSans.ttf");
+	src: local("PlusJakartaSans-Regular"), url("/assets/fonts/PlusJakartaSans.ttf");
 }
 /*
 * CHUSAN AVATAR
