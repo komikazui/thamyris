@@ -84,7 +84,7 @@ const SystemvoiceCustomization: React.FC = () => {
 					{/* Preview Image */}
 					<div style={{ maxWidth: "100%" }}>
 						<img
-							src={`${CDN}/chunithm/systemvoicethumbnails/${item.imagePath?.replace(".dds", ".png") || ""}`}
+							src={`${CDN}/chunithm/system_voice_thumbnails/${item.imagePath?.replace(".dds", ".png") || ""}`}
 							alt={item.label}
 							className="mx-auto mb-2"
 							style={{
