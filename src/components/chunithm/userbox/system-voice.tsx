@@ -123,7 +123,7 @@ const SystemvoiceCustomization: React.FC = () => {
 				layout="stacked"
 				itemHeight={90}
 				itemWidth={240}
-				imageBasePath="chunithm/systemvoicethumbnails"
+				imageBasePath="chunithm/system_voice_thumbnails"
 				onItemClick={handleSelect}
 				onEquip={handleEquip}
 				onUnlock={handleUnlock}
