@@ -17,6 +17,7 @@ import { SystemVoiceRoutes } from "./systemvoice";
 import { ChunithmTeamsRoutes } from "./teams";
 import { TrophyRoutes } from "./trophies";
 import { UserBoxRoutes } from "./userbox";
+import { UsernameRoutes } from "./update-name";
 
 export const AllChunithmRoutes = new Hono()
 	.route("static", ChunithmStaticMusic)
@@ -35,4 +36,6 @@ export const AllChunithmRoutes = new Hono()
 	.route("trophy", TrophyRoutes)
 	.route("mods", ChunithmModsRoutes)
 	.route("teams", ChunithmTeamsRoutes)
-	.route("userbox", UserBoxRoutes);
+	.route("userbox", UserBoxRoutes)
+	.route("username", UsernameRoutes);
+	

@@ -7,6 +7,7 @@ import ArcadeConfiguration from "@/components/settings/common/arcade-configurati
 import ArcadeOwnership from "@/components/settings/common/arcade-ownership";
 import { useAdmin } from "@/hooks/admin";
 import { hasAdminAccess } from "@/utils/permissions";
+import UpdateUsernameBox from "@/components/settings/chunithm/update-username";
 
 const Account = () => {
 	const { data: systemAdmin } = useAdmin();
@@ -20,6 +21,7 @@ const Account = () => {
 				{adminPerms && <KeychipGenerator />}
 				{adminPerms && <ArcadeConfiguration />}
 				{adminPerms && <ArcadeOwnership />}
+				<UpdateUsernameBox />
 				<AimeCardSwap />
 			</div>
 		</div>
