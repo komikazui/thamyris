@@ -6,6 +6,7 @@ export enum ChunithmVersions {
   Luminous = 15,
   LuminousPlus = 16,
   Verse = 17,
+  XVerse = 18,
 }
 
 export enum OngekiVersions {
